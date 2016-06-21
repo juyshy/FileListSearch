@@ -1,0 +1,12 @@
+*.opensdf
+Debug/
+*.sdf
+*.suo
+*.csv
+*.txt
+*.TMP
+.visuallint/
+!LICENSE.txt
+Snapshot*.xml
+*.pdb
+*.ipch
