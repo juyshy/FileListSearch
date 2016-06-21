@@ -10,3 +10,4 @@ Debug/
 Snapshot*.xml
 *.pdb
 *.ipch
+*.bak
