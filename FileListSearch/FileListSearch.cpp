@@ -2,6 +2,8 @@
 //
 
 #include "stdafx.h"
+#include <boost/program_options.hpp>
+#include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
 #include <algorithm>  // for std::find
 #include <iostream>   // for std::cout
@@ -17,12 +19,12 @@ using std::string;
 using std::cout;
 using std::ifstream;
 using namespace boost::filesystem;
-
+namespace opt = boost::program_options;
 
  
 using std::endl;
 
-std::ofstream resuts_file("searchResults2.txt");
+std::ofstream resuts_file; 
 
 bool search(string filename, string searchString) {
   boost::timer::auto_cpu_timer t;
@@ -80,15 +82,70 @@ bool search(string filename, string searchString) {
 }
 
 
-int main()
+int main(int argc, char *argv[]) 
 {
    boost::timer::auto_cpu_timer t;
-   //string filename = "E:/adm/hdlist/seagate500dir.txt"; 
-   string filename = "E:/adm/hdlist/SeagateExpansionDrive_22DB-0CBF__12012015-2034.txt";
-   //std::string filename = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt";// listings[2];
+   opt::options_description desc("All options: (search and listingfiles required)");
+   //_crtBreakAlloc = 894;
+   desc.add_options()
+     ("search,s", opt::value<std::string>(), "search string")
+     ("resultfile,r",
+     opt::value<std::string>()->default_value("search_resultsfile.csv"),
+     "results output file name")
+     ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
+     "file listings")
+     ("help", "produce help message");
 
-   string searchString = "animaatio";
-   search(filename, searchString);
+   opt::variables_map vm;
+
+   opt::store(opt::parse_command_line(argc, argv, desc), vm);
+   opt::notify(vm);
+
+   if (vm.count("help")) {
+     std::cout << desc << "\n";
+     return 1;
+   }
+
+   opt::notify(vm);
+   std::string searchString;
+   // extracting search word from command line options
+   if (!vm["search"].empty()) {
+     searchString = vm["search"].as<std::string>();
+   }
+   else {
+     std::cout << "Search option required:" << "\n";
+     std::cout << desc << "\n";
+     return 1;
+   }
+   //char * haku = reinterpret_cast<char *>(alloca(searchString.size() + 1));
+   //memcpy(haku, hakustr.c_str(), hakustr.size() + 1);
+
+   // extracting search results file file name from command line options
+   std::string resultfileName = vm["resultfile"].as<std::string>();
+
+   // extracting file listing path names from command line options
+   std::vector<string> listFiles;
+   if (!vm["listingfiles"].empty() &&
+     (listFiles = vm["listingfiles"].as<std::vector<string> >()).size() > 0) {
+     // good to go
+   }
+   else {
+     std::cout << desc << "\n";
+     return 1;
+   }
+
+   //string filename = "E:/adm/hdlist/seagate500dir.txt"; 
+   //string filename = "E:/adm/hdlist/SeagateExpansionDrive_22DB-0CBF__12012015-2034.txt";
+   std::string filename = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt";// listings[2];
+   resuts_file.open(resultfileName);
+   //string searchString = "animaatio";
+   cout << "searchString " <<  searchString << endl;
+   for (string filename : listFiles) {
+     cout << filename << endl;
+     search(filename, searchString);
+   }
+
+   resuts_file.close();
  
 }
 //
