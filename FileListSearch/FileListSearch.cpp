@@ -64,13 +64,12 @@ bool search2(string filename, string searchString) {
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
   memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
 
- 
-
+  int hitcount = 0;
+  // loop through all potential search hits
   while (f && f != end  ) {
-    if (f = static_cast<const char*>(memchr(f, searchChar1, end - f)))
+    if (f = static_cast<const char*>(memchr(f, searchChar1, end - f))) 
     {
 
- 
       // check for search string
       if (  ((end - f) > searchStringLen) && memcmp(searchCharArray, f, searchStringLen) == 0)
       {
@@ -87,14 +86,17 @@ bool search2(string filename, string searchString) {
         }
          --lineEndPoint; //  step back to drop "\n"
 
+         // filter out directories and abnormaly long results
          if (memcmp(dirnamestr, linestartPoint, compsize) != 0
            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
            && lineEndPoint - linestartPoint < 1000)
          {
              string resultString(linestartPoint, lineEndPoint - linestartPoint);
-             searchResults.push_back(resultString);
+             //searchResults.push_back(resultString);
+             ++hitcount;
              //cout << " resultString:  " << resultString << endl;
 
+             // search  and fetch the containging directory name
              dirStartPoint = linestartPoint;
              while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
              {
@@ -107,25 +109,19 @@ bool search2(string filename, string searchString) {
              }
              --dirEndPoint; //  step back to drop "\n"
 
+             // capture only the directory name
              string lineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
              resuts_file <<  lineString << "; " <<  resultString << "\n";
              f = lineEndPoint; // continue searching from the end of last result line
          }
-
       }
       f++;
     }
   }
    
-  
-  //    // fetch the containging directory
-  //    std::size_t previousDirectory = filecontents.rfind("Directory of", lineStart) + 13;
-  //    std::size_t dirlineEndIndx = filecontents.find("\r", previousDirectory + 1);
-  //    currentDir = filecontents.substr(previousDirectory, dirlineEndIndx - previousDirectory);
-  //    searchResults.push_back(resultRow);
  
 
-  cout << "search results found: " << searchResults.size() << endl;
+  cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
 
   return true;
 }
@@ -257,10 +253,11 @@ int main(int argc, char *argv[])
  
 }
 //
+//
 //searchString opengl
 //E : / adm / hdlist / SeagateExpansionDrive_22DB - 0CBF__12012015 - 2034.txt
-//    0.254786s wall, 0.140625s user + 0.109375s system = 0.250000s CPU(98.1%)
+//    0.000191s wall, 0.000000s user + 0.000000s system = 0.000000s CPU(n / a%)
 //    search results found : 1551
-//    3.692597s wall, 3.609375s user + 0.078125s system = 3.687500s CPU(99.9%)
-//    3.964862s wall, 3.750000s user + 0.187500s system = 3.937500s CPU(99.3%)
+//    1.609561s wall, 1.546875s user + 0.062500s system = 1.609375s CPU(100.0%)
+//    1.626751s wall, 1.546875s user + 0.062500s system = 1.609375s CPU(98.9%)
 //    Press any key to continue . . .
