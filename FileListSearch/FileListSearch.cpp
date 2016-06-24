@@ -59,7 +59,7 @@ bool search2(string filename, string searchString, bool casesensitive) {
   const char * f = mmap.const_data();
   
   const char * beginning = f;
-  const char * beginning2;
+  const char * beginning2; // lowercase duplicate beginning pointer
   auto end = f + mmap.size();
   auto size2 = end - f;
 
@@ -90,12 +90,8 @@ bool search2(string filename, string searchString, bool casesensitive) {
   t.start();
 
   // search
-  //std::size_t found = filecontents.find(searchString);
-  std::vector<string> searchResults;
-
-  //static_cast<char>(searchString[0]
+  //std::vector<string> searchResults;
   auto searchChar1 = searchString[0];
-  
   int searchStringLen = searchString.size();
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
   memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
@@ -113,19 +109,16 @@ bool search2(string filename, string searchString, bool casesensitive) {
       lowrcasecopy[i] = tolower(c);
       i++;
     }
-    //f = &lowrcasecopy[0];
-    f2 = &lowrcasecopy[0];
- 
+    f2 = &lowrcasecopy[0]; // using lowercase copy for search
     end = f2 + size2;
-     
   }
   else
   {
-    f2 = f;
+    f2 = f; // using the original
     
   }
+
   beginning2 = f2;
-  //
   end = f2 + size2;
   t.report();
   t.stop();
@@ -185,11 +178,8 @@ bool search2(string filename, string searchString, bool casesensitive) {
       f2++;
     }
   }
-   
- 
 
   cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
-
   return true;
 }
 
@@ -295,8 +285,7 @@ int main(int argc, char *argv[])
    if (!vm["casesensitive"].empty()) {
      casesensitive = vm["casesensitive"].as<bool>();
    }
-   //char * haku = reinterpret_cast<char *>(alloca(searchString.size() + 1));
-   //memcpy(haku, hakustr.c_str(), hakustr.size() + 1);
+ 
 
    // extracting search results file file name from command line options
    std::string resultfileName = vm["resultfile"].as<std::string>();
