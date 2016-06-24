@@ -32,9 +32,9 @@ const char * linestartPoint;
 const char * lineEndPoint;
 const char * dirStartPoint;
 const char * dirEndPoint;
-const char dirnamestr[] = " Directory of ";
+ char dirnamestr[] = " Directory of ";
 const size_t compsize = sizeof(dirnamestr) - 1;
-const char dirStr[] = "<DIR>";
+ char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
 string  get_match(std::string const &s, std::regex const &r) {
@@ -50,16 +50,20 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool search2(string filename, string searchString) {
+bool search2(string filename, string searchString, bool casesensitive) {
 
   boost::timer::auto_cpu_timer t;
 
   // Load file
   boost::iostreams::mapped_file mmap(filename, boost::iostreams::mapped_file::readonly);
   const char * f = mmap.const_data();
+  
   const char * beginning = f;
+  const char * beginning2;
   auto end = f + mmap.size();
   auto size2 = end - f;
+
+ 
   if (!f) {
     printf("Not enough memory for f. It's the end I'm afraid.\n");
     return false;
@@ -95,18 +99,49 @@ bool search2(string filename, string searchString) {
   int searchStringLen = searchString.size();
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
   memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
-
+  const char * f2;
+  //bool casesensitive = false;
+  if (!casesensitive) { // not casesensitive make a lower copy
+ 
+    std::cout << "making lowercase copy for caseinsenstive search: "   << "\n";
+    char * lowrcasecopy = new char[size2 + 1]();
+    int i = 0;
+    char c;
+    while (f[i])
+    {
+      c = f[i];
+      lowrcasecopy[i] = tolower(c);
+      i++;
+    }
+    //f = &lowrcasecopy[0];
+    f2 = &lowrcasecopy[0];
+ 
+    end = f2 + size2;
+     
+  }
+  else
+  {
+    f2 = f;
+    
+  }
+  beginning2 = f2;
+  //
+  end = f2 + size2;
+  t.report();
+  t.stop();
+  t.start();
+  std::cout << "searching: " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
-  while (f && f != end  ) {
-    if (f = static_cast<const char*>(memchr(f, searchChar1, end - f))) 
+  while (f2 && f2 != end  ) {
+    if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2))) 
     {
 
       // check for search string
-      if (  ((end - f) > searchStringLen) && memcmp(searchCharArray, f, searchStringLen) == 0)
+      if (  ((end - f2) > searchStringLen) && memcmp(searchCharArray, f2, searchStringLen) == 0)
       {
         // locate search result line start and end
-        linestartPoint = lineEndPoint= f;
+        linestartPoint = lineEndPoint = f + (f2-beginning2); // flip to search from original in case of caseinsensitive search
          while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
         {
           --linestartPoint;
@@ -144,10 +179,10 @@ bool search2(string filename, string searchString) {
              // capture only the directory name
              string lineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
              resuts_file <<  lineString << "; " <<  resultString << "\n";
-             f = lineEndPoint; // continue searching from the end of last result line
+             f2 = beginning2 + ( lineEndPoint - beginning); // continue searching from the end of last result line
          }
       }
-      f++;
+      f2++;
     }
   }
    
@@ -227,6 +262,7 @@ int main(int argc, char *argv[])
    //_crtBreakAlloc = 894;
    desc.add_options()
      ("search,s", opt::value<std::string>(), "search string")
+     ("casesensitive,c", opt::value<bool>()->default_value(false),"casesensitive")
      ("resultfile,r",
      opt::value<std::string>()->default_value("search_resultsfile.csv"),
      "results output file name")
@@ -255,6 +291,10 @@ int main(int argc, char *argv[])
      std::cout << desc << "\n";
      return 1;
    }
+   bool casesensitive;
+   if (!vm["casesensitive"].empty()) {
+     casesensitive = vm["casesensitive"].as<bool>();
+   }
    //char * haku = reinterpret_cast<char *>(alloca(searchString.size() + 1));
    //memcpy(haku, hakustr.c_str(), hakustr.size() + 1);
 
@@ -278,7 +318,7 @@ int main(int argc, char *argv[])
    cout << "searchString " <<  searchString << endl;
    for (string filename : listFiles) {
      //cout << filename << endl;
-     search2(filename, searchString);
+     search2(filename, searchString, casesensitive);
    }
 
    resuts_file.close();
