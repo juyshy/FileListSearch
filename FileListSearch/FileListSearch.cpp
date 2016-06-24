@@ -26,7 +26,14 @@ using std::endl;
 
 std::ofstream resuts_file; 
 
-
+const char   rivinvaihto = '\n';
+const char * rivinvaihtoChar = &rivinvaihto;
+const char * linestartPoint;
+const char * lineEndPoint;
+const char dirnamestr[] = " Directory of ";
+const size_t compsize = sizeof(dirnamestr) - 1;
+const char dirStr[] = "<DIR>";
+const size_t compsize2 = sizeof(dirStr) - 1;
 
 bool search2(string filename, string searchString) {
 
@@ -39,7 +46,6 @@ bool search2(string filename, string searchString) {
   auto end = f + mmap.size();
   auto size2 = end - f;
 
-  
    
   t.report();
   t.stop();
@@ -56,18 +62,14 @@ bool search2(string filename, string searchString) {
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
   memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
 
-  //int counteri = 0;
+ 
 
-  char   rivinvaihto = '\n';
-  char * rivinvaihtoChar = &rivinvaihto;
-  const char * linestartPoint;
-  const char * lineEndPoint;
   while (f && f != end  ) {
     if (f = static_cast<const char*>(memchr(f, searchChar1, end - f)))
     {
 
-      //counteri++;
-      // check for searchh string
+ 
+      // check for search string
       if (  ((end - f) > searchStringLen) && memcmp(searchCharArray, f, searchStringLen) == 0)
       {
         // locate search result line start and end
@@ -76,13 +78,21 @@ bool search2(string filename, string searchString) {
         {
           --linestartPoint;
         }
+         ++linestartPoint; // step forward to drop "\n"
          while ((end - lineEndPoint) > 0 && memcmp(rivinvaihtoChar, lineEndPoint, 1) != 0)
         {
           ++lineEndPoint;
         }
-         if (lineEndPoint - linestartPoint < 1000){
-           string resultString(linestartPoint+1, lineEndPoint - linestartPoint -2);
-           searchResults.push_back(resultString);
+         --lineEndPoint; //  step back to drop "\n"
+
+         if (memcmp(dirnamestr, linestartPoint, compsize) != 0
+           && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
+           && lineEndPoint - linestartPoint < 1000)
+         {
+             string resultString(linestartPoint, lineEndPoint - linestartPoint);
+             searchResults.push_back(resultString);
+             cout << " resultString:  " << resultString << endl;
+             resuts_file << /*currentDir << "; " <<*/ resultString << "\n";
          }
 
       }
@@ -90,32 +100,13 @@ bool search2(string filename, string searchString) {
     }
   }
    
- 
-  //  std::size_t lineEndIndx = filecontents.find("\r", found + 1);
-  //  std::size_t lineStart = filecontents.rfind('\n', found) + 1;
-
-  //  if (lineStart == std::string::npos)
-  //    lineStart = 0;
-
-  //  int lineLength = lineEndIndx - lineStart;
-  //  string resultRow = filecontents.substr(lineStart, lineLength);
-  //  std::size_t dirfound = resultRow.find("Directory of");
-  //  std::size_t dirfound2 = resultRow.find("<DIR>");
-
-  //  // filter out Directories
-  //  if (dirfound == std::string::npos && dirfound2 == std::string::npos)
-  //  {
+  
   //    // fetch the containging directory
   //    std::size_t previousDirectory = filecontents.rfind("Directory of", lineStart) + 13;
   //    std::size_t dirlineEndIndx = filecontents.find("\r", previousDirectory + 1);
   //    currentDir = filecontents.substr(previousDirectory, dirlineEndIndx - previousDirectory);
   //    searchResults.push_back(resultRow);
-  //    resuts_file << currentDir << "; " << resultRow << "\n";
-  //  }
-
-  //  found = filecontents.find(searchString, lineStart + lineLength);
-
-  //}
+ 
 
   cout << "search results found: " << searchResults.size() << endl;
 
