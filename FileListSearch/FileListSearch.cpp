@@ -369,17 +369,22 @@ int main(int argc, char *argv[])
      {
        string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
        resultfileName = resultfileNameOriginal + renameSuffixStr;
-
+       
      }
      else if (mystr == "c")
      {
        std::cout << "canceling.." << "\n";
        return 1;
      }
+     else
+     {
+       std::cout << "over"; 
+       break;
+     }
      renameSuffix++;
      
    }
-
+   std::cout << "writing results to " << resultfileName << "\n";
    resuts_file.open(resultfileName);
    resuts_file << "searchString: " << searchString <<  "\n";
    for (string filename : listFiles) {
