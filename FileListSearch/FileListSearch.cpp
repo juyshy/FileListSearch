@@ -37,6 +37,19 @@ const size_t compsize = sizeof(dirnamestr) - 1;
 const char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
+string  get_match(std::string const &s, std::regex const &r) {
+  std::smatch match;
+  string matchStr;
+  if (std::regex_search(s, match, r)) {
+    /*std::cout << "Sernum: " << */
+    matchStr = match[1].str();
+    return matchStr;
+  }
+  else {
+    std::cerr << s << "did not match\n";
+    return "";
+  }
+}
 bool search2(string filename, string searchString) {
 
   boost::timer::auto_cpu_timer t;
@@ -47,8 +60,27 @@ bool search2(string filename, string searchString) {
   const char * beginning = f;
   auto end = f + mmap.size();
   auto size2 = end - f;
-
-   
+  if (!f) {
+    printf("Not enough memory for f. It's the end I'm afraid.\n");
+    return false;
+  }
+  std::cout << "listing file: " << filename << " ";
+  std::cout << "loaded " << "\n";
+  std::cout << "size: " << mmap.size() << "\n";
+  // ulong stop1 = GetTickCount();
+  // cout << "mmap.open, mmap.const_data took " << stop1 - start1 << "mS" << endl;
+  string listingbeginning(f, 200);
+  std::regex serPattern("Serial Number is (.*?)\r?\n");
+  string sernum = get_match(listingbeginning, serPattern);
+  std::regex volPattern("Volume in drive ([A-Z]) is\\s+.*?\r?\n");
+  string volLetter = get_match(listingbeginning, volPattern);
+  std::cout << "volume letter: " << volLetter << "\n";
+  std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
+  string volName = get_match(listingbeginning, volnamePattern);
+  std::cout << "volume name: " << volName << "\n";
+  resuts_file << ">>>>" << filename + "\n";
+  resuts_file <<  sernum + "\n";
+  resuts_file <<  volName + "\n";
   t.report();
   t.stop();
   t.start();
@@ -245,7 +277,7 @@ int main(int argc, char *argv[])
    resuts_file.open(resultfileName);  //string searchString = "animaatio";
    cout << "searchString " <<  searchString << endl;
    for (string filename : listFiles) {
-     cout << filename << endl;
+     //cout << filename << endl;
      search2(filename, searchString);
    }
 
