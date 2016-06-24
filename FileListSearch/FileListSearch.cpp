@@ -5,6 +5,7 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
+ 
 #include <algorithm>  // for std::find
 #include <iostream>   // for std::cout
 #include <cstring>
@@ -18,6 +19,7 @@
 #include <exception> 
 using std::string;
 using std::cout;
+using std::cin;
 using std::ifstream;
 using namespace boost::filesystem;
 namespace opt = boost::program_options;
@@ -280,6 +282,14 @@ bool search(string filename, string searchString) {
   return true;
 }
 
+bool fexists(string resultfileName)
+{
+  auto filename = reinterpret_cast<char *>(alloca(resultfileName.size() + 1));
+  memcpy(filename, resultfileName.c_str(), resultfileName.size() + 1);
+
+  ifstream ifile(filename);
+  return static_cast<bool>( ifile);
+}
 
 int main(int argc, char *argv[]) 
 {
@@ -345,7 +355,32 @@ int main(int argc, char *argv[])
 
  
    std::string filename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
-   resuts_file.open(resultfileName);  //string searchString = "animaatio";
+   std::string resultfileNameOriginal = resultfileName;
+   int renameSuffix = 1;
+   while (fexists(resultfileName))
+ 
+   {
+     std::cout << "results file " << resultfileName << " allready exists" << "\n";
+     std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
+     string mystr;
+ 
+     getline(cin, mystr);
+     if (mystr == "r")
+     {
+       string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
+       resultfileName = resultfileNameOriginal + renameSuffixStr;
+
+     }
+     else if (mystr == "c")
+     {
+       std::cout << "canceling.." << "\n";
+       return 1;
+     }
+     renameSuffix++;
+     
+   }
+
+   resuts_file.open(resultfileName);
    resuts_file << "searchString: " << searchString <<  "\n";
    for (string filename : listFiles) {
      //cout << filename << endl;
