@@ -15,6 +15,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <regex>
+#include <exception> 
 using std::string;
 using std::cout;
 using std::ifstream;
@@ -53,11 +54,27 @@ string  get_match(std::string const &s, std::regex const &r) {
 bool search2(string filename, string searchString, bool casesensitive, string filetype) {
 
   boost::timer::auto_cpu_timer t;
+  boost::iostreams::mapped_file mmap;
+  try {
 
   // Load file
-  boost::iostreams::mapped_file mmap(filename, boost::iostreams::mapped_file::readonly);
+   mmap.open(filename, boost::iostreams::mapped_file::readonly);
+  }
+  catch (std::exception& e)
+  {
+    // remind the user that the ISBNs must match and prompt for another pair
+    std::cerr << "exception caught: " << e.what() << '\n';
+    return 1;
+  }
+  cout << "searchString " << searchString << endl;
+  if (filetype == "both")
+  {
+    cout << "searching for both files and directories " << filetype << endl;
+  }
+  else
+    cout << "searching for file type: " << filetype << endl;
+
   const char * f = mmap.const_data();
-  
   const char * beginning = f;
   const char * beginning2; // lowercase duplicate beginning pointer
   auto end = f + mmap.size();
@@ -196,6 +213,9 @@ bool search2(string filename, string searchString, bool casesensitive, string fi
   }
 
   cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
+
+  if (hitcount == 0)
+    resuts_file << "NOTHING FOUND "  << "\n";
   return true;
 }
 
@@ -308,11 +328,7 @@ int main(int argc, char *argv[])
    if (!vm["filetype"].empty()) {
      filetype = vm["filetype"].as<std::string>();
    }
-   if (filetype == "both")
-   {
-     cout << "searching for both files and directories " << filetype << endl;
-   } else
-     cout << "searching for file type: " << filetype << endl;
+
    // extracting search results file file name from command line options
    std::string resultfileName = vm["resultfile"].as<std::string>();
 
@@ -330,7 +346,7 @@ int main(int argc, char *argv[])
  
    std::string filename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    resuts_file.open(resultfileName);  //string searchString = "animaatio";
-   cout << "searchString " <<  searchString << endl;
+   resuts_file << "searchString: " << searchString <<  "\n";
    for (string filename : listFiles) {
      //cout << filename << endl;
      search2(filename, searchString, casesensitive, filetype);
