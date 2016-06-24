@@ -30,6 +30,8 @@ const char   rivinvaihto = '\n';
 const char * rivinvaihtoChar = &rivinvaihto;
 const char * linestartPoint;
 const char * lineEndPoint;
+const char * dirStartPoint;
+const char * dirEndPoint;
 const char dirnamestr[] = " Directory of ";
 const size_t compsize = sizeof(dirnamestr) - 1;
 const char dirStr[] = "<DIR>";
@@ -91,8 +93,23 @@ bool search2(string filename, string searchString) {
          {
              string resultString(linestartPoint, lineEndPoint - linestartPoint);
              searchResults.push_back(resultString);
-             cout << " resultString:  " << resultString << endl;
-             resuts_file << /*currentDir << "; " <<*/ resultString << "\n";
+             //cout << " resultString:  " << resultString << endl;
+
+             dirStartPoint = linestartPoint;
+             while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+             {
+               --dirStartPoint;
+             }
+             dirEndPoint = dirStartPoint;
+             while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
+             {
+               ++dirEndPoint;
+             }
+             --dirEndPoint; //  step back to drop "\n"
+
+             string lineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+             resuts_file <<  lineString << "; " <<  resultString << "\n";
+             f = lineEndPoint; // continue searching from the end of last result line
          }
 
       }
