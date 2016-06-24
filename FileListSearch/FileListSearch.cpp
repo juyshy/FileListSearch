@@ -50,7 +50,7 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool search2(string filename, string searchString, bool casesensitive) {
+bool search2(string filename, string searchString, bool casesensitive, string filetype) {
 
   boost::timer::auto_cpu_timer t;
 
@@ -146,10 +146,23 @@ bool search2(string filename, string searchString, bool casesensitive) {
         }
          --lineEndPoint; //  step back to drop "\n"
 
+         bool  filter ;
          // filter out directories and abnormaly long results
-         if (memcmp(dirnamestr, linestartPoint, compsize) != 0
-           && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
-           && lineEndPoint - linestartPoint < 1000)
+         if (filetype == "file") {
+           // filter out directories
+           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
+             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0;
+         }
+         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
+         {
+           // only directories
+           filter = memcmp(dirStr, linestartPoint + 21, compsize2) == 0;
+         } else
+         {
+           // filter out directories  
+           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0;
+         }
+           if (filter  && lineEndPoint - linestartPoint < 1000)
          {
              string resultString(linestartPoint, lineEndPoint - linestartPoint);
              //searchResults.push_back(resultString);
@@ -171,7 +184,10 @@ bool search2(string filename, string searchString, bool casesensitive) {
 
              // capture only the directory name
              string lineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
-             resuts_file <<  lineString << "; " <<  resultString << "\n";
+      
+             resuts_file << lineString << "; " << resultString << "\n";
+             
+             
              f2 = beginning2 + ( lineEndPoint - beginning); // continue searching from the end of last result line
          }
       }
@@ -253,6 +269,7 @@ int main(int argc, char *argv[])
    desc.add_options()
      ("search,s", opt::value<std::string>(), "search string")
      ("casesensitive,c", opt::value<bool>()->default_value(false),"casesensitive")
+     ("filetype,s", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
      ("resultfile,r",
      opt::value<std::string>()->default_value("search_resultsfile.csv"),
      "results output file name")
@@ -286,7 +303,16 @@ int main(int argc, char *argv[])
      casesensitive = vm["casesensitive"].as<bool>();
    }
  
-
+   std::string filetype;
+   // extracting search word from command line options
+   if (!vm["filetype"].empty()) {
+     filetype = vm["filetype"].as<std::string>();
+   }
+   if (filetype == "both")
+   {
+     cout << "searching for both files and directories " << filetype << endl;
+   } else
+     cout << "searching for file type: " << filetype << endl;
    // extracting search results file file name from command line options
    std::string resultfileName = vm["resultfile"].as<std::string>();
 
@@ -307,7 +333,7 @@ int main(int argc, char *argv[])
    cout << "searchString " <<  searchString << endl;
    for (string filename : listFiles) {
      //cout << filename << endl;
-     search2(filename, searchString, casesensitive);
+     search2(filename, searchString, casesensitive, filetype);
    }
 
    resuts_file.close();
