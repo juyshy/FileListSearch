@@ -284,12 +284,4 @@ int main(int argc, char *argv[])
    resuts_file.close();
  
 }
-//
-//
-//searchString opengl
-//E : / adm / hdlist / SeagateExpansionDrive_22DB - 0CBF__12012015 - 2034.txt
-//    0.000191s wall, 0.000000s user + 0.000000s system = 0.000000s CPU(n / a%)
-//    search results found : 1551
-//    1.609561s wall, 1.546875s user + 0.062500s system = 1.609375s CPU(100.0%)
-//    1.626751s wall, 1.546875s user + 0.062500s system = 1.609375s CPU(98.9%)
-//    Press any key to continue . . .
+ 
