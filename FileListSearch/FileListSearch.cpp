@@ -7,6 +7,7 @@
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
  
 #include <algorithm>  // for std::find
+#include <functional> 
 #include <iostream>   // for std::cout
 #include <cstring>
 #include <boost/timer/timer.hpp>
@@ -17,6 +18,9 @@
 #include <boost/lexical_cast.hpp>
 #include <regex>
 #include <exception> 
+#include <cctype>
+#include <locale>
+
 using std::string;
 using std::cout;
 using std::cin;
@@ -40,6 +44,25 @@ const size_t compsize = sizeof(dirnamestr) - 1;
  char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
+
+
+//http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+  s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {
+  ltrim(s);
+  rtrim(s);
+}
+
 string  get_match(std::string const &s, std::regex const &r) {
   std::smatch match;
   string matchStr;
@@ -53,7 +76,7 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool search2(string fileListFilename, string searchString, bool casesensitive, string filetype) {
+bool search2(string fileListFilename, string searchString, bool casesensitive, string filetype, bool fullpath) {
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
@@ -204,11 +227,29 @@ bool search2(string fileListFilename, string searchString, bool casesensitive, s
              // capture only the directory name
              string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
       
-             //std::regex filenamePattern(":\\d\\d\\s+\\d+\\s+(.*?)$");
-             //string filename = get_match(dirLineString, filenamePattern);
+             if (fullpath) {
+               string size_filename = resultString.substr(17); // offset for size and filenames in the row
+               trim(size_filename);
+               std::size_t endOfSizeLocation = size_filename.find(" ");
+               string filename;
+               string filesizeStr;
+               int filesize;
+               if (endOfSizeLocation != std::string::npos)
+               {
+                 filename = size_filename.substr(endOfSizeLocation+1);
+                 filesizeStr = size_filename.substr(0, endOfSizeLocation);
+                 filesize = boost::lexical_cast<int>(filesizeStr);
+               }
+               else
+               {
+                 throw std::runtime_error("filename not found!");
+                 filename = size_filename;// todo: 
+               }
 
-             resuts_file << dirLineString << "; " << resultString << "\n";
-             
+               resuts_file << dirLineString << "; " << resultString << "; " << dirLineString << "\\" << filename << "\n";
+               }
+             else
+               resuts_file << dirLineString << "; " << resultString <<   "\n";
              
              f2 = beginning2 + ( lineEndPoint - beginning); // continue searching from the end of last result line
          }
@@ -308,6 +349,8 @@ int main(int argc, char *argv[])
      "results output file name")
      ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
      "file listings")
+     ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
+     ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
      ("help", "produce help message");
 
    opt::variables_map vm;
@@ -336,6 +379,16 @@ int main(int argc, char *argv[])
      casesensitive = vm["casesensitive"].as<bool>();
    }
  
+   bool overwrite;
+   if (!vm["overwrite"].empty()) {
+     overwrite = vm["overwrite"].as<bool>();
+   }
+
+   bool fullpath;
+   if (!vm["fullpath"].empty()) {
+     fullpath = vm["fullpath"].as<bool>();
+   }
+   
    std::string filetype;
    // extracting search word from command line options
    if (!vm["filetype"].empty()) {
@@ -360,8 +413,7 @@ int main(int argc, char *argv[])
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    std::string resultsFilenameOriginal = resultsFilename;
    int renameSuffix = 1;
-   while (fexists(resultsFilename))
- 
+   while (fexists(resultsFilename) && !overwrite)
    {
      std::cout << "results file " << resultsFilename << " allready exists" << "\n";
      std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
@@ -392,7 +444,7 @@ int main(int argc, char *argv[])
    resuts_file << "searchString: " << searchString <<  "\n";
    for (string fileListFilename : listFiles) {
      //cout << fileListFilename << endl;
-     search2(fileListFilename, searchString, casesensitive, filetype);
+     search2(fileListFilename, searchString, casesensitive, filetype, fullpath);
    }
 
    resuts_file.close();

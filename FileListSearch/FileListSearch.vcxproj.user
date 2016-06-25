@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>--search=opengl --casesensitive=false --resultfile=hakutulokset_opengl_4ab_lw2.txt  --listingfiles="E:/adm/hdlist/seagate500dir.txt"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--search=opengl --casesensitive=true --resultfile=results/hakutulokset_opengl_5.txt  --overwrite=true --listingfiles="E:/adm/hdlist/seagate500dir.txt"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
