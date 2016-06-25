@@ -53,14 +53,14 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool search2(string filename, string searchString, bool casesensitive, string filetype) {
+bool search2(string fileListFilename, string searchString, bool casesensitive, string filetype) {
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
   try {
 
   // Load file
-   mmap.open(filename, boost::iostreams::mapped_file::readonly);
+   mmap.open(fileListFilename, boost::iostreams::mapped_file::readonly);
   }
   catch (std::exception& e)
   {
@@ -87,7 +87,7 @@ bool search2(string filename, string searchString, bool casesensitive, string fi
     printf("Not enough memory for f. It's the end I'm afraid.\n");
     return false;
   }
-  std::cout << "listing file: " << filename << " ";
+  std::cout << "listing file: " << fileListFilename << " ";
   std::cout << "loaded " << "\n";
   std::cout << "size: " << mmap.size() << "\n";
   // ulong stop1 = GetTickCount();
@@ -101,7 +101,7 @@ bool search2(string filename, string searchString, bool casesensitive, string fi
   std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
   string volName = get_match(listingbeginning, volnamePattern);
   std::cout << "volume name: " << volName << "\n";
-  resuts_file << ">>>>" << filename + "\n";
+  resuts_file << ">>>>" << fileListFilename + "\n";
   resuts_file <<  sernum + "\n";
   resuts_file <<  volName + "\n";
   t.report();
@@ -202,9 +202,12 @@ bool search2(string filename, string searchString, bool casesensitive, string fi
              --dirEndPoint; //  step back to drop "\n"
 
              // capture only the directory name
-             string lineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+             string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
       
-             resuts_file << lineString << "; " << resultString << "\n";
+             //std::regex filenamePattern(":\\d\\d\\s+\\d+\\s+(.*?)$");
+             //string filename = get_match(dirLineString, filenamePattern);
+
+             resuts_file << dirLineString << "; " << resultString << "\n";
              
              
              f2 = beginning2 + ( lineEndPoint - beginning); // continue searching from the end of last result line
@@ -221,12 +224,12 @@ bool search2(string filename, string searchString, bool casesensitive, string fi
   return true;
 }
 
-bool search(string filename, string searchString) {
+bool search(string fileListFilename, string searchString) {
 
   boost::timer::auto_cpu_timer t;
   
   // Load file
-  boost::iostreams::mapped_file mmap(filename, boost::iostreams::mapped_file::readonly);
+  boost::iostreams::mapped_file mmap(fileListFilename, boost::iostreams::mapped_file::readonly);
   const char * f = mmap.const_data();
   const char * beginning = f;
   auto end = f + mmap.size();
@@ -282,12 +285,12 @@ bool search(string filename, string searchString) {
   return true;
 }
 
-bool fexists(string resultfileName)
+bool fexists(string filenameToCheck)
 {
-  auto filename = reinterpret_cast<char *>(alloca(resultfileName.size() + 1));
-  memcpy(filename, resultfileName.c_str(), resultfileName.size() + 1);
+  auto filenameToCheckChar = reinterpret_cast<char *>(alloca(filenameToCheck.size() + 1));
+  memcpy(filenameToCheckChar, filenameToCheck.c_str(), filenameToCheck.size() + 1);
 
-  ifstream ifile(filename);
+  ifstream ifile(filenameToCheckChar);
   return static_cast<bool>( ifile);
 }
 
@@ -340,7 +343,7 @@ int main(int argc, char *argv[])
    }
 
    // extracting search results file file name from command line options
-   std::string resultfileName = vm["resultfile"].as<std::string>();
+   std::string resultsFilename = vm["resultfile"].as<std::string>();
 
    // extracting file listing path names from command line options
    std::vector<string> listFiles;
@@ -354,13 +357,13 @@ int main(int argc, char *argv[])
    }
 
  
-   std::string filename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
-   std::string resultfileNameOriginal = resultfileName;
+   std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
+   std::string resultsFilenameOriginal = resultsFilename;
    int renameSuffix = 1;
-   while (fexists(resultfileName))
+   while (fexists(resultsFilename))
  
    {
-     std::cout << "results file " << resultfileName << " allready exists" << "\n";
+     std::cout << "results file " << resultsFilename << " allready exists" << "\n";
      std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
      string mystr;
  
@@ -368,7 +371,7 @@ int main(int argc, char *argv[])
      if (mystr == "r")
      {
        string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
-       resultfileName = resultfileNameOriginal + renameSuffixStr;
+       resultsFilename = resultsFilenameOriginal + renameSuffixStr;
        
      }
      else if (mystr == "c")
@@ -384,12 +387,12 @@ int main(int argc, char *argv[])
      renameSuffix++;
      
    }
-   std::cout << "writing results to " << resultfileName << "\n";
-   resuts_file.open(resultfileName);
+   std::cout << "writing results to " << resultsFilename << "\n";
+   resuts_file.open(resultsFilename);
    resuts_file << "searchString: " << searchString <<  "\n";
-   for (string filename : listFiles) {
-     //cout << filename << endl;
-     search2(filename, searchString, casesensitive, filetype);
+   for (string fileListFilename : listFiles) {
+     //cout << fileListFilename << endl;
+     search2(fileListFilename, searchString, casesensitive, filetype);
    }
 
    resuts_file.close();
