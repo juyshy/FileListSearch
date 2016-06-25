@@ -4,6 +4,7 @@ Debug/
 *.suo
 *.csv
 *.txt
+*.txt*
 *.TMP
 .visuallint/
 !LICENSE.txt
