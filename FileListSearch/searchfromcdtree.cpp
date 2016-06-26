@@ -69,18 +69,10 @@ bool searchFromCdTree(string fileListFilename, SearchOptions searchOptions, std:
   std::cout << "size: " << mmap.size() << "\n";
   // ulong stop1 = GetTickCount();
   // cout << "mmap.open, mmap.const_data took " << stop1 - start1 << "mS" << endl;
-  string listingbeginning(f, 200);
-  std::regex serPattern("Serial Number is (.*?)\r?\n");
-  string sernum = get_match(listingbeginning, serPattern);
-  std::regex volPattern("Volume in drive ([A-Z]) is\\s+.*?\r?\n");
-  string volLetter = get_match(listingbeginning, volPattern);
-  std::cout << "volume letter: " << volLetter << "\n";
-  std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
-  string volName = get_match(listingbeginning, volnamePattern);
-  std::cout << "volume name: " << volName << "\n";
+ 
+
   resuts_file << ">>>>" << fileListFilename + "\n";
-  resuts_file << sernum + "\n";
-  resuts_file << volName + "\n";
+ 
   t.report();
   t.stop();
   t.start();
@@ -145,19 +137,18 @@ bool searchFromCdTree(string fileListFilename, SearchOptions searchOptions, std:
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
-          // filter out directories
-          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
-            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0;
+          // filter in only files    
+          filter = memcmp("F,", linestartPoint, 2) == 0  ;
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
-          // only directories
-          filter = memcmp(dirStr, linestartPoint + 21, compsize2) == 0;
+          //  only directories
+          filter = memcmp("D,", linestartPoint, 2) == 0  ;
         }
         else
         {
-          // filter out directories  
-          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0;
+          // filter out  cd/dvd names  
+          filter = memcmp("C,", linestartPoint, 2) != 0;
         }
         if (filter  && lineEndPoint - linestartPoint < 1000)
         {
@@ -168,10 +159,11 @@ bool searchFromCdTree(string fileListFilename, SearchOptions searchOptions, std:
 
           // search  and fetch the containging directory name
           dirStartPoint = linestartPoint;
-          while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+          while ((dirStartPoint - beginning) > 0 && memcmp("\nD,", dirStartPoint, 3) != 0)
           {
             --dirStartPoint;
           }
+          dirStartPoint++;
           dirEndPoint = dirStartPoint;
           while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
           {
@@ -179,38 +171,57 @@ bool searchFromCdTree(string fileListFilename, SearchOptions searchOptions, std:
           }
           --dirEndPoint; //  step back to drop "\n"
 
-          // capture only the directory name
-          string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+          // capture  the directory  line
+          string dirLineString(dirStartPoint, dirEndPoint - dirStartPoint );
 
-          // if fullpath written to results file extract filename
-          if (fullpath) {
-            string size_filename = resultString.substr(17); // offset for size and filenames in the row
-            trim(size_filename);
-            std::size_t endOfSizeLocation = size_filename.find(" ");
-            string filename;
 
-            string filesizeStr;
-            int filesize;
-            if (endOfSizeLocation != std::string::npos)
-            {
-              filename = size_filename.substr(endOfSizeLocation + 1);
-              filesizeStr = size_filename.substr(0, endOfSizeLocation);
-              if (filesizeStr != "<DIR>")
-                filesize = boost::lexical_cast<int>(filesizeStr);
-              else
-                trim(filename);
-
-            }
-            else
-            {
-              throw std::runtime_error("filename not found!");
-              filename = size_filename;// todo: 
-            }
-
-            resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
+          const char * cdStartPoint = dirStartPoint;
+          while ((cdStartPoint - beginning) > 0 && memcmp("\nC,", cdStartPoint, 3) != 0)
+          {
+            --cdStartPoint;
           }
-          else
-            resuts_file << dirLineString << "; " << resultString << "\n";
+          cdStartPoint++;
+          const char *  cdEndPoint = cdStartPoint;
+          while ((end - cdEndPoint) > 0 && memcmp(rivinvaihtoChar, cdEndPoint, 1) != 0)
+          {
+            ++cdEndPoint;
+          }
+          --cdEndPoint; //  step back to drop "\n"
+
+          cdStartPoint--;
+          string cdLineString(cdStartPoint, cdEndPoint - cdStartPoint);
+
+
+          
+          // if fullpath written to results file extract filename
+          //if (fullpath) {
+          //  string size_filename = resultString.substr(17); // offset for size and filenames in the row
+          //  trim(size_filename);
+          //  std::size_t endOfSizeLocation = size_filename.find(" ");
+          //  string filename;
+
+          //  string filesizeStr;
+          //  int filesize;
+          //  if (endOfSizeLocation != std::string::npos)
+          //  {
+          //    filename = size_filename.substr(endOfSizeLocation + 1);
+          //    filesizeStr = size_filename.substr(0, endOfSizeLocation);
+          //    if (filesizeStr != "<DIR>")
+          //      filesize = boost::lexical_cast<int>(filesizeStr);
+          //    else
+          //      trim(filename);
+
+          //  }
+          //  else
+          //  {
+          //    throw std::runtime_error("filename not found!");
+          //    filename = size_filename;// todo: 
+          //  }
+
+          //  resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
+          //}
+          //else
+          resuts_file << cdLineString << "; " << dirLineString << "; " << resultString << "\n";
 
           f2 = beginning2 + (lineEndPoint - beginning); // continue searching from the end of last result line
         }
