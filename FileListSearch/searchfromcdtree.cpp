@@ -188,40 +188,28 @@ bool searchFromCdTree(string fileListFilename, SearchOptions searchOptions, std:
           }
           --cdEndPoint; //  step back to drop "\n"
 
-          cdStartPoint--;
+          cdStartPoint--; // step backward
           string cdLineString(cdStartPoint, cdEndPoint - cdStartPoint);
 
 
+          string cdname = cdLineString.substr(3 );
+          trim(cdname);
+          std::size_t endOfname = cdname.find(",");
+          cdname = cdname.substr(0, endOfname);
+          string dirname = dirLineString.substr(3 );
+          std::size_t begOfname = dirname.find(",");
           
-          // if fullpath written to results file extract filename
-          //if (fullpath) {
-          //  string size_filename = resultString.substr(17); // offset for size and filenames in the row
-          //  trim(size_filename);
-          //  std::size_t endOfSizeLocation = size_filename.find(" ");
-          //  string filename;
+          dirname = dirname.substr(begOfname+1 );
+          endOfname = dirname.find(",");
+          dirname = dirname.substr(0, endOfname);
+          string fileinfo = resultString.substr(3 );
 
-          //  string filesizeStr;
-          //  int filesize;
-          //  if (endOfSizeLocation != std::string::npos)
-          //  {
-          //    filename = size_filename.substr(endOfSizeLocation + 1);
-          //    filesizeStr = size_filename.substr(0, endOfSizeLocation);
-          //    if (filesizeStr != "<DIR>")
-          //      filesize = boost::lexical_cast<int>(filesizeStr);
-          //    else
-          //      trim(filename);
-
-          //  }
-          //  else
-          //  {
-          //    throw std::runtime_error("filename not found!");
-          //    filename = size_filename;// todo: 
-          //  }
-
-          //  resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
-          //}
-          //else
-          resuts_file << cdLineString << "; " << dirLineString << "; " << resultString << "\n";
+          begOfname = fileinfo.find(",");
+          fileinfo = fileinfo.substr(begOfname + 1);
+      
+          resuts_file << cdname << "; " << dirname << "; " << fileinfo << "\n";
+ 
+         // resuts_file << cdLineString << "; " << dirLineString << "; " << resultString << "\n";
 
           f2 = beginning2 + (lineEndPoint - beginning); // continue searching from the end of last result line
         }

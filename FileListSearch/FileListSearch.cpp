@@ -205,6 +205,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   opt::notify(vm);
 
   if (vm.count("help")) {
+    std::cout <<  "Usage: FileListSearch options\n";
+    std::cout << "--search and --listingfiles options required\n";
     std::cout << searchOptions.desc << "\n";
     searchOptions.success = false;
     return false;
