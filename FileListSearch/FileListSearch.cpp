@@ -188,6 +188,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name or cdtree)")
+    ("cdtreefilenameflag,d", opt::value<std::string>()->default_value("cdt"), "if this string found in the file name switch to cdtree search function")
+    
     ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("help", "produce help message");
 
@@ -228,8 +230,10 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.casesensitive = vm["casesensitive"].as<bool>();
   searchOptions.overwrite = vm["overwrite"].as<bool>();
   searchOptions.fullpath = vm["fullpath"].as<bool>();
-
   searchOptions.filetype = vm["filetype"].as<std::string>();
+  searchOptions.cdtreefilenameflag = vm["cdtreefilenameflag"].as<std::string>();
+
+  
 
   searchOptions.searchby = vm["searchby"].as<std::string>();
   searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();
@@ -291,12 +295,14 @@ int main(int argc, char *argv[])
   resuts_file << "searchString: " << searchOptions.searchString << "\n";
   for (string fileListFilename : searchOptions.listFiles) {
     //cout << fileListFilename << endl;
-    if (searchOptions.searchby == "filename")
+    std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
+    if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
+      searchFromCdTree(fileListFilename, searchOptions, resuts_file);
+    else if(searchOptions.searchby == "filename")
       searchByName(fileListFilename, searchOptions, resuts_file);
     else if (searchOptions.searchby == "by_directory_name")
       searchFilesByFolderName(fileListFilename, searchOptions, resuts_file);
-    else if (searchOptions.searchby == "cdtree")
-      searchFromCdTree(fileListFilename, searchOptions, resuts_file);
+  
     else {
       cout << "ERROR!! searchby search function option not valid! " << endl;
       cout << "search function needs to be one of the following: filename, by_directory_name or cdtree" << endl;

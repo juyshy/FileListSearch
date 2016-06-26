@@ -25,6 +25,7 @@ public:
   string searchby; // search function
   bool timestampInAutoName;
   opt::options_description desc;
+  string cdtreefilenameflag;
   
 };
 
