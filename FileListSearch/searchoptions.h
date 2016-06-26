@@ -26,6 +26,7 @@ public:
   bool timestampInAutoName;
   opt::options_description desc;
   string cdtreefilenameflag;
+  string fileExtension;
   
 };
 

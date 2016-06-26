@@ -122,10 +122,21 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   int hitcount = 0;
   // loop through all potential search hits
 
-  string fileExtension = ".jpg";
+  string fileExtension = searchOptions.fileExtension;
+
+  bool filterFileExt = false;
+  if (fileExtension.size() > 0 && fileExtension != "*")
+    filterFileExt = true;
+
+  if (fileExtension.at(0) != '.')
+    fileExtension = "." + fileExtension;
+
   int fileExtLen = fileExtension.size();
   char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
+   // do the file extension filtering
+  bool fileExtensionCheck = false; // actual test variable initial value
+  bool fileExtensionCheckCaseSensitive = false;
 
   std::locale loc;
   //searchChar1 = fileExt[0];
@@ -157,18 +168,15 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
         --lineEndPoint; //  step back to drop "\n"
 
         
-        bool filterFileExt = false; // do the file extension filtering
-        bool fileExtensionCheck = false; // actual test variable initial value
-        bool fileExtensionCheckCaseSensitive = false;
 
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
-
+          string fileExtensionPortionLower = "";
           if (filterFileExt && !fileExtensionCheckCaseSensitive) {
             const char * fileExtensionCheckStart = lineEndPoint - fileExtLen; //  beginning2 + (lineEndPoint - beginning - fileExtLen);
             string fileExtensionPortion(fileExtensionCheckStart, fileExtLen);
-            string fileExtensionPortionLower = "";
+            
             // make lowercase version
             for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
               fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
