@@ -32,17 +32,17 @@ FileListSearch.exe --help:
 
 Usage: FileListSearch options
 --search and --listingfiles options required
-  -s [ --search ] arg                   search string
-  -l [ --listingfiles ] arg             file listings
-  -c [ --casesensitive ] arg (=0)       casesensitive search true/false
-  -f [ --filetype ] arg (=file)         file type to search (file, directory or
+*  -s [ --search ] arg                   search string
+*  -l [ --listingfiles ] arg             file listings
+*  -c [ --casesensitive ] arg (=0)       casesensitive search true/false
+*  -f [ --filetype ] arg (=file)         file type to search (file, directory or
                                         both)
-  -r [ --resultfile ] arg (=auto)       results output file name (auto means
+* -r [ --resultfile ] arg (=auto)       results output file name (auto means
                                         automatically generated file name with
                                         format: results_for_searchTerm_searchte
                                         rm.txt )
-  -u [ --fullpath ] arg (=0)            fullpath included in results
-  -b [ --searchby ] arg (=filename)     searchtype (filename, by_directory_name
+* -u [ --fullpath ] arg (=0)            fullpath included in results
+* -b [ --searchby ] arg (=filename)     searchtype (filename, by_directory_name
                                         or cdtree)
                                              filename = regular file name
                                         search,
@@ -50,26 +50,26 @@ Usage: FileListSearch options
                                         in directories that match search term,
                                              cdtree = search cdtree format csv
                                         file
-  -x [ --fileextension ] arg (=*)       file extension filter for search
+* -x [ --fileextension ] arg (=*)       file extension filter for search
                                         default to any
-  -n [ --fileextensioncase ] arg (=0)   file extension filter casesensitive
+* -n [ --fileextensioncase ] arg (=0)   file extension filter casesensitive
                                         defaults to false (= case insensitive)
-  -e [ --timestamp ] arg (=0)           include timestamp in auto generated
+* -e [ --timestamp ] arg (=0)           include timestamp in auto generated
                                         result file name
-  -o [ --overwrite ] arg (=0)           overwrite results file by default in
+* -o [ --overwrite ] arg (=0)           overwrite results file by default in
                                         case it exists
-  -d [ --cdtreefilenameflag ] arg (=cdtree)
+* -d [ --cdtreefilenameflag ] arg (=cdtree)
                                         if this string found in the file name
                                         switch to cdtree search function
-  --help                                produce help message
+*  --help                                produce help message
 
 About the code base:
 --------
 You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile this.
 Tested with Visual Studio 2013, windows 8.1
 
-replace <AdditionalIncludeDirectories>
-and  <AdditionalLibraryDirectories> values in  FileListSearch.vcxproj project file for your paths
+replace &lt;AdditionalIncludeDirectories&gt;
+and  &lt;AdditionalLibraryDirectories&gt; values in  FileListSearch.vcxproj project file for your paths
 
 
 Todo:
