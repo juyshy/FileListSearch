@@ -27,6 +27,15 @@
     <ClInclude Include="utility_funcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="searchfromcdtree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="searchoptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="searchbyname.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility_funcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="searchfromcdtree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="searchbyname.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
