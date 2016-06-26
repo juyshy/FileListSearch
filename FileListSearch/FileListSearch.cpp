@@ -543,6 +543,40 @@ void checkWildCardInFileListings(std::vector<string> &listFiles) {
   }
 }
 
+
+bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
+
+  std::string resultsFilenameOriginal = resultsFilename;
+  int renameSuffix = 1;
+  while (fexists(resultsFilename) && !overwrite)
+  {
+    std::cout << "results file " << resultsFilename << " allready exists" << "\n";
+    std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
+    string mystr;
+
+    getline(cin, mystr);
+    if (mystr == "r")
+    {
+      string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
+      resultsFilename = resultsFilenameOriginal + renameSuffixStr;
+
+    }
+    else if (mystr == "c")
+    {
+      std::cout << "canceling.." << "\n";
+      return false;
+    }
+    else
+    {
+      std::cout << "over";
+      break;
+    }
+    renameSuffix++;
+
+  }
+  return true;
+}
+
 int main(int argc, char *argv[]) 
 {
    boost::timer::auto_cpu_timer t;
@@ -615,34 +649,10 @@ int main(int argc, char *argv[])
    checkWildCardInFileListings(listFiles);
 
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
-   std::string resultsFilenameOriginal = resultsFilename;
-   int renameSuffix = 1;
-   while (fexists(resultsFilename) && !overwrite)
-   {
-     std::cout << "results file " << resultsFilename << " allready exists" << "\n";
-     std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
-     string mystr;
- 
-     getline(cin, mystr);
-     if (mystr == "r")
-     {
-       string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
-       resultsFilename = resultsFilenameOriginal + renameSuffixStr;
-       
-     }
-     else if (mystr == "c")
-     {
-       std::cout << "canceling.." << "\n";
-       return 1;
-     }
-     else
-     {
-       std::cout << "over"; 
-       break;
-     }
-     renameSuffix++;
-     
-   }
+   
+   if (!checkExistingFile(resultsFilename, overwrite))
+     return 1;
+
    std::cout << "writing results to " << resultsFilename << "\n";
    resuts_file.open(resultsFilename);
    resuts_file << "searchString: " << searchString <<  "\n";
