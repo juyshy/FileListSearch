@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="searchbyname.h" />
+    <ClInclude Include="searchfilesbyfoldername.h" />
     <ClInclude Include="searchfromcdtree.h" />
     <ClInclude Include="searchoptions.h" />
     <ClInclude Include="stdafx.h" />
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="FileListSearch.cpp" />
     <ClCompile Include="searchbyname.cpp" />
+    <ClCompile Include="searchfilesbyfoldername.cpp" />
     <ClCompile Include="searchfromcdtree.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
