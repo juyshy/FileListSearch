@@ -227,6 +227,7 @@ bool search2(string fileListFilename, string searchString, bool casesensitive, s
              // capture only the directory name
              string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
       
+             // if fullpath written to results file extract filename
              if (fullpath) {
                string size_filename = resultString.substr(17); // offset for size and filenames in the row
                trim(size_filename);
