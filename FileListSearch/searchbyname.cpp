@@ -122,9 +122,12 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   int hitcount = 0;
   // loop through all potential search hits
 
-  //string fileExtension = ".jpg";
-  //int fileExtensionLen = fileExtension.size();
-  //char * fileExt = ".jpg";
+  string fileExtension = ".jpg";
+  int fileExtLen = fileExtension.size();
+  char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
+  memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
+
+  std::locale loc;
   //searchChar1 = fileExt[0];
 
   while (f2 && f2 != end) {
@@ -138,7 +141,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
      
       if (endBoundaryCheck && matchSting)
       {
-        //bool fileExtensionCheck =
+        
         //if ()
         // locate search result line start and end
         linestartPoint = lineEndPoint = f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
@@ -153,12 +156,31 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
         }
         --lineEndPoint; //  step back to drop "\n"
 
+        
+        bool filterFileExt = false; // do the file extension filtering
+        bool fileExtensionCheck = false; // actual test variable initial value
+        bool fileExtensionCheckCaseSensitive = false;
+
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
+
+          if (filterFileExt && !fileExtensionCheckCaseSensitive) {
+            const char * fileExtensionCheckStart = lineEndPoint - fileExtLen; //  beginning2 + (lineEndPoint - beginning - fileExtLen);
+            string fileExtensionPortion(fileExtensionCheckStart, fileExtLen);
+            string fileExtensionPortionLower = "";
+            // make lowercase version
+            for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
+              fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
+
+            fileExtensionCheck = fileExtensionPortionLower == fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
+          
+          }
           // filter out directories
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
-            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0;
+            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0 
+            && (!filterFileExt || (filterFileExt
+            && fileExtensionCheck))  ;
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
