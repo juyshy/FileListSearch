@@ -577,91 +577,119 @@ bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
   return true;
 }
 
+class SearchOptions
+{
+public:
+  bool success;
+  string searchString;
+  bool casesensitive;
+  string filetype;
+  string resultsFilename;
+  std::vector<std::string> listFiles;
+  bool overwrite;
+  bool fullpath;
+  string searchby;
+ 
+};
+
+bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
+   
+  opt::options_description desc("All options: (search and listingfiles required)");
+  //_crtBreakAlloc = 894;
+  desc.add_options()
+    ("search,s", opt::value<std::string>(), "search string")
+    ("casesensitive,c", opt::value<bool>()->default_value(false), "casesensitive")
+    ("filetype,s", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
+    ("resultfile,r",
+    opt::value<std::string>()->default_value("search_resultsfile.csv"),
+    "results output file name")
+    ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
+    "file listings")
+    ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
+    ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
+    ("searchby,s", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
+
+    ("help", "produce help message");
+
+  opt::variables_map vm;
+
+  opt::store(opt::parse_command_line(argc, argv, desc), vm);
+  opt::notify(vm);
+
+  if (vm.count("help")) {
+    std::cout << desc << "\n";
+    searchOptions.success = false;
+    return false;
+  }
+
+  opt::notify(vm);
+
+  // extracting search word from command line options
+  if (!vm["search"].empty()) {
+    searchOptions.searchString = vm["search"].as<std::string>();
+  }
+  else {
+    std::cout << "Search option required:" << "\n";
+    std::cout << desc << "\n";
+    searchOptions.success = false;
+    return false;
+  }
+
+  searchOptions.casesensitive = vm["casesensitive"].as<bool>();
+  searchOptions.overwrite = vm["overwrite"].as<bool>();
+  searchOptions.fullpath = vm["fullpath"].as<bool>();
+
+  searchOptions.filetype = vm["filetype"].as<std::string>();
+
+  searchOptions.searchby = vm["searchby"].as<std::string>();
+
+  // extracting search results file file name from command line options
+  searchOptions.resultsFilename = vm["resultfile"].as<std::string>();
+
+  if (searchOptions.resultsFilename == "auto")
+  {
+    searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + ".txt";
+  }
+
+  // extracting file listing path names from command line options
+ 
+  if (!vm["listingfiles"].empty() &&
+    (searchOptions.listFiles = vm["listingfiles"].as<std::vector<string> >()).size() > 0) {
+    // good to go
+  }
+  else {
+    std::cout << desc << "\n";
+    searchOptions.success = false;
+    return false;
+  }
+  searchOptions.success = true;
+  return true;
+}
+
 int main(int argc, char *argv[]) 
 {
    boost::timer::auto_cpu_timer t;
-   opt::options_description desc("All options: (search and listingfiles required)");
-   //_crtBreakAlloc = 894;
-   desc.add_options()
-     ("search,s", opt::value<std::string>(), "search string")
-     ("casesensitive,c", opt::value<bool>()->default_value(false),"casesensitive")
-     ("filetype,s", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
-     ("resultfile,r",
-     opt::value<std::string>()->default_value("search_resultsfile.csv"),
-     "results output file name")
-     ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
-     "file listings")
-     ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
-     ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
-     ("searchby,s", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
-
-     ("help", "produce help message");
-
-   opt::variables_map vm;
-
-   opt::store(opt::parse_command_line(argc, argv, desc), vm);
-   opt::notify(vm);
-
-   if (vm.count("help")) {
-     std::cout << desc << "\n";
-     return 1;
-   }
-
-   opt::notify(vm);
-   std::string searchString;
-   // extracting search word from command line options
-   if (!vm["search"].empty()) {
-     searchString = vm["search"].as<std::string>();
-   }
-   else {
-     std::cout << "Search option required:" << "\n";
-     std::cout << desc << "\n";
-     return 1;
-   }
-
-   bool casesensitive = vm["casesensitive"].as<bool>();
-   bool overwrite = vm["overwrite"].as<bool>();
-   bool fullpath = vm["fullpath"].as<bool>();
+   SearchOptions searchOptions = SearchOptions();
  
-   std::string filetype = vm["filetype"].as<std::string>();
- 
-   std::string  searchby = vm["searchby"].as<std::string>();
-  
-   // extracting search results file file name from command line options
-   std::string resultsFilename = vm["resultfile"].as<std::string>();
-
-   if (resultsFilename == "auto")
-   {
-     resultsFilename = "results_for_searchTerm_" + searchString + ".txt";
-   }
-
-   // extracting file listing path names from command line options
-   std::vector<string> listFiles;
-   if (!vm["listingfiles"].empty() &&
-     (listFiles = vm["listingfiles"].as<std::vector<string> >()).size() > 0) {
-     // good to go
-   }
-   else {
-     std::cout << desc << "\n";
+   if (!getParameters(argc, argv, searchOptions))
      return 1;
-   }
-   
-   checkWildCardInFileListings(listFiles);
+
+   checkWildCardInFileListings(searchOptions.listFiles);
 
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    
-   if (!checkExistingFile(resultsFilename, overwrite))
+   if (!checkExistingFile(searchOptions.resultsFilename, searchOptions.overwrite))
      return 1;
 
-   std::cout << "writing results to " << resultsFilename << "\n";
-   resuts_file.open(resultsFilename);
-   resuts_file << "searchString: " << searchString <<  "\n";
-   for (string fileListFilename : listFiles) {
+   std::cout << "writing results to " << searchOptions.resultsFilename << "\n";
+   resuts_file.open(searchOptions.resultsFilename);
+   resuts_file << "searchString: " << searchOptions.searchString << "\n";
+   for (string fileListFilename : searchOptions.listFiles) {
      //cout << fileListFilename << endl;
-     if (searchby == "filename")
-       searchByName(fileListFilename, searchString, casesensitive, filetype, fullpath);
+     if (searchOptions.searchby == "filename")
+       searchByName(fileListFilename, searchOptions.searchString, searchOptions.casesensitive, searchOptions.filetype, searchOptions.fullpath);
      else
-       searchFilesByFolderName(fileListFilename, searchString, casesensitive, filetype, fullpath);
+       searchFilesByFolderName(fileListFilename, searchOptions.searchString, searchOptions.casesensitive, searchOptions.filetype, searchOptions.fullpath);
    }
 
    resuts_file.close();
