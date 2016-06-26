@@ -6,6 +6,9 @@
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
 #include <boost/filesystem/operations.hpp> 
+#include <boost/date_time.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> 
+#include <boost/date_time/local_time/local_time.hpp>
 #include <algorithm>  // for std::find
 #include <functional> 
 #include <iostream>   // for std::cout
@@ -27,7 +30,7 @@ using std::cin;
 using std::ifstream;
 using namespace boost::filesystem;
 namespace opt = boost::program_options;
-
+namespace greg = boost::gregorian;
  
 using std::endl;
 
@@ -44,6 +47,7 @@ const size_t compsize = sizeof(dirnamestr) - 1;
  char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
+static boost::local_time::time_zone_ptr const s_timezone(new boost::local_time::posix_time_zone("+02:00"));
 
 class SearchOptions
 {
@@ -57,8 +61,24 @@ public:
   bool overwrite; // overwrite by default of result file allready exists
   bool fullpath; // include full paths in the results
   string searchby; // search function
-
+  bool timestampInAutoName ;
 };
+
+
+std::string mydateformat(boost::local_time::local_date_time const& ldt)
+{
+  using namespace boost;
+  std::ostringstream ss;
+
+  boost::local_time::local_time_facet* output_facet = new boost::local_time::local_time_facet();
+  ss.imbue(std::locale(std::locale::classic(), output_facet));
+  output_facet->format("%Y-%m-%d_%H-%M-%S");
+
+  ss.str("");
+  ss << ldt;
+  return ss.str();
+}
+
 
 //http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 // trim from start (in place)
@@ -90,6 +110,13 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
+
+char * stringToCharPtr(string str1) {
+  char * searchCharPtr = reinterpret_cast<char *>(alloca(str1.size() + 1));
+  memcpy(searchCharPtr, str1.c_str(), str1.size() + 1);
+  return searchCharPtr;
+}
+
 bool searchByName(string fileListFilename, SearchOptions searchOptions) {
  
    string searchString = searchOptions.searchString; 
@@ -618,7 +645,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
     ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,s", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
-
+    //("timestamp,t", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("help", "produce help message");
 
   opt::variables_map vm;
@@ -652,15 +679,26 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.filetype = vm["filetype"].as<std::string>();
 
   searchOptions.searchby = vm["searchby"].as<std::string>();
+  //searchOptions.timestampInAutoName = vm["timestamp"].as<bool>(); 
 
   // extracting search results file file name from command line options
   searchOptions.resultsFilename = vm["resultfile"].as<std::string>();
-
+  searchOptions.timestampInAutoName = true;
   if (searchOptions.resultsFilename == "auto")
   {
-    searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + ".txt";
-  }
+    string timeString = "";
+    if (searchOptions.timestampInAutoName) {
+      //boost::posix_time::ptime nowTime = boost::posix_time::second_clock::local_time();
 
+      boost::posix_time::ptime my_ptime = boost::posix_time::second_clock::universal_time();
+      boost::local_time::local_date_time ldt(my_ptime, s_timezone);
+
+      timeString = mydateformat(ldt);
+      //to_simple_string(nowTime);
+    }
+
+    searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + "_" + timeString + ".txt";
+  }
   // extracting file listing path names from command line options
  
   if (!vm["listingfiles"].empty() &&
@@ -703,6 +741,7 @@ int main(int argc, char *argv[])
    }
 
    resuts_file.close();
- 
+
+
 }
  
