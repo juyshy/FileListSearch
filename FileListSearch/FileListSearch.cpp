@@ -133,7 +133,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   }
   catch (std::exception& e)
   {
-    // remind the user that the ISBNs must match and prompt for another pair
+     
     std::cerr << "exception caught: " << e.what() << '\n';
     return 1;
   }
@@ -348,9 +348,9 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
   }
   catch (std::exception& e)
   {
-    // remind the user that the ISBNs must match and prompt for another pair
-    std::cerr << "exception caught: " << e.what() << '\n';
-    return 1;
+     
+    std::cerr << "exception caught:  " << e.what() << '\n';
+    return false;
   }
   cout << "searchString " << searchString << endl;
   if (filetype == "both")
@@ -635,22 +635,30 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   //_crtBreakAlloc = 894;
   desc.add_options()
     ("search,s", opt::value<std::string>(), "search string")
-    ("casesensitive,c", opt::value<bool>()->default_value(false), "casesensitive")
-    ("filetype,s", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
-    ("resultfile,r",
-    opt::value<std::string>()->default_value("search_resultsfile.csv"),
-    "results output file name")
     ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
     "file listings")
-    ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
-    ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
-    ("searchby,s", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
-    ("timestamp,t", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
+    ("casesensitive,c", opt::value<bool>()->default_value(false), "casesensitive")
+    ("filetype,f", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
+    ("resultfile,r",
+    opt::value<std::string>()->default_value("auto"),
+    "results output file name (auto means automatically generated file name)")
+    ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default")
+    ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
+    ("searchby,b", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
+    ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("help", "produce help message");
 
   opt::variables_map vm;
-
-  opt::store(opt::parse_command_line(argc, argv, desc), vm);
+  try {
+    opt::store(opt::parse_command_line(argc, argv, desc), vm);
+  }
+  catch (std::exception& e)
+    {
+      //  
+      std::cerr << "\n\nERROR in options!!!  check your options: " << e.what() << "\n\n";
+      std::cout << desc << "\n";
+      return false;
+    }
   opt::notify(vm);
 
   if (vm.count("help")) {
@@ -695,9 +703,13 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
 
       timeString = mydateformat(ldt);
       //to_simple_string(nowTime);
+      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + "_" + timeString + ".txt";
+    }
+    else
+    {
+      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString  + ".txt";
     }
 
-    searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + "_" + timeString + ".txt";
   }
   // extracting file listing path names from command line options
  
