@@ -1,3 +1,5 @@
+FileListingSearch
+======
 
 FileListingSearch is application for searching files from multiple hard drives or usb sticks in one application run. It searches file names from text files containing a files and folders listing. More than one listing file can be searched at once. 
 
@@ -9,8 +11,8 @@ This application arose from a need to search simultaneusly from multiple hard dr
 
 
 Usage:
-
-1) you need to create text files containing list of files and folders for all hard drives you wish to search files from.
+--------
+1. you need to create text files containing list of files and folders for all hard drives you wish to search files from.
 
 this is how it is done: 
 navigate to the drive in command prompt and issue this command: (you may modify the file name to your preference)
@@ -23,7 +25,7 @@ dir /S /-C G: > g_usb_drive_listing.txt
 
 Note that this application currently works only on english windows os with this specific dir command  options:  /S /-C
 
-2) then issue command for searhing the file listings:
+2. then issue command for searhing the file listings:
 FileListingSearch.exe --search=searchterm --resultfile=searchresults_for_searchterm.csv --listingfiles=g_usb_drive_listing.txt
 
 replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_drive_listing.txt
@@ -32,6 +34,7 @@ replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_d
 
 
 Todo:
+--------
 internationalization: timezones, operating system languages
 further performance optimations
 parallel code

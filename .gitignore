@@ -12,3 +12,4 @@ Snapshot*.xml
 *.pdb
 *.ipch
 *.bak
+*.stackdump
