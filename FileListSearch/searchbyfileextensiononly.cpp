@@ -179,23 +179,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         // filter out directories and abnormaly long results
         if (filetype == "file") {
 
-          //if (filterFileExt) {
-          //  const char * fileExtensionCheckStart = lineEndPoint - fileExtLen;
-          //  string fileExtensionPortion(fileExtensionCheckStart, fileExtLen);
-          //  if (!fileExtensionCheckCaseSensitive) {
-          //    //  beginning2 + (lineEndPoint - beginning - fileExtLen);
-          //    string fileExtensionPortionLower = "";
-
-          //    // make lowercase version
-          //    for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
-          //      fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
-
-          //    fileExtensionCheck = fileExtensionPortionLower == fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
-          //  }
-          //  else {
-          //    fileExtensionCheck = fileExtensionPortion == fileExtension;
-          //  }
-          //}
+      
           // filter out directories
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
