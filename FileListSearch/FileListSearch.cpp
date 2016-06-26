@@ -252,9 +252,11 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   
   if (searchOptions.resultsFilename == "auto")
   {
-    string resultfileTermString = searchOptions.resultsFilename;
+    string resultfileTermString = searchOptions.searchString;
     if (resultfileTermString == "*")
       resultfileTermString = "any";
+    if (searchOptions.fileExtension != "*")
+      resultfileTermString += "_with_fileExt_" + searchOptions.fileExtension;
     string timeString = "";
     if (searchOptions.timestampInAutoName) {
       //boost::posix_time::ptime nowTime = boost::posix_time::second_clock::local_time();
