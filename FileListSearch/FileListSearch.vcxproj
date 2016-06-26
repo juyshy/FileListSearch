@@ -80,6 +80,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="searchbyfileextensiononly.h" />
     <ClInclude Include="searchbyname.h" />
     <ClInclude Include="searchfilesbyfoldername.h" />
     <ClInclude Include="searchfromcdtree.h" />
@@ -90,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileListSearch.cpp" />
+    <ClCompile Include="searchbyfileextensiononly.cpp" />
     <ClCompile Include="searchbyname.cpp" />
     <ClCompile Include="searchfilesbyfoldername.cpp" />
     <ClCompile Include="searchfromcdtree.cpp" />

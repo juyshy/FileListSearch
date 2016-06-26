@@ -7,6 +7,7 @@
 #include "searchfromcdtree.h"
 #include "searchbyname.h"
 #include "searchfilesbyfoldername.h"
+#include "searchbyfileextensiononly.h"
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
@@ -246,8 +247,12 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   // extracting search results file file name from command line options
   searchOptions.resultsFilename = vm["resultfile"].as<std::string>();
   //searchOptions.timestampInAutoName = true;
+  
   if (searchOptions.resultsFilename == "auto")
   {
+    string resultfileTermString = searchOptions.resultsFilename;
+    if (resultfileTermString == "*")
+      resultfileTermString = "any";
     string timeString = "";
     if (searchOptions.timestampInAutoName) {
       //boost::posix_time::ptime nowTime = boost::posix_time::second_clock::local_time();
@@ -257,11 +262,11 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
 
       timeString = mydateformat(ldt);
       //to_simple_string(nowTime);
-      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + "_" + timeString + ".txt";
+      searchOptions.resultsFilename = "results_for_searchTerm_" + resultfileTermString + "_" + timeString + ".txt";
     }
     else
     {
-      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + ".txt";
+      searchOptions.resultsFilename = "results_for_searchTerm_" + resultfileTermString + ".txt";
     }
 
   }
@@ -303,6 +308,9 @@ int main(int argc, char *argv[])
     std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
     if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
       searchFromCdTree(fileListFilename, searchOptions, resuts_file);
+    else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
+      searchByFileExtensionOnly(fileListFilename, searchOptions, resuts_file);
+
     else if(searchOptions.searchby == "filename")
       searchByName(fileListFilename, searchOptions, resuts_file);
     else if (searchOptions.searchby == "by_directory_name")

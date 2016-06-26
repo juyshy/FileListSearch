@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "searchbyname.h"
+#include "searchbyfileextensiononly.h"
+
 #include "utility_funcs.h"
 
 #include <boost/timer/timer.hpp>
@@ -15,9 +16,7 @@ class SearchOptions;
 
 
 
-
-
-bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofstream &resuts_file) {
+bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
 
   const char   rivinvaihto = '\n';
   const char * rivinvaihtoChar = &rivinvaihto;
@@ -138,25 +137,26 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   int fileExtLen = fileExtension.size();
   char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
-   // do the file extension filtering
+  // do the file extension filtering
   bool fileExtensionCheck = false; // actual test variable initial value
   bool fileExtensionCheckCaseSensitive = searchOptions.fileExtensionCheckCaseSensitive;
 
   std::locale loc;
-  //searchChar1 = fileExt[0];
+  searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
 
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2)))
     {
 
+      f2--; // back one step to include the dot for comparison
       // check for search string
 
       bool endBoundaryCheck = (end - f2) > searchStringLen;
-      bool matchSting = memcmp(searchCharArray, f2, searchStringLen) == 0;
-     
+      bool matchSting = memcmp(fileExt, f2, searchStringLen) == 0;
+
       if (endBoundaryCheck && matchSting)
       {
-        
+
         //if ()
         // locate search result line start and end
         linestartPoint = lineEndPoint = f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
@@ -171,24 +171,24 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
         }
         --lineEndPoint; //  step back to drop "\n"
 
-        
+
 
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
-          
-          if (filterFileExt  ) {
+
+          if (filterFileExt) {
             const char * fileExtensionCheckStart = lineEndPoint - fileExtLen;
             string fileExtensionPortion(fileExtensionCheckStart, fileExtLen);
             if (!fileExtensionCheckCaseSensitive) {
-             //  beginning2 + (lineEndPoint - beginning - fileExtLen);
-            string fileExtensionPortionLower = "";
-            
-            // make lowercase version
-            for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
-              fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
+              //  beginning2 + (lineEndPoint - beginning - fileExtLen);
+              string fileExtensionPortionLower = "";
 
-            fileExtensionCheck = fileExtensionPortionLower == fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
+              // make lowercase version
+              for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
+                fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
+
+              fileExtensionCheck = fileExtensionPortionLower == fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
             }
             else {
               fileExtensionCheck = fileExtensionPortion == fileExtension;
@@ -196,9 +196,9 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
           }
           // filter out directories
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
-            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0 
+            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
             && (!filterFileExt || (filterFileExt
-            && fileExtensionCheck))  ;
+            && fileExtensionCheck));
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
@@ -266,7 +266,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
           f2 = beginning2 + (lineEndPoint - beginning); // continue searching from the end of last result line
         }
       }
-      f2++;
+      f2+= 2; //don't get stuck!!
     }
   }
 
@@ -276,3 +276,5 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
     resuts_file << "NOTHING FOUND " << "\n";
   return true;
 }
+
+
