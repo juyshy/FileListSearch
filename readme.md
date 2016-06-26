@@ -13,17 +13,12 @@ This application arose from a need to search simultaneusly from multiple hard dr
 Usage:
 --------
 1. you need to create text files containing list of files and folders for all hard drives you wish to search files from.
-
-this is how it is done: 
-navigate to the drive in command prompt and issue this command: (you may modify the file name to your preference)
- 
-dir /S /-C <DRIVE LETTER>: > drive_filelisting.txt
-
-for example if you want to make a listing from usb stick found in drive G: you could make following command:
-
-dir /S /-C G: > g_usb_drive_listing.txt
-
-Note that this application currently works only on english windows os with this specific dir command  options:  /S /-C
+  * this is how it is done: 
+    *navigate to the drive in command prompt and issue this command: (you may modify the file name to your preference)
+  * dir /S /-C <DRIVE LETTER>: > drive_filelisting.txt
+  * for example if you want to make a listing from usb stick found in drive G: you could make following command:
+    * dir /S /-C G: > g_usb_drive_listing.txt
+  * Note that this application currently works only on english windows os with this specific dir command  options:  /S /-C
 
 2. then issue command for searhing the file listings:
 FileListingSearch.exe --search=searchterm --resultfile=searchresults_for_searchterm.csv --listingfiles=g_usb_drive_listing.txt
