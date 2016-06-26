@@ -31,11 +31,11 @@ string  get_match(std::string const &s, std::regex const &r) {
   }
 }
 
-char * stringToCharPtr(string str1) {
-  char * searchCharPtr = reinterpret_cast<char *>(alloca(str1.size() + 1));
-  memcpy(searchCharPtr, str1.c_str(), str1.size() + 1);
-  return searchCharPtr;
-}
+//void stringToCharPtr(const string str1, char * searchCharPtr) {
+//   searchCharPtr = reinterpret_cast<char *>(alloca(str1.size() + 1));
+//  memcpy(searchCharPtr, str1.c_str(), str1.size() + 1);
+//   
+//}
 
 
 int replace(std::string& str, const std::string& from, const std::string& to) {

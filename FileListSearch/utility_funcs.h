@@ -40,7 +40,7 @@ static inline void trim(std::string &s) {
 
 string  get_match(std::string const &s, std::regex const &r);
 
-char * stringToCharPtr(string str1);
+//void stringToCharPtr(const string str1, char * searchCharPtr);
 int replace(std::string& str, const std::string& from, const std::string& to);
 bool fexists(string filenameToCheck);
 
