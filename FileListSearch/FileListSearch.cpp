@@ -76,7 +76,7 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool search2(string fileListFilename, string searchString, bool casesensitive, string filetype, bool fullpath) {
+bool searchByName(string fileListFilename, string searchString, bool casesensitive, string filetype, bool fullpath) {
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
@@ -233,13 +233,18 @@ bool search2(string fileListFilename, string searchString, bool casesensitive, s
                trim(size_filename);
                std::size_t endOfSizeLocation = size_filename.find(" ");
                string filename;
+                
                string filesizeStr;
                int filesize;
                if (endOfSizeLocation != std::string::npos)
                {
                  filename = size_filename.substr(endOfSizeLocation+1);
                  filesizeStr = size_filename.substr(0, endOfSizeLocation);
-                 filesize = boost::lexical_cast<int>(filesizeStr);
+                 if (filesizeStr != "<DIR>") 
+                   filesize = boost::lexical_cast<int>(filesizeStr);
+                 else
+                   trim(filename);
+
                }
                else
                {
@@ -445,7 +450,7 @@ int main(int argc, char *argv[])
    resuts_file << "searchString: " << searchString <<  "\n";
    for (string fileListFilename : listFiles) {
      //cout << fileListFilename << endl;
-     search2(fileListFilename, searchString, casesensitive, filetype, fullpath);
+     searchByName(fileListFilename, searchString, casesensitive, filetype, fullpath);
    }
 
    resuts_file.close();
