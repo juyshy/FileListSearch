@@ -29,6 +29,7 @@ replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_d
 About the code base:
 --------
 You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile this.
+Tested with Visual Studio 2013, windows 8.1
 
 Todo:
 --------
