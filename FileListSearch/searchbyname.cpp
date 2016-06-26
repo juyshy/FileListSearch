@@ -121,13 +121,25 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   std::cout << "searching: " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
+
+  //string fileExtension = ".jpg";
+  //int fileExtensionLen = fileExtension.size();
+  //char * fileExt = ".jpg";
+  //searchChar1 = fileExt[0];
+
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2)))
     {
 
       // check for search string
-      if (((end - f2) > searchStringLen) && memcmp(searchCharArray, f2, searchStringLen) == 0)
+
+      bool endBoundaryCheck = (end - f2) > searchStringLen;
+      bool matchSting = memcmp(searchCharArray, f2, searchStringLen) == 0;
+     
+      if (endBoundaryCheck && matchSting)
       {
+        //bool fileExtensionCheck =
+        //if ()
         // locate search result line start and end
         linestartPoint = lineEndPoint = f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
         while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
