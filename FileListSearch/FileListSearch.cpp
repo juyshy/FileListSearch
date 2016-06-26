@@ -31,10 +31,10 @@ using std::ifstream;
 using namespace boost::filesystem;
 namespace opt = boost::program_options;
 namespace greg = boost::gregorian;
- 
+
 using std::endl;
 
-std::ofstream resuts_file; 
+std::ofstream resuts_file;
 
 const char   rivinvaihto = '\n';
 const char * rivinvaihtoChar = &rivinvaihto;
@@ -42,9 +42,9 @@ const char * linestartPoint;
 const char * lineEndPoint;
 const char * dirStartPoint;
 const char * dirEndPoint;
- char dirnamestr[] = " Directory of ";
+char dirnamestr[] = " Directory of ";
 const size_t compsize = sizeof(dirnamestr) - 1;
- char dirStr[] = "<DIR>";
+char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
 static boost::local_time::time_zone_ptr const s_timezone(new boost::local_time::posix_time_zone("+02:00"));
@@ -53,7 +53,7 @@ class SearchOptions
 {
 public:
   bool success; // success for gathering options
-  string searchString; 
+  string searchString;
   bool casesensitive; // is searchh casesensitive
   string filetype; // filetypes to search
   string resultsFilename; // search results written to this file
@@ -61,7 +61,7 @@ public:
   bool overwrite; // overwrite by default of result file allready exists
   bool fullpath; // include full paths in the results
   string searchby; // search function
-  bool timestampInAutoName ;
+  bool timestampInAutoName;
 };
 
 
@@ -118,22 +118,22 @@ char * stringToCharPtr(string str1) {
 }
 
 bool searchByName(string fileListFilename, SearchOptions searchOptions) {
- 
-   string searchString = searchOptions.searchString; 
-   bool casesensitive = searchOptions.casesensitive;
-   string filetype = searchOptions.filetype;
-   bool fullpath = searchOptions.fullpath;
+
+  string searchString = searchOptions.searchString;
+  bool casesensitive = searchOptions.casesensitive;
+  string filetype = searchOptions.filetype;
+  bool fullpath = searchOptions.fullpath;
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
   try {
 
-  // Load file
-   mmap.open(fileListFilename, boost::iostreams::mapped_file::readonly);
+    // Load file
+    mmap.open(fileListFilename, boost::iostreams::mapped_file::readonly);
   }
   catch (std::exception& e)
   {
-     
+
     std::cerr << "exception caught: " << e.what() << '\n';
     return 1;
   }
@@ -151,7 +151,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   auto end = f + mmap.size();
   auto size2 = end - f;
 
- 
+
   if (!f) {
     printf("Not enough memory for f. It's the end I'm afraid.\n");
     return false;
@@ -171,8 +171,8 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   string volName = get_match(listingbeginning, volnamePattern);
   std::cout << "volume name: " << volName << "\n";
   resuts_file << ">>>>" << fileListFilename + "\n";
-  resuts_file <<  sernum + "\n";
-  resuts_file <<  volName + "\n";
+  resuts_file << sernum + "\n";
+  resuts_file << volName + "\n";
   t.report();
   t.stop();
   t.start();
@@ -186,8 +186,8 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   const char * f2;
   //bool casesensitive = false;
   if (!casesensitive) { // not casesensitive make a lower copy
- 
-    std::cout << "making lowercase copy for caseinsenstive search: "   << "\n";
+
+    std::cout << "making lowercase copy for caseinsenstive search: " << "\n";
     char * lowrcasecopy = new char[size2 + 1]();
     int i = 0;
     char c;
@@ -203,7 +203,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   else
   {
     f2 = f; // using the original
-    
+
   }
 
   beginning2 = f2;
@@ -214,97 +214,98 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   std::cout << "searching: " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
-  while (f2 && f2 != end  ) {
-    if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2))) 
+  while (f2 && f2 != end) {
+    if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2)))
     {
 
       // check for search string
-      if (  ((end - f2) > searchStringLen) && memcmp(searchCharArray, f2, searchStringLen) == 0)
+      if (((end - f2) > searchStringLen) && memcmp(searchCharArray, f2, searchStringLen) == 0)
       {
         // locate search result line start and end
-        linestartPoint = lineEndPoint = f + (f2-beginning2); // flip to search from original in case of caseinsensitive search
-         while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
+        linestartPoint = lineEndPoint = f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
+        while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
         {
           --linestartPoint;
         }
-         ++linestartPoint; // step forward to drop "\n"
-         while ((end - lineEndPoint) > 0 && memcmp(rivinvaihtoChar, lineEndPoint, 1) != 0)
+        ++linestartPoint; // step forward to drop "\n"
+        while ((end - lineEndPoint) > 0 && memcmp(rivinvaihtoChar, lineEndPoint, 1) != 0)
         {
           ++lineEndPoint;
         }
-         --lineEndPoint; //  step back to drop "\n"
+        --lineEndPoint; //  step back to drop "\n"
 
-         bool  filter ;
-         // filter out directories and abnormaly long results
-         if (filetype == "file") {
-           // filter out directories
-           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
-             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0;
-         }
-         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
-         {
-           // only directories
-           filter = memcmp(dirStr, linestartPoint + 21, compsize2) == 0;
-         } else
-         {
-           // filter out directories  
-           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0;
-         }
-           if (filter  && lineEndPoint - linestartPoint < 1000)
-         {
-             string resultString(linestartPoint, lineEndPoint - linestartPoint);
-             //searchResults.push_back(resultString);
-             ++hitcount;
-             //cout << " resultString:  " << resultString << endl;
+        bool  filter;
+        // filter out directories and abnormaly long results
+        if (filetype == "file") {
+          // filter out directories
+          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
+            && memcmp(dirStr, linestartPoint + 21, compsize2) != 0;
+        }
+        else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
+        {
+          // only directories
+          filter = memcmp(dirStr, linestartPoint + 21, compsize2) == 0;
+        }
+        else
+        {
+          // filter out directories  
+          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0;
+        }
+        if (filter  && lineEndPoint - linestartPoint < 1000)
+        {
+          string resultString(linestartPoint, lineEndPoint - linestartPoint);
+          //searchResults.push_back(resultString);
+          ++hitcount;
+          //cout << " resultString:  " << resultString << endl;
 
-             // search  and fetch the containging directory name
-             dirStartPoint = linestartPoint;
-             while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
-             {
-               --dirStartPoint;
-             }
-             dirEndPoint = dirStartPoint;
-             while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
-             {
-               ++dirEndPoint;
-             }
-             --dirEndPoint; //  step back to drop "\n"
+          // search  and fetch the containging directory name
+          dirStartPoint = linestartPoint;
+          while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+          {
+            --dirStartPoint;
+          }
+          dirEndPoint = dirStartPoint;
+          while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
+          {
+            ++dirEndPoint;
+          }
+          --dirEndPoint; //  step back to drop "\n"
 
-             // capture only the directory name
-             string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
-      
-             // if fullpath written to results file extract filename
-             if (fullpath) {
-               string size_filename = resultString.substr(17); // offset for size and filenames in the row
-               trim(size_filename);
-               std::size_t endOfSizeLocation = size_filename.find(" ");
-               string filename;
-                
-               string filesizeStr;
-               int filesize;
-               if (endOfSizeLocation != std::string::npos)
-               {
-                 filename = size_filename.substr(endOfSizeLocation+1);
-                 filesizeStr = size_filename.substr(0, endOfSizeLocation);
-                 if (filesizeStr != "<DIR>") 
-                   filesize = boost::lexical_cast<int>(filesizeStr);
-                 else
-                   trim(filename);
+          // capture only the directory name
+          string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
 
-               }
-               else
-               {
-                 throw std::runtime_error("filename not found!");
-                 filename = size_filename;// todo: 
-               }
+          // if fullpath written to results file extract filename
+          if (fullpath) {
+            string size_filename = resultString.substr(17); // offset for size and filenames in the row
+            trim(size_filename);
+            std::size_t endOfSizeLocation = size_filename.find(" ");
+            string filename;
 
-               resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
-               }
-             else
-               resuts_file << dirLineString << "; " << resultString <<   "\n";
-             
-             f2 = beginning2 + ( lineEndPoint - beginning); // continue searching from the end of last result line
-         }
+            string filesizeStr;
+            int filesize;
+            if (endOfSizeLocation != std::string::npos)
+            {
+              filename = size_filename.substr(endOfSizeLocation + 1);
+              filesizeStr = size_filename.substr(0, endOfSizeLocation);
+              if (filesizeStr != "<DIR>")
+                filesize = boost::lexical_cast<int>(filesizeStr);
+              else
+                trim(filename);
+
+            }
+            else
+            {
+              throw std::runtime_error("filename not found!");
+              filename = size_filename;// todo: 
+            }
+
+            resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
+          }
+          else
+            resuts_file << dirLineString << "; " << resultString << "\n";
+
+          f2 = beginning2 + (lineEndPoint - beginning); // continue searching from the end of last result line
+        }
       }
       f2++;
     }
@@ -313,7 +314,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
 
   if (hitcount == 0)
-    resuts_file << "NOTHING FOUND "  << "\n";
+    resuts_file << "NOTHING FOUND " << "\n";
   return true;
 }
 
@@ -326,8 +327,8 @@ int replace(std::string& str, const std::string& from, const std::string& to) {
 
     count++;
 
-  str.replace(start_pos, from.length(), to);
-  start_pos = str.find(from, start_pos+1);
+    str.replace(start_pos, from.length(), to);
+    start_pos = str.find(from, start_pos + 1);
   }
   return count;
 }
@@ -348,7 +349,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
   }
   catch (std::exception& e)
   {
-     
+
     std::cerr << "exception caught:  " << e.what() << '\n';
     return false;
   }
@@ -452,7 +453,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
 
         // do we have a directory lissting start?
         if (memcmp(dirnamestr, linestartPoint, compsize) == 0)
-          
+
         {
           f = lineEndPoint; // start searching for the next directory in the listing
           while (f && f != end) {
@@ -464,7 +465,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
               {
                 f--;
                 string resultString(linestartPoint, f - linestartPoint); // grab the whole thing
-  
+
                 ++hitcount;
                 //cout << " resultString:  " << resultString << endl;
                 replace(resultString, "\r\n", "\n");
@@ -483,7 +484,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
     }
   }
 
-  cout << hitcount <<  " directories and their contents found  " << /*searchResults.size() <<*/ endl;
+  cout << hitcount << " directories and their contents found  " << /*searchResults.size() <<*/ endl;
 
   if (hitcount == 0)
     resuts_file << "NOTHING FOUND " << "\n";
@@ -494,7 +495,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
 bool search(string fileListFilename, string searchString) {
 
   boost::timer::auto_cpu_timer t;
-  
+
   // Load file
   boost::iostreams::mapped_file mmap(fileListFilename, boost::iostreams::mapped_file::readonly);
   const char * f = mmap.const_data();
@@ -517,9 +518,9 @@ bool search(string fileListFilename, string searchString) {
     return false;
 
   }
-  string currentDir; 
+  string currentDir;
   while (found != std::string::npos) {
-    
+
     // locate search result line start and end
     std::size_t lineEndIndx = filecontents.find("\r", found + 1);
     std::size_t lineStart = filecontents.rfind('\n', found) + 1;
@@ -542,11 +543,11 @@ bool search(string fileListFilename, string searchString) {
       searchResults.push_back(resultRow);
       resuts_file << currentDir << "; " << resultRow << "\n";
     }
- 
+
     found = filecontents.find(searchString, lineStart + lineLength);
 
   }
- 
+
   cout << "search results found: " << searchResults.size() << endl;
 
   return true;
@@ -558,7 +559,7 @@ bool fexists(string filenameToCheck)
   memcpy(filenameToCheckChar, filenameToCheck.c_str(), filenameToCheck.size() + 1);
 
   ifstream ifile(filenameToCheckChar);
-  return static_cast<bool>( ifile);
+  return static_cast<bool>(ifile);
 }
 
 
@@ -574,7 +575,7 @@ void checkWildCardInFileListings(std::vector<string> &listFiles) {
     boost::filesystem::directory_iterator end;
 
     for (; begin != end; ++begin) {
- 
+
       boost::filesystem::file_status fs =
         begin->status();
 
@@ -630,7 +631,7 @@ bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
 
 
 bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
-   
+
   opt::options_description desc("All options: (search and listingfiles required)");
   //_crtBreakAlloc = 894;
   desc.add_options()
@@ -653,12 +654,12 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     opt::store(opt::parse_command_line(argc, argv, desc), vm);
   }
   catch (std::exception& e)
-    {
-      //  
-      std::cerr << "\n\nERROR in options!!!  check your options: " << e.what() << "\n\n";
-      std::cout << desc << "\n";
-      return false;
-    }
+  {
+    //  
+    std::cerr << "\n\nERROR in options!!!  check your options: " << e.what() << "\n\n";
+    std::cout << desc << "\n";
+    return false;
+  }
   opt::notify(vm);
 
   if (vm.count("help")) {
@@ -687,7 +688,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.filetype = vm["filetype"].as<std::string>();
 
   searchOptions.searchby = vm["searchby"].as<std::string>();
-  searchOptions.timestampInAutoName = vm["timestamp"].as<bool>(); 
+  searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();
 
   // extracting search results file file name from command line options
   searchOptions.resultsFilename = vm["resultfile"].as<std::string>();
@@ -707,12 +708,12 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     }
     else
     {
-      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString  + ".txt";
+      searchOptions.resultsFilename = "results_for_searchTerm_" + searchOptions.searchString + ".txt";
     }
 
   }
   // extracting file listing path names from command line options
- 
+
   if (!vm["listingfiles"].empty() &&
     (searchOptions.listFiles = vm["listingfiles"].as<std::vector<string> >()).size() > 0) {
     // good to go
@@ -726,34 +727,33 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   return true;
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-   boost::timer::auto_cpu_timer t;
-   SearchOptions searchOptions = SearchOptions();
- 
-   if (!getParameters(argc, argv, searchOptions))
-     return 1;
+  boost::timer::auto_cpu_timer t;
+  SearchOptions searchOptions = SearchOptions();
 
-   checkWildCardInFileListings(searchOptions.listFiles);
+  if (!getParameters(argc, argv, searchOptions))
+    return 1;
 
-   std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
-   
-   if (!checkExistingFile(searchOptions.resultsFilename, searchOptions.overwrite))
-     return 1;
+  checkWildCardInFileListings(searchOptions.listFiles);
 
-   std::cout << "writing results to " << searchOptions.resultsFilename << "\n";
-   resuts_file.open(searchOptions.resultsFilename);
-   resuts_file << "searchString: " << searchOptions.searchString << "\n";
-   for (string fileListFilename : searchOptions.listFiles) {
-     //cout << fileListFilename << endl;
-     if (searchOptions.searchby == "filename")
-       searchByName(fileListFilename, searchOptions);
-     else
-       searchFilesByFolderName(fileListFilename, searchOptions);
-   }
+  std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
 
-   resuts_file.close();
+  if (!checkExistingFile(searchOptions.resultsFilename, searchOptions.overwrite))
+    return 1;
+
+  std::cout << "writing results to " << searchOptions.resultsFilename << "\n";
+  resuts_file.open(searchOptions.resultsFilename);
+  resuts_file << "searchString: " << searchOptions.searchString << "\n";
+  for (string fileListFilename : searchOptions.listFiles) {
+    //cout << fileListFilename << endl;
+    if (searchOptions.searchby == "filename")
+      searchByName(fileListFilename, searchOptions);
+    else
+      searchFilesByFolderName(fileListFilename, searchOptions);
+  }
+
+  resuts_file.close();
 
 
 }
- 
