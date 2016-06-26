@@ -42,7 +42,7 @@ std::ofstream resuts_file;
 
 
 
-
+// obsolete unused function for benchmarking
 bool search(string fileListFilename, string searchString) {
 
   boost::timer::auto_cpu_timer t;
@@ -181,20 +181,22 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("search,s", opt::value<std::string>(), "search string")
     ("listingfiles,l", opt::value<std::vector<std::string> >()->multitoken(),
     "file listings")
-    ("casesensitive,c", opt::value<bool>()->default_value(false), "casesensitive")
+    ("casesensitive,c", opt::value<bool>()->default_value(false), "casesensitive search true/false")
     ("filetype,f", opt::value<std::string>()->default_value("file"), "file type to search (file, directory or both)")
     ("resultfile,r",
     opt::value<std::string>()->default_value("auto"),
-    "results output file name (auto means automatically generated file name)")
-    ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default")
+    "results output file name (auto means automatically generated file name with format: results_for_searchTerm_searchterm.txt )")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
-    ("searchby,b", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name or cdtree)")
-    ("cdtreefilenameflag,d", opt::value<std::string>()->default_value("cdt"), "if this string found in the file name switch to cdtree search function")
-    
+    ("searchby,b", opt::value<std::string>()->default_value("filename"), 
+    "searchtype (filename, by_directory_name or cdtree)\n \
+    filename = regular file name search,\n \
+    by_directory_name = list all files in directories that match search term,\n \
+    cdtree = search cdtree format csv file")
     ("fileextension,x", opt::value<std::string>()->default_value("*"), "file extension filter for search default to any")
-    ("fileextensioncase,n", opt::value<bool>()->default_value(false), "file extension filter casesensitive defaults to false (= case insensitive)")
-     
+    ("fileextensioncase,n", opt::value<bool>()->default_value(false), "file extension filter casesensitive defaults to false (= case insensitive)")     
     ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
+    ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default in case it exists")
+    ("cdtreefilenameflag,d", opt::value<std::string>()->default_value("cdtree"), "if this string found in the file name switch to cdtree search function")
     ("help", "produce help message");
 
   opt::variables_map vm;

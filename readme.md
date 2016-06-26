@@ -17,7 +17,8 @@ navigate to the drive in command prompt and issue this command: (you may modify 
  
 dir /S /-C <DRIVE LETTER>: > drive_filelisting.txt
 
-for ex if you want to make a listing from usb stick found in G: you could make foloing command:
+for example if you want to make a listing from usb stick found in drive G: you could make following command:
+
 dir /S /-C G: > g_usb_drive_listing.txt
 
 Note that this application currently works only on english windows os with this specific dir command  options:  /S /-C
@@ -31,10 +32,11 @@ replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_d
 
 
 Todo:
-
-memory leak checks
-parallel code
+internationalization: timezones, operating system languages
 further performance optimations
+parallel code
+memory leak checks
 more search options
 splitting date, size in csv
 GUI
+
