@@ -28,7 +28,7 @@ replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_d
 
 About the code base:
 --------
-You need [I'm an inline-style link] ( http://www.boost.org/ ) library to compile this.
+You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile this.
 
 Todo:
 --------
