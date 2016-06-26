@@ -191,7 +191,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("cdtreefilenameflag,d", opt::value<std::string>()->default_value("cdt"), "if this string found in the file name switch to cdtree search function")
     
     ("fileextension,x", opt::value<std::string>()->default_value("*"), "file extension filter for search default to any")
-
+    ("fileextensioncase,n", opt::value<bool>()->default_value(false), "file extension filter casesensitive defaults to false (= case insensitive)")
+     
     ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("help", "produce help message");
 
@@ -235,8 +236,9 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.filetype = vm["filetype"].as<std::string>();
   searchOptions.cdtreefilenameflag = vm["cdtreefilenameflag"].as<std::string>();
   searchOptions.fileExtension = vm["fileextension"].as<std::string>();
-  
-  
+  searchOptions.fileExtensionCheckCaseSensitive = vm["fileextensioncase"].as<bool>();
+
+ 
 
   searchOptions.searchby = vm["searchby"].as<std::string>();
   searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();

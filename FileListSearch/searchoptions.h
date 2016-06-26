@@ -27,6 +27,7 @@ public:
   opt::options_description desc;
   string cdtreefilenameflag;
   string fileExtension;
+  bool fileExtensionCheckCaseSensitive;
   
 };
 

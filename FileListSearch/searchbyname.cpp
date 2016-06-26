@@ -136,7 +136,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
    // do the file extension filtering
   bool fileExtensionCheck = false; // actual test variable initial value
-  bool fileExtensionCheckCaseSensitive = false;
+  bool fileExtensionCheckCaseSensitive = searchOptions.fileExtensionCheckCaseSensitive;
 
   std::locale loc;
   //searchChar1 = fileExt[0];
@@ -172,17 +172,23 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
-          string fileExtensionPortionLower = "";
-          if (filterFileExt && !fileExtensionCheckCaseSensitive) {
-            const char * fileExtensionCheckStart = lineEndPoint - fileExtLen; //  beginning2 + (lineEndPoint - beginning - fileExtLen);
+          
+          if (filterFileExt  ) {
+            const char * fileExtensionCheckStart = lineEndPoint - fileExtLen;
             string fileExtensionPortion(fileExtensionCheckStart, fileExtLen);
+            if (!fileExtensionCheckCaseSensitive) {
+             //  beginning2 + (lineEndPoint - beginning - fileExtLen);
+            string fileExtensionPortionLower = "";
             
             // make lowercase version
             for (std::string::size_type i = 0; i<fileExtensionPortion.length(); ++i)
               fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
 
             fileExtensionCheck = fileExtensionPortionLower == fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
-          
+            }
+            else {
+              fileExtensionCheck = fileExtensionPortion == fileExtension;
+            }
           }
           // filter out directories
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
