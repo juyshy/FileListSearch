@@ -6,7 +6,7 @@ FileListingSearch is application for searching files from multiple hard drives o
 FileListingSearch is currently a windows command line application.
 It searches files from file listing text files and produces aggregated csv file for search results.
 
-This application arose from a need to search simultaneusly from multiple hard drives (and/or usb sticks)  where several drives may contain millions of files thus making search a performance critical task.
+This application arose from a need to search simultaneously from multiple hard drives (and/or usb sticks)  where several drives may contain millions of files thus making search a performance critical task.
 
 
 
@@ -20,7 +20,7 @@ Usage:
     * dir /S /-C G: > g_usb_drive_listing.txt
   * Note that this application currently works only on english windows os with this specific dir command  options:  /S /-C
 
-2. then issue command for searhing the file listings:
+2. then issue command for searching the file listings:
 FileListingSearch.exe --search=searchterm --resultfile=searchresults_for_searchterm.csv --listingfiles=g_usb_drive_listing.txt
 
 replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_drive_listing.txt
@@ -30,7 +30,7 @@ replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_d
 
 Todo:
 --------
-internationalization: timezones, operating system languages
+internationalization: time zones, operating system languages
 further performance optimations
 parallel code
 memory leak checks
