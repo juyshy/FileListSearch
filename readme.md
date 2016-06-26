@@ -8,7 +8,9 @@ It searches files from file listing text files and produces aggregated csv file 
 
 This application arose from a need to search simultaneously from multiple hard drives (and/or usb sticks)  where several drives may contain millions of files thus making search a performance critical task.
 
-
+Blog post / home page:
+--------
+[http://juy.fi/blogi/searching-for-lost-files-with-filelistsearch/] ( http://juy.fi/blogi/searching-for-lost-files-with-filelistsearch/)
 
 Usage:
 --------
