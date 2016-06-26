@@ -45,6 +45,20 @@ const size_t compsize = sizeof(dirnamestr) - 1;
 const size_t compsize2 = sizeof(dirStr) - 1;
 
 
+class SearchOptions
+{
+public:
+  bool success;
+  string searchString;
+  bool casesensitive;
+  string filetype;
+  string resultsFilename;
+  std::vector<std::string> listFiles;
+  bool overwrite;
+  bool fullpath;
+  string searchby;
+
+};
 
 //http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 // trim from start (in place)
@@ -76,7 +90,12 @@ string  get_match(std::string const &s, std::regex const &r) {
     return "";
   }
 }
-bool searchByName(string fileListFilename, string searchString, bool casesensitive, string filetype, bool fullpath) {
+bool searchByName(string fileListFilename, SearchOptions searchOptions) {
+ 
+   string searchString = searchOptions.searchString; 
+   bool casesensitive = searchOptions.casesensitive;
+   string filetype = searchOptions.filetype;
+   bool fullpath = searchOptions.fullpath;
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
@@ -286,7 +305,12 @@ int replace(std::string& str, const std::string& from, const std::string& to) {
   return count;
 }
 
-bool searchFilesByFolderName(string fileListFilename, string searchString, bool casesensitive, string filetype, bool fullpath) {
+bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOptions) {
+
+  string searchString = searchOptions.searchString;
+  bool casesensitive = searchOptions.casesensitive;
+  string filetype = searchOptions.filetype;
+  bool fullpath = searchOptions.fullpath;
 
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
@@ -577,20 +601,6 @@ bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
   return true;
 }
 
-class SearchOptions
-{
-public:
-  bool success;
-  string searchString;
-  bool casesensitive;
-  string filetype;
-  string resultsFilename;
-  std::vector<std::string> listFiles;
-  bool overwrite;
-  bool fullpath;
-  string searchby;
- 
-};
 
 bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
    
@@ -687,9 +697,9 @@ int main(int argc, char *argv[])
    for (string fileListFilename : searchOptions.listFiles) {
      //cout << fileListFilename << endl;
      if (searchOptions.searchby == "filename")
-       searchByName(fileListFilename, searchOptions.searchString, searchOptions.casesensitive, searchOptions.filetype, searchOptions.fullpath);
+       searchByName(fileListFilename, searchOptions);
      else
-       searchFilesByFolderName(fileListFilename, searchOptions.searchString, searchOptions.casesensitive, searchOptions.filetype, searchOptions.fullpath);
+       searchFilesByFolderName(fileListFilename, searchOptions);
    }
 
    resuts_file.close();
