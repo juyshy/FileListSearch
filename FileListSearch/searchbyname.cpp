@@ -122,7 +122,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
   //t.report();
   //t.stop();
   //t.start();
-  std::cout << "searching: " << "\n";
+  std::cout << "searching... " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
 

@@ -119,7 +119,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
   //t.report();
   //t.stop();
   //t.start();
-  std::cout << "searching: " << "\n";
+  std::cout << "searching... " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
   while (f2 && f2 != end) {

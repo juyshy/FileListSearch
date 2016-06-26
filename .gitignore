@@ -13,3 +13,4 @@ Snapshot*.xml
 *.ipch
 *.bak
 *.stackdump
+Release/
