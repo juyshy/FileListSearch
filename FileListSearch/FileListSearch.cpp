@@ -2,13 +2,12 @@
 //
 
 #include "stdafx.h"
+#include "utility_funcs.h"
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
 #include <boost/filesystem/operations.hpp> 
-#include <boost/date_time.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> 
-#include <boost/date_time/local_time/local_time.hpp>
+
 #include <algorithm>  // for std::find
 #include <functional> 
 #include <iostream>   // for std::cout
@@ -30,7 +29,7 @@ using std::cin;
 using std::ifstream;
 using namespace boost::filesystem;
 namespace opt = boost::program_options;
-namespace greg = boost::gregorian;
+
 
 using std::endl;
 
@@ -47,7 +46,6 @@ const size_t compsize = sizeof(dirnamestr) - 1;
 char dirStr[] = "<DIR>";
 const size_t compsize2 = sizeof(dirStr) - 1;
 
-static boost::local_time::time_zone_ptr const s_timezone(new boost::local_time::posix_time_zone("+02:00"));
 
 class SearchOptions
 {
@@ -65,57 +63,6 @@ public:
 };
 
 
-std::string mydateformat(boost::local_time::local_date_time const& ldt)
-{
-  using namespace boost;
-  std::ostringstream ss;
-
-  boost::local_time::local_time_facet* output_facet = new boost::local_time::local_time_facet();
-  ss.imbue(std::locale(std::locale::classic(), output_facet));
-  output_facet->format("%Y-%m-%d_%H-%M-%S");
-
-  ss.str("");
-  ss << ldt;
-  return ss.str();
-}
-
-
-//http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-// trim from start (in place)
-static inline void ltrim(std::string &s) {
-  s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-}
-
-// trim from end (in place)
-static inline void rtrim(std::string &s) {
-  s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-}
-
-// trim from both ends (in place)
-static inline void trim(std::string &s) {
-  ltrim(s);
-  rtrim(s);
-}
-
-string  get_match(std::string const &s, std::regex const &r) {
-  std::smatch match;
-  string matchStr;
-  if (std::regex_search(s, match, r)) {
-    /*std::cout << "Sernum: " << */
-    matchStr = match[1].str();
-    return matchStr;
-  }
-  else {
-    std::cerr << s << "did not match\n";
-    return "";
-  }
-}
-
-char * stringToCharPtr(string str1) {
-  char * searchCharPtr = reinterpret_cast<char *>(alloca(str1.size() + 1));
-  memcpy(searchCharPtr, str1.c_str(), str1.size() + 1);
-  return searchCharPtr;
-}
 
 bool searchByName(string fileListFilename, SearchOptions searchOptions) {
 
@@ -316,21 +263,6 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions) {
   if (hitcount == 0)
     resuts_file << "NOTHING FOUND " << "\n";
   return true;
-}
-
-int replace(std::string& str, const std::string& from, const std::string& to) {
-  size_t start_pos = str.find(from);
-  int count = 0;
-  if (start_pos == std::string::npos)
-    return 0;
-  while (start_pos != std::string::npos) {
-
-    count++;
-
-    str.replace(start_pos, from.length(), to);
-    start_pos = str.find(from, start_pos + 1);
-  }
-  return count;
 }
 
 bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOptions) {
@@ -551,15 +483,6 @@ bool search(string fileListFilename, string searchString) {
   cout << "search results found: " << searchResults.size() << endl;
 
   return true;
-}
-
-bool fexists(string filenameToCheck)
-{
-  auto filenameToCheckChar = reinterpret_cast<char *>(alloca(filenameToCheck.size() + 1));
-  memcpy(filenameToCheckChar, filenameToCheck.c_str(), filenameToCheck.size() + 1);
-
-  ifstream ifile(filenameToCheckChar);
-  return static_cast<bool>(ifile);
 }
 
 
