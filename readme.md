@@ -31,7 +31,9 @@ Options
 FileListSearch.exe --help:
 
 Usage: FileListSearch options
+
 --search and --listingfiles options required
+
 *  -s [ --search ] arg                   search string
 *  -l [ --listingfiles ] arg             file listings
 *  -c [ --casesensitive ] arg (=0)       casesensitive search true/false

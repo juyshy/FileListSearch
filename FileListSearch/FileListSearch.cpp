@@ -45,7 +45,7 @@ std::ofstream resuts_file;
 // obsolete unused function for benchmarking
 bool search(string fileListFilename, string searchString) {
 
-  boost::timer::auto_cpu_timer t;
+  //boost::timer::auto_cpu_timer t;
 
   // Load file
   boost::iostreams::mapped_file mmap(fileListFilename, boost::iostreams::mapped_file::readonly);
@@ -56,9 +56,9 @@ bool search(string fileListFilename, string searchString) {
 
   // load file contnts to string
   string filecontents(beginning, size2);
-  t.report();
-  t.stop();
-  t.start();
+  //t.report();
+  //t.stop();
+  //t.start();
 
   // search
   std::size_t found = filecontents.find(searchString);
@@ -289,7 +289,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
 
 int main(int argc, char *argv[])
 {
-  boost::timer::auto_cpu_timer t;
+  //boost::timer::auto_cpu_timer t;
   SearchOptions searchOptions = SearchOptions();
 
   if (!getParameters(argc, argv, searchOptions))

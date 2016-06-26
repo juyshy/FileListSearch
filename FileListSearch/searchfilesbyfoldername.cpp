@@ -32,7 +32,7 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
   string filetype = searchOptions.filetype;
   bool fullpath = searchOptions.fullpath;
 
-  boost::timer::auto_cpu_timer t;
+  //boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
   try {
 
@@ -81,9 +81,9 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
   resuts_file << ">>>>" << fileListFilename + "\n";
   resuts_file << sernum + "\n";
   resuts_file << volName + "\n";
-  t.report();
-  t.stop();
-  t.start();
+  //t.report();
+  //t.stop();
+  //t.start();
 
   // search
   //std::vector<string> searchResults;
@@ -116,9 +116,9 @@ bool searchFilesByFolderName(string fileListFilename, SearchOptions searchOption
 
   beginning2 = f2;
   end = f2 + size2;
-  t.report();
-  t.stop();
-  t.start();
+  //t.report();
+  //t.stop();
+  //t.start();
   std::cout << "searching: " << "\n";
   int hitcount = 0;
   // loop through all potential search hits
