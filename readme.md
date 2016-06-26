@@ -68,13 +68,18 @@ Usage: FileListSearch options
                                         switch to cdtree search function
 *  --help                                produce help message
 
-About the code base:
+Compilation:
 --------
 You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile this.
 Tested with Visual Studio 2013, windows 8.1
 
 replace &lt;AdditionalIncludeDirectories&gt;
 and  &lt;AdditionalLibraryDirectories&gt; values in  FileListSearch.vcxproj project file for your boost paths
+
+Binary:
+--------
+Download link for compiled exe can be found from blog post:
+[http://juy.fi/blogi/searching-for-lost-files-with-filelistsearch/] ( http://juy.fi/blogi/searching-for-lost-files-with-filelistsearch/)
 
 
 Todo:
