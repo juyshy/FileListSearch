@@ -4,9 +4,10 @@ FileListingSearch
 FileListingSearch is application for searching files from multiple hard drives or usb sticks in one application run. It searches file names from text files containing a files and folders listing. More than one listing file can be searched at once. 
 
 FileListingSearch is currently a windows command line application.
-It searches files from file listing text files and produces aggregated csv file for search results.
+It searches files from file listing text files and produces aggregated csv/ttxt file for search results.
 
 This application arose from a need to search simultaneously from multiple hard drives (and/or usb sticks)  where several drives may contain millions of files thus making search a performance critical task.
+
 
 Blog post / home page:
 --------
@@ -73,7 +74,7 @@ You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile th
 Tested with Visual Studio 2013, windows 8.1
 
 replace &lt;AdditionalIncludeDirectories&gt;
-and  &lt;AdditionalLibraryDirectories&gt; values in  FileListSearch.vcxproj project file for your paths
+and  &lt;AdditionalLibraryDirectories&gt; values in  FileListSearch.vcxproj project file for your boost paths
 
 
 Todo:

@@ -14,3 +14,4 @@ Snapshot*.xml
 *.bak
 *.stackdump
 Release/
+*.vcxproj.user
