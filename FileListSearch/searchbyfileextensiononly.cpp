@@ -30,7 +30,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   const size_t compsize2 = sizeof(dirStr) - 1;
 
   string searchString = searchOptions.searchString;
-  bool casesensitive = searchOptions.casesensitive;
+  bool casesensitive = searchOptions.casesensitive || searchOptions.fileExtensionCheckCaseSensitive;
   string filetype = searchOptions.filetype;
   bool fullpath = searchOptions.fullpath;
 
@@ -139,7 +139,6 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
   // do the file extension filtering
   bool fileExtensionCheck = false; // actual test variable initial value
-  bool fileExtensionCheckCaseSensitive = searchOptions.fileExtensionCheckCaseSensitive;
 
   std::locale loc;
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
