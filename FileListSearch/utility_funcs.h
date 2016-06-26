@@ -14,7 +14,8 @@ using std::ifstream;
 
 namespace greg = boost::gregorian;
 
-static boost::local_time::time_zone_ptr const s_timezone(new boost::local_time::posix_time_zone("+02:00"));
+
+static boost::local_time::time_zone_ptr const s_timezone(new boost::local_time::posix_time_zone("+03:00"));
 
 
 std::string mydateformat(boost::local_time::local_date_time const& ldt);
