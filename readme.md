@@ -25,19 +25,60 @@ FileListingSearch.exe --search=searchterm --resultfile=searchresults_for_searcht
 
 replace the option values: searchterm, searchresults_for_searchterm.csv, g_usb_drive_listing.txt
 
+Options
+--------
+
+FileListSearch.exe --help:
+
+Usage: FileListSearch options
+--search and --listingfiles options required
+  -s [ --search ] arg                   search string
+  -l [ --listingfiles ] arg             file listings
+  -c [ --casesensitive ] arg (=0)       casesensitive search true/false
+  -f [ --filetype ] arg (=file)         file type to search (file, directory or
+                                        both)
+  -r [ --resultfile ] arg (=auto)       results output file name (auto means
+                                        automatically generated file name with
+                                        format: results_for_searchTerm_searchte
+                                        rm.txt )
+  -u [ --fullpath ] arg (=0)            fullpath included in results
+  -b [ --searchby ] arg (=filename)     searchtype (filename, by_directory_name
+                                        or cdtree)
+                                             filename = regular file name
+                                        search,
+                                             by_directory_name = list all files
+                                        in directories that match search term,
+                                             cdtree = search cdtree format csv
+                                        file
+  -x [ --fileextension ] arg (=*)       file extension filter for search
+                                        default to any
+  -n [ --fileextensioncase ] arg (=0)   file extension filter casesensitive
+                                        defaults to false (= case insensitive)
+  -e [ --timestamp ] arg (=0)           include timestamp in auto generated
+                                        result file name
+  -o [ --overwrite ] arg (=0)           overwrite results file by default in
+                                        case it exists
+  -d [ --cdtreefilenameflag ] arg (=cdtree)
+                                        if this string found in the file name
+                                        switch to cdtree search function
+  --help                                produce help message
 
 About the code base:
 --------
 You need [http://www.boost.org/] ( http://www.boost.org/ ) library to compile this.
 Tested with Visual Studio 2013, windows 8.1
 
+replace <AdditionalIncludeDirectories>
+and  <AdditionalLibraryDirectories> values in  FileListSearch.vcxproj project file for your paths
+
+
 Todo:
 --------
-internationalization: time zones, operating system languages
-further performance optimations
-parallel code
-memory leak checks
-more search options
-splitting date, size in csv
-GUI
+* internationalization: time zones, operating system languages
+* further performance optimations
+* parallel code
+* memory leak checks
+* more search options
+* splitting date, size in csv
+* GUI
 
