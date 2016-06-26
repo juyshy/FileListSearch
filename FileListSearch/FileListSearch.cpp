@@ -645,7 +645,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("overwrite,c", opt::value<bool>()->default_value(false), "overwrite results file by default")
     ("fullpath,c", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,s", opt::value<std::string>()->default_value("filename"), "searchtype (filename, by_directory_name)")
-    //("timestamp,t", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
+    ("timestamp,t", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("help", "produce help message");
 
   opt::variables_map vm;
@@ -679,11 +679,11 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.filetype = vm["filetype"].as<std::string>();
 
   searchOptions.searchby = vm["searchby"].as<std::string>();
-  //searchOptions.timestampInAutoName = vm["timestamp"].as<bool>(); 
+  searchOptions.timestampInAutoName = vm["timestamp"].as<bool>(); 
 
   // extracting search results file file name from command line options
   searchOptions.resultsFilename = vm["resultfile"].as<std::string>();
-  searchOptions.timestampInAutoName = true;
+  //searchOptions.timestampInAutoName = true;
   if (searchOptions.resultsFilename == "auto")
   {
     string timeString = "";
