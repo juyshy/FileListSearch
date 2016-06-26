@@ -252,7 +252,7 @@ bool searchByName(string fileListFilename, string searchString, bool casesensiti
                  filename = size_filename;// todo: 
                }
 
-               resuts_file << dirLineString << "; " << resultString << "; " << dirLineString << "\\" << filename << "\n";
+               resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
                }
              else
                resuts_file << dirLineString << "; " << resultString <<   "\n";
@@ -591,8 +591,8 @@ int main(int argc, char *argv[])
      std::cout << desc << "\n";
      return 1;
    }
-
  
+
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    std::string resultsFilenameOriginal = resultsFilename;
    int renameSuffix = 1;
