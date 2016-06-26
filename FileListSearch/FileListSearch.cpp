@@ -5,7 +5,7 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
- 
+#include <boost/filesystem/operations.hpp> 
 #include <algorithm>  // for std::find
 #include <functional> 
 #include <iostream>   // for std::cout
@@ -551,35 +551,22 @@ int main(int argc, char *argv[])
      std::cout << desc << "\n";
      return 1;
    }
-   bool casesensitive;
-   if (!vm["casesensitive"].empty()) {
-     casesensitive = vm["casesensitive"].as<bool>();
-   }
+
+   bool casesensitive = vm["casesensitive"].as<bool>();
+   bool overwrite = vm["overwrite"].as<bool>();
+   bool fullpath = vm["fullpath"].as<bool>();
  
-   bool overwrite;
-   if (!vm["overwrite"].empty()) {
-     overwrite = vm["overwrite"].as<bool>();
-   }
-
-   bool fullpath;
-   if (!vm["fullpath"].empty()) {
-     fullpath = vm["fullpath"].as<bool>();
-   }
-   
-   std::string filetype;
-   // extracting search word from command line options
-   if (!vm["filetype"].empty()) {
-     filetype = vm["filetype"].as<std::string>();
-   }
-   std::string searchby;
-   // extracting search word from command line options
-   if (!vm["searchby"].empty()) {
-     searchby = vm["searchby"].as<std::string>();
-   }
-   
-
+   std::string filetype = vm["filetype"].as<std::string>();
+ 
+   std::string  searchby = vm["searchby"].as<std::string>();
+  
    // extracting search results file file name from command line options
    std::string resultsFilename = vm["resultfile"].as<std::string>();
+
+   if (resultsFilename == "auto")
+   {
+     resultsFilename = "results_for_searchTerm_" + searchString + ".txt";
+   }
 
    // extracting file listing path names from command line options
    std::vector<string> listFiles;
@@ -591,7 +578,44 @@ int main(int argc, char *argv[])
      std::cout << desc << "\n";
      return 1;
    }
+   
+   std::size_t wildcardPos = listFiles.at(0).find("*");
+   if (listFiles.size() == 1 && wildcardPos != std::string::npos){
+
+     
+     string listingDir = listFiles.at(0).substr(0, wildcardPos);
+     listFiles.clear();
+     boost::filesystem::directory_iterator begin(listingDir);
+     boost::filesystem::directory_iterator end;
+
+     for (; begin != end; ++begin) {
+       /*
+       boost::filesystem::file_status fs =
+       boost::filesystem::status(*begin);
+       */
+
+       boost::filesystem::file_status fs =
+         begin->status();
+
+       switch (fs.type()) {
+       case boost::filesystem::regular_file:
+         std::cout << "listing file:  ";
+         std::cout << begin->path() << '\n';
+
+         listFiles.push_back(begin->path().string());
+         break;
+
+       default:
+         //std::cout << "OTHER      ";
+         break;
+       }
+
  
+
+     }
+   }
+   
+    
 
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    std::string resultsFilenameOriginal = resultsFilename;
