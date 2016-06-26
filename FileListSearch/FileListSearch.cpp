@@ -510,6 +510,39 @@ bool fexists(string filenameToCheck)
   return static_cast<bool>( ifile);
 }
 
+
+void checkWildCardInFileListings(std::vector<string> &listFiles) {
+  std::size_t wildcardPos = listFiles.at(0).find("*");
+
+  // if wild card in the first parameter list all files on the dir
+  if (listFiles.size() == 1 && wildcardPos != std::string::npos){
+
+    string listingDir = listFiles.at(0).substr(0, wildcardPos);
+    listFiles.clear();
+    boost::filesystem::directory_iterator begin(listingDir);
+    boost::filesystem::directory_iterator end;
+
+    for (; begin != end; ++begin) {
+ 
+      boost::filesystem::file_status fs =
+        begin->status();
+
+      switch (fs.type()) {
+      case boost::filesystem::regular_file:
+        std::cout << "listing file:  ";
+        std::cout << begin->path() << '\n';
+
+        listFiles.push_back(begin->path().string());
+        break;
+
+      default:
+        //std::cout << "OTHER      ";
+        break;
+      }
+    }
+  }
+}
+
 int main(int argc, char *argv[]) 
 {
    boost::timer::auto_cpu_timer t;
@@ -579,43 +612,7 @@ int main(int argc, char *argv[])
      return 1;
    }
    
-   std::size_t wildcardPos = listFiles.at(0).find("*");
-   if (listFiles.size() == 1 && wildcardPos != std::string::npos){
-
-     
-     string listingDir = listFiles.at(0).substr(0, wildcardPos);
-     listFiles.clear();
-     boost::filesystem::directory_iterator begin(listingDir);
-     boost::filesystem::directory_iterator end;
-
-     for (; begin != end; ++begin) {
-       /*
-       boost::filesystem::file_status fs =
-       boost::filesystem::status(*begin);
-       */
-
-       boost::filesystem::file_status fs =
-         begin->status();
-
-       switch (fs.type()) {
-       case boost::filesystem::regular_file:
-         std::cout << "listing file:  ";
-         std::cout << begin->path() << '\n';
-
-         listFiles.push_back(begin->path().string());
-         break;
-
-       default:
-         //std::cout << "OTHER      ";
-         break;
-       }
-
- 
-
-     }
-   }
-   
-    
+   checkWildCardInFileListings(listFiles);
 
    std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
    std::string resultsFilenameOriginal = resultsFilename;
