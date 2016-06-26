@@ -48,15 +48,15 @@ const size_t compsize2 = sizeof(dirStr) - 1;
 class SearchOptions
 {
 public:
-  bool success;
-  string searchString;
-  bool casesensitive;
-  string filetype;
-  string resultsFilename;
-  std::vector<std::string> listFiles;
-  bool overwrite;
-  bool fullpath;
-  string searchby;
+  bool success; // success for gathering options
+  string searchString; 
+  bool casesensitive; // is searchh casesensitive
+  string filetype; // filetypes to search
+  string resultsFilename; // search results written to this file
+  std::vector<std::string> listFiles; // file listings path names
+  bool overwrite; // overwrite by default of result file allready exists
+  bool fullpath; // include full paths in the results
+  string searchby; // search function
 
 };
 
