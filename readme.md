@@ -88,7 +88,8 @@ Todo:
 * further performance optimization 
 * parallel code
 * memory leak checks
-* more search options
+* more search options: date, year, file size, regex
 * splitting date, size into csv
 * GUI
+* post processing option: duplicate removal
 

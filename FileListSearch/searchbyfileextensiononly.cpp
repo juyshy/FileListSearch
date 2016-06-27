@@ -132,8 +132,8 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
     filterFileExt = true;
 
   if (fileExtension.at(0) != '.')
-    fileExtension = "." + fileExtension + "\r\n";
-
+    fileExtension = "." + fileExtension;
+  fileExtension +=  "\r\n";
   int fileExtLen = fileExtension.size();
   char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
@@ -142,6 +142,9 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
 
   std::locale loc;
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
+
+  char * yearFilter = "2011";
+  char * monthyearFilter = "07.2011";
 
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2)))
@@ -172,18 +175,18 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         // oh and then we have to flip it to the original f
         lineEndPoint = f + (f2 - beginning2  + fileExtLen - 2);
 
- 
+        
 
         bool  filter;
         // filter out directories and abnormaly long results
         if (filetype == "file") {
 
-      
+          bool  monthyearCheck = memcmp(monthyearFilter, linestartPoint+3, 7) == 0;
           // filter out directories
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
-            /*&& (!filterFileExt || (filterFileExt
-            && fileExtensionCheck))*/;
+            && (monthyearFilter == "" || (monthyearFilter != ""
+            && monthyearCheck));
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
