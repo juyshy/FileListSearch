@@ -189,6 +189,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("year,y", opt::value<std::string>()->default_value(""), "filter by year: yyyy")
     ("monthyear,m", opt::value<std::string>()->default_value(""), "filter by monthyear with format mm.yyyy")
     ("date,d", opt::value<std::string>()->default_value(""), "filter by date with format dd.mm.yyyy")
+    ("size,z", opt::value<std::string>()->default_value(""), "filter by size. Example: -z\">1M\", -z\"<100k\". You can also make a range like this -z\">100k <2M\" (use allways double quotes!)")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), 
     "searchtype (filename, by_directory_name or cdtree)\n \
@@ -246,7 +247,17 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.year = vm["year"].as<std::string>();
   searchOptions.date = vm["date"].as<std::string>();
   searchOptions.monthYear = vm["monthyear"].as<std::string>();
+  searchOptions.sizeFilter = vm["size"].as<std::string>();
  
+  std::regex  sizereg1("^[<>]\\d+[MmKkGgTt]?(\\s*[<>]\\d+[MmKkGgTt]?)?$");
+
+  if (searchOptions.sizeFilter != "" && !std::regex_match(searchOptions.sizeFilter, sizereg1)) {
+    std::cout << "\n\nAttention!!!\n\nSizeFilter option needs to be in this format: < or > number and optional metric prefix (k,M,G or T)" << std::endl;
+    std::cout << "Please try again like this example: -z\">100\" or -z\"<20M\" " << std::endl;
+    std::cout << "Or for a range like this example: -z\">100k <20M\""  << std::endl;
+    searchOptions.success = false;
+    return false;
+  }
 
   std::regex  datereg1("^\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d$");
 

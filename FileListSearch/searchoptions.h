@@ -31,7 +31,7 @@ public:
   string year;
   string date;
   string monthYear;
-  
+  string sizeFilter;
 };
 
 
