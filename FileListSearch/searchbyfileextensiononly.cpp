@@ -241,6 +241,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
+          // todo: date,year filterin here:
           // only directories
           filter = memcmp(dirStr, linestartPoint + 21, compsize2) == 0;
         }

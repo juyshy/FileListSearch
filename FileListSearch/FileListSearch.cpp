@@ -230,7 +230,9 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("year,y", opt::value<std::string>()->default_value(""), "filter by year: yyyy")
     ("monthyear,m", opt::value<std::string>()->default_value(""), "filter by monthyear with format mm.yyyy")
     ("date,d", opt::value<std::string>()->default_value(""), "filter by date with format dd.mm.yyyy")
-    ("size,z", opt::value<std::string>()->default_value(""), "filter by size. Example: -z\">1M\", -z\"<100k\". You can also make a range like this -z\">100k <2M\" (use allways double quotes!)")
+    ("size,z", opt::value<std::string>()->default_value(""), 
+    "filter by size. Example: -z\">1M\", -z\"<100k\" or -z\"g1M\" -z\"s100k\". \
+     You can also make a range like this -z\">100k <2M\" (use allways double quotes!)")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), 
     "searchtype (filename, by_directory_name or cdtree)\n \
