@@ -248,6 +248,13 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.monthYear = vm["monthyear"].as<std::string>();
  
 
+  std::regex  datereg1("^\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d$");
+  if (searchOptions.monthYear != "" && !std::regex_match(searchOptions.date, datereg1)) {
+    std::cout << "date option needs to be in this format: dd.mm.yyyy" << std::endl;
+    searchOptions.success = false;
+    return false;
+  }
+
   searchOptions.searchby = vm["searchby"].as<std::string>();
   searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();
 
