@@ -39,7 +39,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   string yearFilterStr = searchOptions.year;
   string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
   string  sizeFilterStr = searchOptions.sizeFilter;
-  //boost::timer::auto_cpu_timer t;
+  boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
   try {
 
@@ -88,9 +88,9 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   resuts_file << ">>>>" << fileListFilename + "\n";
   resuts_file << sernum + "\n";
   resuts_file << volName + "\n";
-  //t.report();
-  //t.stop();
-  //t.start();
+  t.report();
+  t.stop();
+  t.start();
 
   // search
   //std::vector<string> searchResults;
@@ -151,7 +151,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
   
   
-   
+  bool sizeFilterActive = searchOptions.sizeOperand.greaterThan != -1 || searchOptions.sizeOperand.smallerThan != -1;
   
   char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
   memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
@@ -202,7 +202,27 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         // filter out directories 
         if (filetype == "file") {
 
-                     // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
+          int size;
+          bool sizeFilterCheck = false;
+          if (sizeFilterActive) {
+            const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
+            while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
+            {
+              ++sizeStartPoint;
+            }
+            const char * sizeEndPoint = sizeStartPoint;
+            while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
+            {
+              ++sizeEndPoint;
+            }
+            string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
+            size = boost::lexical_cast<int>(sizeString);
+            
+            sizeFilterCheck = searchOptions.sizeOperand.greaterThan == -1 || searchOptions.sizeOperand.greaterThan < size;
+            sizeFilterCheck = sizeFilterCheck && (searchOptions.sizeOperand.smallerThan == -1 || searchOptions.sizeOperand.smallerThan > size);
+          }
+
+          // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
           bool  monthyearCheck = memcmp(monthYearFilter, linestartPoint+3, 7) == 0;
           // offset 6 in dd.mm.yyyy, yyyy 4 chars long
           bool yearFilterCheck = memcmp(yearFilter, linestartPoint + 6, 4) == 0;
@@ -215,7 +235,8 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
             && (!monthYearFilterActive   || monthyearCheck)
             && (!yearFilterActive  || yearFilterCheck)
-            && (!dateFilterActive || dateFilterCheck);;
+            && (!dateFilterActive || dateFilterCheck)
+            && (!sizeFilterActive || sizeFilterCheck);
 
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")

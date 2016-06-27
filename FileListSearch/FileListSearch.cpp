@@ -174,10 +174,10 @@ bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
 
 void getSizeOperands(SearchOptions & searchOptions){
 
-  std::regex greaterSmallerReg1("^([><]\\d+[kmgtKMGT]?)");
+  std::regex greaterSmallerReg1("^([><gs]\\d+[kmgtKMGT]?)");
   string greaterSmaller1 = get_match(searchOptions.sizeFilter, greaterSmallerReg1);
 
-  std::regex greaterSmallerReg2("^[><]\\d+[kmgtKMGT]?\\s*([><]\\d+[kmgtKMGT]?)");
+  std::regex greaterSmallerReg2("^[><gs]\\d+[kmgtKMGT]?\\s*([><gs]\\d+[kmgtKMGT]?)");
   string greaterSmaller2 = get_match(searchOptions.sizeFilter, greaterSmallerReg2);
 
   std::regex numvalueReg("(\\d+)");
@@ -199,14 +199,16 @@ void getSizeOperands(SearchOptions & searchOptions){
     metricMult2 = metricPrefix2Integer(metricPrefix2[0]);
   }
 
-  if (greaterSmaller1[0] == '>'){
+  if (greaterSmaller1[0] == '>' || greaterSmaller1[0] == 'g'){
     searchOptions.sizeOperand.greaterThan = metricMult1 * sizeValue1;
-    if (greaterSmaller2 != "" && greaterSmaller2[0] == '<')
+    if (greaterSmaller2 != "" && ( greaterSmaller2[0] == '<' && greaterSmaller2[0] == 's'))
       searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
   }
   else {
     searchOptions.sizeOperand.smallerThan = metricMult1 * sizeValue1;
-    if (greaterSmaller2 != "" && greaterSmaller2[0] == '>')
+    bool greater = greaterSmaller2[0] == 'g';
+    bool greater1 = greaterSmaller2[0] == '>';
+    if (greaterSmaller2 != "" && (greater1 || greater))
       searchOptions.sizeOperand.greaterThan = metricMult2 * sizeValue2;
   }
 }
@@ -288,7 +290,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.monthYear = vm["monthyear"].as<std::string>();
   searchOptions.sizeFilter = vm["size"].as<std::string>();
  
-  std::regex  sizereg1("^[<>]\\d+[MmKkGgTt]?(\\s*[<>]\\d+[MmKkGgTt]?)?\\s*$");
+  std::regex  sizereg1("^[<>gs]\\d+[MmKkGgTt]?(\\s*[<>sg]\\d+[MmKkGgTt]?)?\\s*$");
 
   if (searchOptions.sizeFilter != "" && !std::regex_match(searchOptions.sizeFilter, sizereg1)) {
     std::cout << "\n\nAttention!!!\n\nSizeFilter option needs to be in this format: < or > number and optional metric prefix (k,M,G or T)" << std::endl;
@@ -377,7 +379,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
 
 int main(int argc, char *argv[])
 {
-  //boost::timer::auto_cpu_timer t;
+  boost::timer::auto_cpu_timer t;
   SearchOptions searchOptions = SearchOptions();
 
   if (!getParameters(argc, argv, searchOptions))
