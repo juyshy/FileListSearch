@@ -172,6 +172,44 @@ bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
   return true;
 }
 
+void getSizeOperands(SearchOptions & searchOptions){
+
+  std::regex greaterSmallerReg1("^([><]\\d+[kmgtKMGT]?)");
+  string greaterSmaller1 = get_match(searchOptions.sizeFilter, greaterSmallerReg1);
+
+  std::regex greaterSmallerReg2("^[><]\\d+[kmgtKMGT]?\\s*([><]\\d+[kmgtKMGT]?)");
+  string greaterSmaller2 = get_match(searchOptions.sizeFilter, greaterSmallerReg2);
+
+  std::regex numvalueReg("(\\d+)");
+  std::regex metricPrfixReg("([kmgtKMGT]?)$");
+
+  string numValueStr1 = get_match(greaterSmaller1, numvalueReg);
+  int sizeValue1 = boost::lexical_cast<int>(numValueStr1);
+  string metricPrefix1 = get_match(greaterSmaller1, metricPrfixReg);
+  metricPrefix1 = tolower(metricPrefix1[0]);
+  int metricMult1 = metricPrefix2Integer(metricPrefix1[0]);
+
+  int sizeValue2;
+  int metricMult2;
+  if (greaterSmaller2 != "") {
+    string numValueStr2 = get_match(greaterSmaller2, numvalueReg);
+    sizeValue2 = boost::lexical_cast<int>(numValueStr2);
+    string metricPrefix2 = get_match(greaterSmaller2, metricPrfixReg);
+    metricPrefix2 = tolower(metricPrefix2[0]);
+    metricMult2 = metricPrefix2Integer(metricPrefix2[0]);
+  }
+
+  if (greaterSmaller1[0] == '>'){
+    searchOptions.sizeOperand.greaterThan = metricMult1 * sizeValue1;
+    if (greaterSmaller2 != "" && greaterSmaller2[0] == '<')
+      searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
+  }
+  else {
+    searchOptions.sizeOperand.smallerThan = metricMult1 * sizeValue1;
+    if (greaterSmaller2 != "" && greaterSmaller2[0] == '>')
+      searchOptions.sizeOperand.greaterThan = metricMult2 * sizeValue2;
+  }
+}
 
 bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
 
@@ -261,42 +299,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   }
 
   if (searchOptions.sizeFilter != "") {
-
-    std::regex greaterSmallerReg1("^([><]\\d+[kmgtKMGT]?)");
-    string greaterSmaller1 = get_match(searchOptions.sizeFilter, greaterSmallerReg1);
-
-    std::regex greaterSmallerReg2("^[><]\\d+[kmgtKMGT]?\\s*([><]\\d+[kmgtKMGT]?)");
-    string greaterSmaller2 = get_match(searchOptions.sizeFilter, greaterSmallerReg2);
-
-    std::regex numvalueReg("(\\d+)");
-    std::regex metricPrfixReg("([kmgtKMGT]?)$");
-
-    string numValueStr1 = get_match(greaterSmaller1, numvalueReg);
-    int sizeValue1 = boost::lexical_cast<int>(numValueStr1);
-    string metricPrefix1 = get_match(greaterSmaller1, metricPrfixReg);
-    metricPrefix1 = tolower(metricPrefix1[0]);
-    int metricMult1 = metricPrefix2Integer(metricPrefix1[0]);
-
-    int sizeValue2;
-    int metricMult2;
-    if (greaterSmaller2 != "") {
-      string numValueStr2 = get_match(greaterSmaller2, numvalueReg);
-      sizeValue2 = boost::lexical_cast<int>(numValueStr2);
-      string metricPrefix2 = get_match(greaterSmaller2, metricPrfixReg);
-      metricPrefix2 = tolower(metricPrefix2[0]);
-      metricMult2 = metricPrefix2Integer(metricPrefix2[0]);
-    }
-
-    if (greaterSmaller1[0] == '>'){
-      searchOptions.sizeOperand.greaterThan = metricMult1 * sizeValue1;
-      if (greaterSmaller2 != "" && greaterSmaller2[0] == '<')
-        searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
-    }
-    else {
-      searchOptions.sizeOperand.smallerThan = metricMult1 * sizeValue1;
-      if (greaterSmaller2 != "" && greaterSmaller2[0] == '>')
-        searchOptions.sizeOperand.greaterThan = metricMult2 * sizeValue2;
-    }
+    getSizeOperands(searchOptions);
   }
 
   std::regex  datereg1("^\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d$");
