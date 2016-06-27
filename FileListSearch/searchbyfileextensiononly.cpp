@@ -18,8 +18,8 @@ class SearchOptions;
 
 bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
 
-  const char   rivinvaihto = '\n';
-  const char * rivinvaihtoChar = &rivinvaihto;
+  const char   newLine = '\n';
+  const char * newLineChar = &newLine;
   const char * linestartPoint;
   const char * lineEndPoint;
   const char * dirStartPoint;
@@ -33,6 +33,11 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   bool casesensitive = searchOptions.casesensitive || searchOptions.fileExtensionCheckCaseSensitive;
   string filetype = searchOptions.filetype;
   bool fullpath = searchOptions.fullpath;
+
+ 
+  string  dateFilterStr = searchOptions.date;
+  string yearFilterStr = searchOptions.year;
+  string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
 
   //boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
@@ -133,7 +138,9 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
 
   if (fileExtension.at(0) != '.')
     fileExtension = "." + fileExtension;
-  fileExtension +=  "\r\n";
+
+  // hard coded new line appended: file extension should always be at the end of file list line
+  fileExtension +=  "\r\n"; 
   int fileExtLen = fileExtension.size();
   char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
   memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
@@ -142,9 +149,22 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
 
   std::locale loc;
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
+  
+  char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
+  memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
 
-  char * yearFilter = "2011";
-  char * monthyearFilter = "07.2011";
+  char * yearFilter = reinterpret_cast<char *>(alloca(yearFilterStr.size() + 1));
+  memcpy(yearFilter, yearFilterStr.c_str(), yearFilterStr.size() + 1);
+ 
+  char * monthYearFilter = reinterpret_cast<char *>(alloca(monthYearFilterStr.size() + 1));
+  memcpy(monthYearFilter, monthYearFilterStr.c_str(), monthYearFilterStr.size() + 1);
+
+  // if empty no filtering
+
+  bool dateFilterActive = dateFilterStr.size() > 0 ;
+  // if empty no filtering and if dateFilterActive allready true override monthYearFilterActive
+  bool monthYearFilterActive = monthYearFilterStr.size() > 0 && !dateFilterActive;
+  bool yearFilterActive = yearFilterStr.size() > 0 && (!monthYearFilterActive && !dateFilterActive);
 
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, searchChar1, end - f2)))
@@ -161,10 +181,10 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
       {
 
         // locate search result line start and end
-        linestartPoint =  f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
+        linestartPoint =  f + (f2 - beginning2); // flip to grab result from original in case of caseinsensitive search
 
 
-        while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
+        while ((linestartPoint - beginning) > 0 && memcmp(newLineChar, linestartPoint, 1) != 0)
         {
           --linestartPoint;
         }
@@ -175,18 +195,25 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         // oh and then we have to flip it to the original f
         lineEndPoint = f + (f2 - beginning2  + fileExtLen - 2);
 
-        
-
         bool  filter;
-        // filter out directories and abnormaly long results
+        // filter out directories 
         if (filetype == "file") {
 
-          bool  monthyearCheck = memcmp(monthyearFilter, linestartPoint+3, 7) == 0;
+          // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
+          bool  monthyearCheck = memcmp(monthYearFilter, linestartPoint+3, 7) == 0;
+          // offset 6 in dd.mm.yyyy, yyyy 4 chars long
+          bool yearFilterCheck = memcmp(yearFilter, linestartPoint + 6, 4) == 0;
+          // offset 0 in dd.mm.yyyy, yyyy 10 chars long
+          bool dateFilterCheck = memcmp(dateFilter, linestartPoint , 10) == 0;
           // filter out directories
-          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
+          // filter out lines containing " Directory of "
+          filter = memcmp(dirnamestr, linestartPoint, compsize) != 0 
+            // filter out lines containing "<DIR>"
             && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
-            && (monthyearFilter == "" || (monthyearFilter != ""
-            && monthyearCheck));
+            && (!monthYearFilterActive   || monthyearCheck)
+            && (!yearFilterActive  || yearFilterCheck)
+            && (!dateFilterActive || dateFilterCheck);;
+
         }
         else if (filetype == "dir" || filetype == "folder" || filetype == "directory")
         {
@@ -198,6 +225,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
           // filter out directories  
           filter = memcmp(dirnamestr, linestartPoint, compsize) != 0;
         }
+        // filter abnormaly long results
         if (filter  && lineEndPoint - linestartPoint < 1000)
         {
           string resultString(linestartPoint, lineEndPoint - linestartPoint);
@@ -212,7 +240,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
             --dirStartPoint;
           }
           dirEndPoint = dirStartPoint;
-          while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
+          while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
           {
             ++dirEndPoint;
           }
@@ -223,7 +251,10 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
 
           // if fullpath written to results file extract filename
           if (fullpath) {
-            string size_filename = resultString.substr(17); // offset for size and filenames in the row
+            // offset 17 for size and filenames in the row this hard coded value
+            // propably needs to be 
+            // parametrized in internationalization
+            string size_filename = resultString.substr(17); 
             trim(size_filename);
             std::size_t endOfSizeLocation = size_filename.find(" ");
             string filename;

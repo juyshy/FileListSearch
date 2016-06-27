@@ -186,6 +186,9 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("resultfile,r",
     opt::value<std::string>()->default_value("auto"),
     "results output file name (auto means automatically generated file name with format: results_for_searchTerm_searchterm.txt )")
+    ("year,y", opt::value<std::string>()->default_value(""), "filter by year: yyyy")
+    ("monthyear,m", opt::value<std::string>()->default_value(""), "filter by monthyear with format mm.yyyy")
+    ("date,d", opt::value<std::string>()->default_value(""), "filter by monthyear with format dd.mm.yyyy")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), 
     "searchtype (filename, by_directory_name or cdtree)\n \
@@ -196,7 +199,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("fileextensioncase,n", opt::value<bool>()->default_value(false), "file extension filter casesensitive defaults to false (= case insensitive)")     
     ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default in case it exists")
-    ("cdtreefilenameflag,d", opt::value<std::string>()->default_value("cdtree"), "if this string found in the file name switch to cdtree search function")
+    ("cdtreefilenameflag,t", opt::value<std::string>()->default_value("cdtree"), "if this string found in the file name switch to cdtree search function")
     ("help", "produce help message");
 
   opt::variables_map vm;
@@ -240,7 +243,9 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.cdtreefilenameflag = vm["cdtreefilenameflag"].as<std::string>();
   searchOptions.fileExtension = vm["fileextension"].as<std::string>();
   searchOptions.fileExtensionCheckCaseSensitive = vm["fileextensioncase"].as<bool>();
-
+  searchOptions.year = vm["year"].as<std::string>();
+  searchOptions.date = vm["date"].as<std::string>();
+  searchOptions.monthYear = vm["monthyear"].as<std::string>();
  
 
   searchOptions.searchby = vm["searchby"].as<std::string>();

@@ -87,9 +87,10 @@ Todo:
 * internationalization: time zones, operating system languages
 * further performance optimization 
 * parallel code
+* linting
 * memory leak checks
 * more search options: date, year, file size, regex
 * splitting date, size into csv
 * GUI
 * post processing option: duplicate removal
-
+* metadata analysis and filters 

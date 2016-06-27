@@ -28,6 +28,9 @@ public:
   string cdtreefilenameflag;
   string fileExtension;
   bool fileExtensionCheckCaseSensitive;
+  string year;
+  string date;
+  string monthYear;
   
 };
 
