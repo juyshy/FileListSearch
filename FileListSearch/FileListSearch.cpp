@@ -399,7 +399,9 @@ int main(int argc, char *argv[])
   resuts_file << "searchString: " << searchOptions.searchString << "\n";
   for (string fileListFilename : searchOptions.listFiles) {
     //cout << fileListFilename << endl;
-    std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
+    searchLoopTesting(fileListFilename, searchOptions, resuts_file);
+   
+  /*  std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
     if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
       searchFromCdTree(fileListFilename, searchOptions, resuts_file);
     else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
@@ -414,7 +416,7 @@ int main(int argc, char *argv[])
       cout << "ERROR!! searchby search function option not valid! " << endl;
       cout << "search function needs to be one of the following: filename, by_directory_name or cdtree" << endl;
       std::cout << searchOptions.desc << "\n";
-    }
+    }*/
   }
 
   resuts_file.close();
