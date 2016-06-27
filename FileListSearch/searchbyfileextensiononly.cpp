@@ -175,8 +175,9 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
     { 
 
       //string lineString(previousLinePtr, f2 - previousLinePtr-1);
-     
-      char * line = new char[f2 - previousLinePtr + 1]();
+      int charsize = f2 - previousLinePtr + 1;
+      char * line = new char[charsize]();
+      strncpy(line, previousLinePtr, charsize);
       f2++;
       hitcount++;
       previousLinePtr = f2;
