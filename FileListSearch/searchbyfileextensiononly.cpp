@@ -38,7 +38,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   string  dateFilterStr = searchOptions.date;
   string yearFilterStr = searchOptions.year;
   string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
-
+  string  sizeFilterStr = searchOptions.sizeFilter;
   //boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
   try {
@@ -150,6 +150,9 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   std::locale loc;
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
   
+  
+   
+  
   char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
   memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
 
@@ -199,7 +202,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
         // filter out directories 
         if (filetype == "file") {
 
-          // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
+                     // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
           bool  monthyearCheck = memcmp(monthYearFilter, linestartPoint+3, 7) == 0;
           // offset 6 in dd.mm.yyyy, yyyy 4 chars long
           bool yearFilterCheck = memcmp(yearFilter, linestartPoint + 6, 4) == 0;

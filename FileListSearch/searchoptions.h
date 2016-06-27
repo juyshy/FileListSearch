@@ -8,6 +8,12 @@ using std::string;
 
 namespace opt = boost::program_options;
 
+
+struct SizeFilterElements{
+  int greaterThan = -1;
+  int smallerThan = -1;
+};
+
 class SearchOptions
 {
 public:
@@ -32,6 +38,7 @@ public:
   string date;
   string monthYear;
   string sizeFilter;
+  SizeFilterElements sizeOperand;
 };
 
 

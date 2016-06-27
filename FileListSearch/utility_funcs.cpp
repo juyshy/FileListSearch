@@ -63,4 +63,10 @@ bool fexists(string filenameToCheck)
   return static_cast<bool>(ifile);
 }
 
+int metricPrefix2Integer(char prefix){
+  string metricPrefixMap = "kmgt";
+  std::size_t metricPrefixMapLoc = metricPrefixMap.find(prefix);
+  return pow(10, ++metricPrefixMapLoc * 3);
+
+}
 

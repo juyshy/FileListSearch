@@ -45,4 +45,6 @@ string  get_match(std::string const &s, std::regex const &r);
 int replace(std::string& str, const std::string& from, const std::string& to);
 bool fexists(string filenameToCheck);
 
+int metricPrefix2Integer(char prefix);
+
 #endif UTILITY_FUNCS_H_

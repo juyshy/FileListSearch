@@ -20,6 +20,7 @@
 #include <boost/timer/timer.hpp>
 #include <string>
 #include <sstream> 
+#include <cmath>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -249,7 +250,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.monthYear = vm["monthyear"].as<std::string>();
   searchOptions.sizeFilter = vm["size"].as<std::string>();
  
-  std::regex  sizereg1("^[<>]\\d+[MmKkGgTt]?(\\s*[<>]\\d+[MmKkGgTt]?)?$");
+  std::regex  sizereg1("^[<>]\\d+[MmKkGgTt]?(\\s*[<>]\\d+[MmKkGgTt]?)?\\s*$");
 
   if (searchOptions.sizeFilter != "" && !std::regex_match(searchOptions.sizeFilter, sizereg1)) {
     std::cout << "\n\nAttention!!!\n\nSizeFilter option needs to be in this format: < or > number and optional metric prefix (k,M,G or T)" << std::endl;
@@ -257,6 +258,45 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     std::cout << "Or for a range like this example: -z\">100k <20M\""  << std::endl;
     searchOptions.success = false;
     return false;
+  }
+
+  if (searchOptions.sizeFilter != "") {
+
+    std::regex greaterSmallerReg1("^([><]\\d+[kmgtKMGT]?)");
+    string greaterSmaller1 = get_match(searchOptions.sizeFilter, greaterSmallerReg1);
+
+    std::regex greaterSmallerReg2("^[><]\\d+[kmgtKMGT]?\\s*([><]\\d+[kmgtKMGT]?)");
+    string greaterSmaller2 = get_match(searchOptions.sizeFilter, greaterSmallerReg2);
+
+    std::regex numvalueReg("(\\d+)");
+    std::regex metricPrfixReg("([kmgtKMGT]?)$");
+
+    string numValueStr1 = get_match(greaterSmaller1, numvalueReg);
+    int sizeValue1 = boost::lexical_cast<int>(numValueStr1);
+    string metricPrefix1 = get_match(greaterSmaller1, metricPrfixReg);
+    metricPrefix1 = tolower(metricPrefix1[0]);
+    int metricMult1 = metricPrefix2Integer(metricPrefix1[0]);
+
+    int sizeValue2;
+    int metricMult2;
+    if (greaterSmaller2 != "") {
+      string numValueStr2 = get_match(greaterSmaller2, numvalueReg);
+      sizeValue2 = boost::lexical_cast<int>(numValueStr2);
+      string metricPrefix2 = get_match(greaterSmaller2, metricPrfixReg);
+      metricPrefix2 = tolower(metricPrefix2[0]);
+      metricMult2 = metricPrefix2Integer(metricPrefix2[0]);
+    }
+
+    if (greaterSmaller1[0] == '>'){
+      searchOptions.sizeOperand.greaterThan = metricMult1 * sizeValue1;
+      if (greaterSmaller2 != "" && greaterSmaller2[0] == '<')
+        searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
+    }
+    else {
+      searchOptions.sizeOperand.smallerThan = metricMult1 * sizeValue1;
+      if (greaterSmaller2 != "" && greaterSmaller2[0] == '>')
+        searchOptions.sizeOperand.greaterThan = metricMult2 * sizeValue2;
+    }
   }
 
   std::regex  datereg1("^\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d$");
