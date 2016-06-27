@@ -19,8 +19,8 @@ class SearchOptions;
 
 bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofstream &resuts_file) {
 
-  const char   rivinvaihto = '\n';
-  const char * rivinvaihtoChar = &rivinvaihto;
+  const char   newLine = '\n';
+  const char * newLineChar = &newLine;
   const char * linestartPoint;
   const char * lineEndPoint;
   const char * dirStartPoint;
@@ -160,12 +160,12 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
         //if ()
         // locate search result line start and end
         linestartPoint = lineEndPoint = f + (f2 - beginning2); // flip to search from original in case of caseinsensitive search
-        while ((linestartPoint - beginning) > 0 && memcmp(rivinvaihtoChar, linestartPoint, 1) != 0)
+        while ((linestartPoint - beginning) > 0 && memcmp(newLineChar, linestartPoint, 1) != 0)
         {
           --linestartPoint;
         }
         ++linestartPoint; // step forward to drop "\n"
-        while ((end - lineEndPoint) > 0 && memcmp(rivinvaihtoChar, lineEndPoint, 1) != 0)
+        while ((end - lineEndPoint) > 0 && memcmp(newLineChar, lineEndPoint, 1) != 0)
         {
           ++lineEndPoint;
         }
@@ -224,7 +224,7 @@ bool searchByName(string fileListFilename, SearchOptions searchOptions,std::ofst
             --dirStartPoint;
           }
           dirEndPoint = dirStartPoint;
-          while ((end - dirEndPoint) > 0 && memcmp(rivinvaihtoChar, dirEndPoint, 1) != 0)
+          while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
           {
             ++dirEndPoint;
           }
