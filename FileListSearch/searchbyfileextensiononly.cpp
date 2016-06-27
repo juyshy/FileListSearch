@@ -171,14 +171,14 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   t.start();
 
   while (f2 && f2 != end) {
-    if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
+    if (f2 = static_cast<const char*>(memchr(f2, 'x', end - f2)))
     { 
       f2++;
       hitcount++;
     }
   }
 
-  cout << "Benchmark: Bare looping count lines: " << endl;
+  cout << "Benchmark: Bare looping count char 'x': " << endl;
   cout << "linecount: " << hitcount << /*searchResults.size() <<*/ endl;
 
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
