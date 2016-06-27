@@ -15,3 +15,4 @@ Snapshot*.xml
 *.stackdump
 Release/
 *.vcxproj.user
+*.html

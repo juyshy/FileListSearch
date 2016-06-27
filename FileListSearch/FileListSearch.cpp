@@ -188,7 +188,7 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     "results output file name (auto means automatically generated file name with format: results_for_searchTerm_searchterm.txt )")
     ("year,y", opt::value<std::string>()->default_value(""), "filter by year: yyyy")
     ("monthyear,m", opt::value<std::string>()->default_value(""), "filter by monthyear with format mm.yyyy")
-    ("date,d", opt::value<std::string>()->default_value(""), "filter by monthyear with format dd.mm.yyyy")
+    ("date,d", opt::value<std::string>()->default_value(""), "filter by date with format dd.mm.yyyy")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), 
     "searchtype (filename, by_directory_name or cdtree)\n \

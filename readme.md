@@ -37,15 +37,18 @@ Usage: FileListSearch options
 
 --search and --listingfiles options required
 
-*  -s [ --search ] arg                   search string
-*  -l [ --listingfiles ] arg             file listings
-*  -c [ --casesensitive ] arg (=0)       casesensitive search true/false
-*  -f [ --filetype ] arg (=file)         file type to search (file, directory or
+* -s [ --search ] arg                   search string
+* -l [ --listingfiles ] arg             file listings
+* -c [ --casesensitive ] arg (=0)       casesensitive search true/false
+* -f [ --filetype ] arg (=file)         file type to search (file, directory or
                                         both)
 * -r [ --resultfile ] arg (=auto)       results output file name (auto means
                                         automatically generated file name with
                                         format: results_for_searchTerm_searchte
                                         rm.txt )
+* -y [ --year ] arg                     filter by year: yyyy
+* -m [ --monthyear ] arg                filter by monthyear with format mm.yyyy
+* -d [ --date ] arg                     filter by date with format dd.mm.yyyy
 * -u [ --fullpath ] arg (=0)            fullpath included in results
 * -b [ --searchby ] arg (=filename)     searchtype (filename, by_directory_name
                                         or cdtree)
@@ -63,10 +66,10 @@ Usage: FileListSearch options
                                         result file name
 * -o [ --overwrite ] arg (=0)           overwrite results file by default in
                                         case it exists
-* -d [ --cdtreefilenameflag ] arg (=cdtree)
+* -t [ --cdtreefilenameflag ] arg (=cdtree)
                                         if this string found in the file name
                                         switch to cdtree search function
-*  --help                                produce help message
+* --help                                produce help message
 
 Compilation:
 --------
