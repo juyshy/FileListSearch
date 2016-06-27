@@ -174,15 +174,16 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
     if (f2 = static_cast<const char*>(memchr(f2, '\n', end - f2)))
     { 
 
-      string lineString(previousLinePtr, f2 - previousLinePtr-1);
-
+      //string lineString(previousLinePtr, f2 - previousLinePtr-1);
+     
+      char * line = new char[f2 - previousLinePtr + 1]();
       f2++;
       hitcount++;
       previousLinePtr = f2;
     }
   }
 
-  cout << "Benchmark: picking lines: " << endl;
+  cout << "Benchmark: picking lines to char: " << endl;
   cout << "linecount: " << hitcount << /*searchResults.size() <<*/ endl;
 
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
