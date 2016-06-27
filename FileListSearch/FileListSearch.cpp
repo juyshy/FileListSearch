@@ -249,13 +249,33 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
  
 
   std::regex  datereg1("^\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d$");
-  if (searchOptions.monthYear != "" && !std::regex_match(searchOptions.date, datereg1)) {
-    std::cout << "date option needs to be in this format: dd.mm.yyyy" << std::endl;
+
+    if (searchOptions.date != "" && !std::regex_match(searchOptions.date, datereg1)) {
+    std::cout << "\n\nAttention!!!\n\nDate option needs to be in this format: dd.mm.yyyy" << std::endl;
+    std::cout << "Please try again like this example: -d17.08.2014" << std::endl;
     searchOptions.success = false;
     return false;
   }
 
-  searchOptions.searchby = vm["searchby"].as<std::string>();
+    std::regex  monthYearreg1("^\\d\\d\\.\\d\\d\\d\\d$");
+
+    if (searchOptions.monthYear != "" && !std::regex_match(searchOptions.monthYear, monthYearreg1)) {
+      std::cout << "\n\nAttention!!!\n\nMonthYear filter option needs to be in this format: mm.yyyy" << std::endl;
+      std::cout << "Please try again like this example: -m08.2014" << std::endl;
+      searchOptions.success = false;
+      return false;
+    }
+
+    std::regex  yearreg1("^\\d\\d\\d\\d$");
+
+    if (searchOptions.year != "" && !std::regex_match(searchOptions.year, yearreg1)) {
+      std::cout << "\n\nAttention!!!\n\nYear filter option needs to be in this format: yyyy" << std::endl;
+      std::cout << "Please try again like this example: -y2014" << std::endl;
+      searchOptions.success = false;
+      return false;
+    }
+
+    searchOptions.searchby = vm["searchby"].as<std::string>();
   searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();
 
   // extracting search results file file name from command line options
