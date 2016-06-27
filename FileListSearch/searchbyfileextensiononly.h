@@ -6,6 +6,10 @@
 #include <iostream>
 using std::string;
 
+
+bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file);
+
+
 bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file);
 
 
