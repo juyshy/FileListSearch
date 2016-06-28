@@ -237,7 +237,25 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
 
         if (sizeFilterCheck) {
           string resultString(linestartPoint, f2 - linestartPoint  );
-          resuts_file   << resultString << "\n";
+
+          // search  and fetch the containging directory name
+          dirStartPoint = linestartPoint;
+          while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+          {
+            --dirStartPoint;
+          }
+          dirEndPoint = dirStartPoint;
+          while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
+          {
+            ++dirEndPoint;
+          }
+          --dirEndPoint; //  step back to drop "\n"
+
+          // capture only the directory name
+          string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+
+
+          resuts_file << dirLineString << "; " << resultString << "\n";
           hitcount++;
         }
       }
