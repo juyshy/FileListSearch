@@ -39,7 +39,11 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   string yearFilterStr = searchOptions.year;
   string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
   string  sizeFilterStr = searchOptions.sizeFilter;
+
+  bool timerProfiling = true;
+
   boost::timer::auto_cpu_timer t;
+  
   boost::iostreams::mapped_file mmap;
 
   try {
@@ -80,9 +84,14 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   reportDriveMetadata(  f,  resuts_file);
 
   resuts_file << ">>>>" << fileListFilename + "\n";
-  t.report();
-  t.stop();
-  t.start();
+
+  if (timerProfiling)
+  {
+    t.report();
+    t.stop();
+    t.start();
+  }
+
 
   // prepare search
  
@@ -173,9 +182,13 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   end = end - 1000 + lastlinePoint;
   linestartPoint = f2;
 
-  t.report();
-  t.stop();
-  t.start();
+  if (timerProfiling)
+  {
+    t.report();
+    t.stop();
+    t.start();
+  }
+
   std::cout << "searching... " << "\n";
 
   // loop through all potential search hits
@@ -308,8 +321,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   std::cout << "listing file: " << fileListFilename << " ";
   std::cout << "loaded " << "\n";
   std::cout << "size: " << mmap.size() << "\n";
-  // ulong stop1 = GetTickCount();
-  // cout << "mmap.open, mmap.const_data took " << stop1 - start1 << "mS" << endl;
+ 
   string listingbeginning(f, 200);
   std::regex serPattern("Serial Number is (.*?)\r?\n");
   string sernum = get_match(listingbeginning, serPattern);
@@ -322,9 +334,13 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   resuts_file << ">>>>" << fileListFilename + "\n";
   resuts_file << sernum + "\n";
   resuts_file << volName + "\n";
-  t.report();
-  t.stop();
-  t.start();
+  //if (timerProfiling)
+  //{
+  //  t.report();
+  //  t.stop();
+  //  t.start();
+  //}
+
 
   // search
   //std::vector<string> searchResults;
@@ -357,9 +373,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
 
   beginning2 = f2;
   end = f2 + size2;
-  //t.report();
-  //t.stop();
-  //t.start();
+ 
   std::cout << "searching... " << "\n";
   int hitcount = 0;
   // loop through all potential search hits

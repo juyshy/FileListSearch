@@ -57,9 +57,12 @@ bool search(string fileListFilename, string searchString) {
 
   // load file contnts to string
   string filecontents(beginning, size2);
-  //t.report();
-  //t.stop();
-  //t.start();
+  //if (timerProfiling)
+  //{
+  //  t.report();
+  //  t.stop();
+  //  t.start();
+  //}
 
   // search
   std::size_t found = filecontents.find(searchString);
