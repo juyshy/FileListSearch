@@ -43,6 +43,7 @@ public:
   string monthYear;
   string sizeFilter;
   SizeFilterElements sizeOperand;
+  bool exposeOptions;
 };
 
 

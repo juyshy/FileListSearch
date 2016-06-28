@@ -252,6 +252,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     ("timestamp,e", opt::value<bool>()->default_value(false), "include timestamp in auto generated result file name")
     ("overwrite,o", opt::value<bool>()->default_value(false), "overwrite results file by default in case it exists")
     ("cdtreefilenameflag,t", opt::value<std::string>()->default_value("cdtree"), "if this string found in the file name switch to cdtree search function")
+    ("exposeoptions,i", opt::value<bool>()->default_value(false), "list all option values to terminal")
+    
     ("help", "produce help message");
 
   opt::variables_map vm;
@@ -295,6 +297,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
   searchOptions.cdtreefilenameflag = vm["cdtreefilenameflag"].as<std::string>();
   searchOptions.fileExtension = vm["fileextension"].as<std::string>();
   searchOptions.fileExtensionCheckCaseSensitive = vm["fileextensioncase"].as<bool>();
+  searchOptions.exposeOptions = vm["exposeoptions"].as<bool>();
+  
   searchOptions.year = vm["year"].as<std::string>();
   searchOptions.date = vm["date"].as<std::string>();
   searchOptions.monthYear = vm["monthyear"].as<std::string>();
@@ -384,8 +388,8 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     return false;
   }
   searchOptions.success = true;
-  bool fullexposureOfSearchOptions = true;
-  if (fullexposureOfSearchOptions)
+  //bool fullexposureOfSearchOptions = true;
+  if (searchOptions.exposeOptions)
   {
 
 
