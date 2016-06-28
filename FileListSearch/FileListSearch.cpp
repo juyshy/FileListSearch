@@ -201,15 +201,20 @@ void getSizeOperands(SearchOptions & searchOptions){
 
   if (greaterSmaller1[0] == '>' || greaterSmaller1[0] == 'g'){
     searchOptions.sizeOperand.greaterThan = metricMult1 * sizeValue1;
-    if (greaterSmaller2 != "" && ( greaterSmaller2[0] == '<' && greaterSmaller2[0] == 's'))
-      searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
+    searchOptions.sizeOperand.greaterThanActive = true;
+    if (greaterSmaller2 != "" && (greaterSmaller2[0] == '<' && greaterSmaller2[0] == 's')){
+    searchOptions.sizeOperand.smallerThan = metricMult2 * sizeValue2;
+    searchOptions.sizeOperand.smallerThanActive = true;
+    }
   }
   else {
     searchOptions.sizeOperand.smallerThan = metricMult1 * sizeValue1;
+    searchOptions.sizeOperand.smallerThanActive = true;
     bool greater = greaterSmaller2[0] == 'g';
     bool greater1 = greaterSmaller2[0] == '>';
     if (greaterSmaller2 != "" && (greater1 || greater))
       searchOptions.sizeOperand.greaterThan = metricMult2 * sizeValue2;
+      searchOptions.sizeOperand.greaterThanActive = true;
   }
 }
 

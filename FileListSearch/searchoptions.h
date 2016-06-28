@@ -4,14 +4,18 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <string>
+#include <climits>
+
 using std::string;
 
 namespace opt = boost::program_options;
 
 
 struct SizeFilterElements{
-  int greaterThan = -1;
-  int smallerThan = -1;
+  unsigned long long greaterThan = 0;
+  unsigned long long smallerThan = LLONG_MAX;
+  bool greaterThanActive = false;
+  bool smallerThanActive = false;
 };
 
 class SearchOptions

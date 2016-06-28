@@ -147,7 +147,7 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
 
 
-  bool sizeFilterActive = searchOptions.sizeOperand.greaterThan != -1 || searchOptions.sizeOperand.smallerThan != -1;
+  bool sizeFilterActive = searchOptions.sizeOperand.greaterThanActive || searchOptions.sizeOperand.smallerThanActive;
 
   char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
   memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
@@ -197,14 +197,13 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
       bool  filter;
       // filter out directories 
       lineEndPoint = f2;
-      long long size;
+      unsigned long long size;
       bool sizeFilterCheck = false;
       filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
         // filter out lines containing "<DIR>"
         && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
         && memcmp("\r\n", linestartPoint , 2) != 0
-       // && memcmp("     Total Files Listed:", linestartPoint, 24) != 0
-        
+
         ;
       if (sizeFilterActive  && linecount > 5 && filter) {
         const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
@@ -218,12 +217,12 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
           ++sizeEndPoint;
         }
         string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-        if (sizeString != "File(s)" /*&& sizeString !=  "Dir(s)"*/) {
+        if (sizeString != "File(s)" ) {
           size = boost::lexical_cast<long long>(sizeString);
 
-          sizeFilterCheck = (searchOptions.sizeOperand.greaterThan == -1
+          sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive 
             || searchOptions.sizeOperand.greaterThan < size )
-            && (searchOptions.sizeOperand.smallerThan == -1
+            && (!searchOptions.sizeOperand.smallerThanActive
             || searchOptions.sizeOperand.smallerThan > size);
 
         }
@@ -393,7 +392,7 @@ bool searchByFileExtensionOnly(string fileListFilename, SearchOptions searchOpti
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
   
   
-  bool sizeFilterActive = searchOptions.sizeOperand.greaterThan != -1 || searchOptions.sizeOperand.smallerThan != -1;
+  bool sizeFilterActive = searchOptions.sizeOperand.greaterThanActive  || searchOptions.sizeOperand.smallerThanActive;
   
   char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
   memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
