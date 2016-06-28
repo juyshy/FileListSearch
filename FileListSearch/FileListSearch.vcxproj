@@ -82,6 +82,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="search_constants.h" />
     <ClInclude Include="searchbyfileextensiononly.h" />
     <ClInclude Include="searchbyname.h" />
     <ClInclude Include="searchfilesbyfoldername.h" />

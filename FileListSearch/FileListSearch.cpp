@@ -399,7 +399,7 @@ int main(int argc, char *argv[])
   if (!checkExistingFile(searchOptions.resultsFilename, searchOptions.overwrite))
     return 1;
 
-  std::cout << "writing results to " << searchOptions.resultsFilename << "\n";
+  std::cout << " \n";
   resuts_file.open(searchOptions.resultsFilename);
   resuts_file << "searchString: " << searchOptions.searchString << "\n";
   for (string fileListFilename : searchOptions.listFiles) {

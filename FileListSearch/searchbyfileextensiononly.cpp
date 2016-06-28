@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "searchbyfileextensiononly.h"
-
+#include "search_constants.h"
 #include "utility_funcs.h"
 
 #include <boost/timer/timer.hpp>
@@ -23,7 +23,7 @@ void reportDriveMetadata(const char * f, std::ofstream & resuts_file){
   std::cout << "volume letter: " << volLetter << "\n";
   std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
   string volName = get_match(listingbeginning, volnamePattern);
-  std::cout << "volume name: " << volName << "\n";
+  std::cout << "volume name: " << volName << "\n\n";
 
   resuts_file << sernum + "\n";
   resuts_file << volName + "\n";
@@ -31,23 +31,10 @@ void reportDriveMetadata(const char * f, std::ofstream & resuts_file){
 
 bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
 
-  const char   newLine = '\n';
-  const char * newLineChar = &newLine;
-  const char * linestartPoint;
-  const char * lineEndPoint;
-  const char * dirStartPoint;
-  const char * dirEndPoint;
-  char dirnamestr[] = " Directory of ";
-  const size_t compsize = sizeof(dirnamestr) - 1;
-  char dirStr[] = "<DIR>";
-  const size_t compsize2 = sizeof(dirStr) - 1;
-
   string searchString = searchOptions.searchString;
   bool casesensitive = searchOptions.casesensitive || searchOptions.fileExtensionCheckCaseSensitive;
   string filetype = searchOptions.filetype;
   bool fullpath = searchOptions.fullpath;
-
-
   string  dateFilterStr = searchOptions.date;
   string yearFilterStr = searchOptions.year;
   string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
@@ -64,14 +51,17 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
     std::cerr << "exception caught: " << e.what() << '\n';
     return 1;
   }
-  cout << "searchString " << searchString << endl;
+
+  cout << "\nPreparing search.."   << endl;
+  cout << "Search by file size only.."   << endl;
+  //cout << "Search string: " << searchString << endl;
 
   if (filetype == "both")
   {
-    cout << "searching for both files and directories " << filetype << endl;
+    cout << "Searching for both files and directories " << filetype << endl;
   }
   else
-    cout << "searching for file type: " << filetype << endl;
+    cout << "Searching for file type: " << filetype << endl;
 
   const char * f = mmap.const_data();
   const char * beginning = f;
@@ -84,9 +74,9 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
     return false;
   }
 
-  std::cout << "listing file: " << fileListFilename << " ";
-  std::cout << "loaded " << "\n";
-  std::cout << "size: " << mmap.size() << "\n";
+  std::cout << "\nListing file: " << fileListFilename << " ";
+  std::cout << "Loaded " << "\n";
+  std::cout << "Size: " << mmap.size() << "\n";
   reportDriveMetadata(  f,  resuts_file);
 
   resuts_file << ">>>>" << fileListFilename + "\n";
@@ -101,7 +91,8 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
   memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
   const char * f2;
-  //bool casesensitive = false;
+
+
   if (!casesensitive) { // not casesensitive make a lower copy
 
     std::cout << "making lowercase copy for caseinsenstive search: " << "\n";
@@ -126,9 +117,9 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   beginning2 = f2;
   end = f2 + size2;
 
-  std::cout << "searching... " << "\n";
+  
   int hitcount = 0;
-  // loop through all potential search hits
+
 
   string fileExtension = searchOptions.fileExtension;
 
@@ -150,7 +141,6 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   std::locale loc;
   searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
 
-
   bool sizeFilterActive = searchOptions.sizeOperand.greaterThanActive || searchOptions.sizeOperand.smallerThanActive;
 
   char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
@@ -163,19 +153,13 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   memcpy(monthYearFilter, monthYearFilterStr.c_str(), monthYearFilterStr.size() + 1);
 
   // if empty no filtering
-
   bool dateFilterActive = dateFilterStr.size() > 0;
   // if empty no filtering and if dateFilterActive allready true override monthYearFilterActive
   bool monthYearFilterActive = monthYearFilterStr.size() > 0 && !dateFilterActive;
   bool yearFilterActive = yearFilterStr.size() > 0 && (!monthYearFilterActive && !dateFilterActive);
 
-
-  t.report();
-  t.stop();
-  t.start();
   int linecount = 0;
 
- 
   //strip non file info from start and finish
   // search for first date in list to skip header lines
   string first1000chars(f2, 1000);
@@ -183,13 +167,18 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
   string firstDate = get_match(first1000chars, firstDateReg);
   size_t firstlinePoint = first1000chars.find(firstDate);
   f2 += firstlinePoint;
-
   // search for "Total Files Listed:" in the end trim search range
   string last1000chars(end-1000, 1000);
   size_t lastlinePoint = last1000chars.rfind("     Total Files Listed:");
   end = end - 1000 + lastlinePoint;
-
   linestartPoint = f2;
+
+  t.report();
+  t.stop();
+  t.start();
+  std::cout << "searching... " << "\n";
+
+  // loop through all potential search hits
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
     { 
@@ -247,11 +236,11 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
     }
   }
 
-  cout << "Benchmark: filtering with size: " << endl;
-  cout << "number of results: " << hitcount << /*searchResults.size() <<*/ endl;
+  //cout << "Benchmark: filtering with size: " << endl;
+  cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
 
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
-
+  std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
   if (hitcount == 0)
     resuts_file << "NOTHING FOUND " << "\n";
   return true;
