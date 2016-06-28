@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream> 
 #include <regex>
+#include <map>
 using std::cout;
 using std::endl;
 class SearchOptions;
@@ -194,6 +195,8 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
   std::vector<string>::iterator it;
   std::cout << "searching... " << "\n";
 
+  std::map<string, int> dupCount;
+  int dups = 0;
   // loop through all potential search hits
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
@@ -216,71 +219,30 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
         ;
 
 
-      if (/*sizeFilterActive  &&*/ linecount > 5 && filter && linecount < 10000) {
+      if (/*sizeFilterActive  &&*/ linecount > 5 && filter /*&& linecount < 150000*/) {
 
         string resultString(linestartPoint, f2 - linestartPoint);
         
         size_t  numfilesrowpos = resultString.find("File(s)");
         if (numfilesrowpos == std::string::npos)
         {
-          it = find(resultRows.begin(), resultRows.end(), resultString);
-          if (it == resultRows.end()){
-
-            resultRows.push_back(resultString);
-            resuts_file <<    resultString << "\n";
+          //it = find(resultRows.begin(), resultRows.end(), resultString);
+          if (dupCount.count(resultString) > 0){
+            dupCount.insert(make_pair(resultString, dupCount[resultString] + 1));
+            //duplicates.push_back(resultString);
+            resuts_file << "DUP: " << resultString << "\n";
+            dups++;
+   
           }
           else
           {
-
-            duplicates.push_back(resultString);
-            resuts_file << "DUP: " << resultString << "\n";
+            hitcount++;
+            dupCount.insert(make_pair(resultString, 1));
+            //resultRows.push_back(resultString);
+            resuts_file << resultString << "\n";
           }
         }
-        //const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
-        //while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
-        //{
-        //  ++sizeStartPoint;
-        //}
-        //const char * sizeEndPoint = sizeStartPoint;
-        //while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
-        //{
-        //  ++sizeEndPoint;
-        //}
-        //string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-        //if (sizeString != "File(s)") {
-        //  size = boost::lexical_cast<long long>(sizeString);
-
-        //  sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
-        //    || searchOptions.sizeOperand.greaterThan < size)
-        //    && (!searchOptions.sizeOperand.smallerThanActive
-        //    || searchOptions.sizeOperand.smallerThan > size);
-
-        //}
-        //else
-        //  sizeFilterCheck = false;
-
-
-        //if (sizeFilterCheck) {
-        //  string resultString(linestartPoint, f2 - linestartPoint);
-
-        //  // search  and fetch the containging directory name
-        //  dirStartPoint = linestartPoint;
-        //  while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
-        //  {
-        //    --dirStartPoint;
-        //  }
-        //  dirEndPoint = dirStartPoint;
-        //  while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
-        //  {
-        //    ++dirEndPoint;
-        //  }
-        //  --dirEndPoint; //  step back to drop "\n"
-
-        //  // capture only the directory name
-        //  string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
-        //  resuts_file << dirLineString << "; " << resultString << "\n";
-        //  hitcount++;
-        //}
+      
       }
 
       f2 += 2;
@@ -292,8 +254,9 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
 
   //cout << "Benchmark: filtering with size: " << endl;
   //cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
-  cout << "Number of rows: " <<   resultRows.size() << endl;
-  cout << "Number of dups: " <<   duplicates.size() << endl;
+  cout << "Number of rows: " << linecount << endl;
+    cout << "Unique files : " << hitcount << endl;
+  cout << "Number of dups: " << dups << endl;
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
   std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
   if (hitcount == 0)
