@@ -170,6 +170,21 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   t.stop();
   t.start();
   int linecount = 0;
+
+ 
+  //strip non file info from start and finish
+  // search for first date in list to skip header lines
+  string first1000chars(f2, 1000);
+  std::regex firstDateReg("\n(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)"); // internationalization needed!
+  string firstDate = get_match(first1000chars, firstDateReg);
+  size_t firstlinePoint = first1000chars.find(firstDate);
+  f2 += firstlinePoint;
+
+  // search for "Total Files Listed:" in the end trim search range
+  string last1000chars(end-1000, 1000);
+  size_t lastlinePoint = last1000chars.rfind("     Total Files Listed:");
+  end = end - 1000 + lastlinePoint;
+
   linestartPoint = f2;
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
@@ -188,7 +203,7 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
         // filter out lines containing "<DIR>"
         && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
         && memcmp("\r\n", linestartPoint , 2) != 0
-        && memcmp("     Total Files Listed:", linestartPoint, 24) != 0
+       // && memcmp("     Total Files Listed:", linestartPoint, 24) != 0
         
         ;
       if (sizeFilterActive  && linecount > 5 && filter) {
@@ -203,7 +218,7 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
           ++sizeEndPoint;
         }
         string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-        if (sizeString != "File(s)" && sizeString !=  "Dir(s)") {
+        if (sizeString != "File(s)" /*&& sizeString !=  "Dir(s)"*/) {
           size = boost::lexical_cast<long long>(sizeString);
 
           sizeFilterCheck = (searchOptions.sizeOperand.greaterThan == -1
