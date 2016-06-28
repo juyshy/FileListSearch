@@ -170,15 +170,15 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   t.stop();
   t.start();
   int linecount = 0;
-  const char * previousLinePtr = linestartPoint = f2;
+  linestartPoint = f2;
   while (f2 && f2 != end) {
     if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
     { 
       ++linecount;
       //
-      //int charsize = f2 - previousLinePtr + 1;
+      //int charsize = f2 - linestartPoint + 1;
       //char * line = new char[charsize]();
-      //strncpy(line, previousLinePtr, charsize);
+      //strncpy(line, linestartPoint, charsize);
       bool  filter;
       // filter out directories 
       lineEndPoint = f2;
@@ -216,7 +216,7 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
           sizeFilterCheck = false;
 
         if (sizeFilterCheck) {
-          string resultString(previousLinePtr, f2 - previousLinePtr  );
+          string resultString(linestartPoint, f2 - linestartPoint  );
           resuts_file   << resultString << "\n";
           hitcount++;
         }
@@ -224,7 +224,7 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
 
       f2+=2;
       
-      linestartPoint = previousLinePtr = f2;
+      linestartPoint  = f2;
       
     }
   }
