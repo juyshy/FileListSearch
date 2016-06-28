@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
   resuts_file << "searchString: " << searchOptions.searchString << "\n";
   for (string fileListFilename : searchOptions.listFiles) {
     //cout << fileListFilename << endl;
-    searchBySizeOnly(fileListFilename, searchOptions, resuts_file);
+    findDups(fileListFilename, searchOptions, resuts_file);
    
   /*  std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
     if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")

@@ -29,6 +29,253 @@ void reportDriveMetadata(const char * f, std::ofstream & resuts_file){
   resuts_file << volName + "\n";
 }
 
+bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
+
+  string searchString = searchOptions.searchString;
+  bool casesensitive = searchOptions.casesensitive || searchOptions.fileExtensionCheckCaseSensitive;
+  string filetype = searchOptions.filetype;
+  bool fullpath = searchOptions.fullpath;
+  string  dateFilterStr = searchOptions.date;
+  string yearFilterStr = searchOptions.year;
+  string  monthYearFilterStr = searchOptions.monthYear;// "07.2011";
+  string  sizeFilterStr = searchOptions.sizeFilter;
+
+  bool timerProfiling = true;
+
+  boost::timer::auto_cpu_timer t;
+
+  boost::iostreams::mapped_file mmap;
+
+  try {
+    // Load file
+    mmap.open(fileListFilename, boost::iostreams::mapped_file::readonly);
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "exception caught: " << e.what() << '\n';
+    return 1;
+  }
+
+  cout << "\nPreparing search.." << endl;
+  cout << "Search by file size only.." << endl;
+  //cout << "Search string: " << searchString << endl;
+
+  if (filetype == "both")
+  {
+    cout << "Searching for both files and directories " << filetype << endl;
+  }
+  else
+    cout << "Searching for file type: " << filetype << endl;
+
+  const char * f = mmap.const_data();
+  const char * beginning = f;
+  const char * beginning2; // lowercase duplicate beginning pointer
+  auto end = f + mmap.size();
+  auto size2 = end - f;
+
+  if (!f) {
+    printf("Not enough memory for f. It's the end I'm afraid.\n");
+    return false;
+  }
+
+  std::cout << "\nListing file: " << fileListFilename << " ";
+  std::cout << "Loaded " << "\n";
+  std::cout << "Size: " << mmap.size() << "\n";
+  reportDriveMetadata(f, resuts_file);
+
+  resuts_file << ">>>>" << fileListFilename + "\n";
+
+  if (timerProfiling)
+  {
+    t.report();
+    t.stop();
+    t.start();
+  }
+
+
+  // prepare search
+
+  auto searchChar1 = searchString[0];
+  int searchStringLen = searchString.size();
+  char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
+  memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
+  const char * f2;
+
+
+  if (!casesensitive) { // not casesensitive make a lower copy
+
+    std::cout << "making lowercase copy for caseinsenstive search: " << "\n";
+    char * lowrcasecopy = new char[size2 + 1]();
+    int i = 0;
+    char c;
+    while (f[i])
+    {
+      c = f[i];
+      lowrcasecopy[i] = tolower(c);
+      i++;
+    }
+    f2 = &lowrcasecopy[0]; // using lowercase copy for search
+    end = f2 + size2;
+  }
+  else
+  {
+    f2 = f; // using the original
+
+  }
+
+  beginning2 = f2;
+  end = f2 + size2;
+
+
+  int hitcount = 0;
+
+
+  string fileExtension = searchOptions.fileExtension;
+
+  bool filterFileExt = false;
+  if (fileExtension.size() > 0 && fileExtension != "*")
+    filterFileExt = true;
+
+  if (fileExtension.at(0) != '.')
+    fileExtension = "." + fileExtension;
+
+  // hard coded new line appended: file extension should always be at the end of file list line
+  fileExtension += "\r\n";
+  int fileExtLen = fileExtension.size();
+  char * fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
+  memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
+  // do the file extension filtering
+  bool fileExtensionCheck = false; // actual test variable initial value
+
+  std::locale loc;
+  searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
+
+  bool sizeFilterActive = searchOptions.sizeOperand.greaterThanActive || searchOptions.sizeOperand.smallerThanActive;
+
+  char * dateFilter = reinterpret_cast<char *>(alloca(dateFilterStr.size() + 1));
+  memcpy(dateFilter, dateFilterStr.c_str(), dateFilterStr.size() + 1);
+
+  char * yearFilter = reinterpret_cast<char *>(alloca(yearFilterStr.size() + 1));
+  memcpy(yearFilter, yearFilterStr.c_str(), yearFilterStr.size() + 1);
+
+  char * monthYearFilter = reinterpret_cast<char *>(alloca(monthYearFilterStr.size() + 1));
+  memcpy(monthYearFilter, monthYearFilterStr.c_str(), monthYearFilterStr.size() + 1);
+
+  // if empty no filtering
+  bool dateFilterActive = dateFilterStr.size() > 0;
+  // if empty no filtering and if dateFilterActive allready true override monthYearFilterActive
+  bool monthYearFilterActive = monthYearFilterStr.size() > 0 && !dateFilterActive;
+  bool yearFilterActive = yearFilterStr.size() > 0 && (!monthYearFilterActive && !dateFilterActive);
+
+  int linecount = 0;
+
+  //strip non file info from start and finish
+  // search for first date in list to skip header lines
+  string first1000chars(f2, 1000);
+  std::regex firstDateReg("\n(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)"); // internationalization needed!
+  string firstDate = get_match(first1000chars, firstDateReg);
+  size_t firstlinePoint = first1000chars.find(firstDate);
+  f2 += firstlinePoint;
+  // search for "Total Files Listed:" in the end trim search range
+  string last1000chars(end - 1000, 1000);
+  size_t lastlinePoint = last1000chars.rfind("     Total Files Listed:");
+  end = end - 1000 + lastlinePoint;
+  linestartPoint = f2;
+
+  if (timerProfiling)
+  {
+    t.report();
+    t.stop();
+    t.start();
+  }
+
+  std::cout << "searching... " << "\n";
+
+  // loop through all potential search hits
+  while (f2 && f2 != end) {
+    if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
+    {
+      ++linecount;
+      //
+      //int charsize = f2 - linestartPoint + 1;
+      //char * line = new char[charsize]();
+      //strncpy(line, linestartPoint, charsize);
+      bool  filter;
+      // filter out directories 
+      lineEndPoint = f2;
+      unsigned long long size;
+      bool sizeFilterCheck = false;
+      filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
+        // filter out lines containing "<DIR>"
+        && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
+        && memcmp("\r\n", linestartPoint, 2) != 0
+
+        ;
+      if (sizeFilterActive  && linecount > 5 && filter) {
+        const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
+        while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
+        {
+          ++sizeStartPoint;
+        }
+        const char * sizeEndPoint = sizeStartPoint;
+        while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
+        {
+          ++sizeEndPoint;
+        }
+        string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
+        if (sizeString != "File(s)") {
+          size = boost::lexical_cast<long long>(sizeString);
+
+          sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
+            || searchOptions.sizeOperand.greaterThan < size)
+            && (!searchOptions.sizeOperand.smallerThanActive
+            || searchOptions.sizeOperand.smallerThan > size);
+
+        }
+        else
+          sizeFilterCheck = false;
+
+        if (sizeFilterCheck) {
+          string resultString(linestartPoint, f2 - linestartPoint);
+
+          // search  and fetch the containging directory name
+          dirStartPoint = linestartPoint;
+          while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+          {
+            --dirStartPoint;
+          }
+          dirEndPoint = dirStartPoint;
+          while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
+          {
+            ++dirEndPoint;
+          }
+          --dirEndPoint; //  step back to drop "\n"
+
+          // capture only the directory name
+          string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+          resuts_file << dirLineString << "; " << resultString << "\n";
+          hitcount++;
+        }
+      }
+
+      f2 += 2;
+
+      linestartPoint = f2;
+
+    }
+  }
+
+  //cout << "Benchmark: filtering with size: " << endl;
+  cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
+
+  //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
+  std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
+  if (hitcount == 0)
+    resuts_file << "NOTHING FOUND " << "\n";
+  return true;
+}
+
+
 bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
 
   string searchString = searchOptions.searchString;
@@ -253,8 +500,6 @@ bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std:
 
           // capture only the directory name
           string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
-
-
           resuts_file << dirLineString << "; " << resultString << "\n";
           hitcount++;
         }

@@ -7,7 +7,7 @@
 using std::string;
 
 void reportDriveMetadata(const char * f, std::ofstream & resuts_file);
-
+bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file);
 bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file);
 
 
