@@ -169,23 +169,68 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   t.report();
   t.stop();
   t.start();
-  const char * previousLinePtr = f2;
+  int linecount = 0;
+  const char * previousLinePtr = linestartPoint = f2;
   while (f2 && f2 != end) {
-    if (f2 = static_cast<const char*>(memchr(f2, '\n', end - f2)))
+    if (f2 = static_cast<const char*>(memchr(f2, '\r', end - f2)))
     { 
+      ++linecount;
+      //
+      //int charsize = f2 - previousLinePtr + 1;
+      //char * line = new char[charsize]();
+      //strncpy(line, previousLinePtr, charsize);
+      bool  filter;
+      // filter out directories 
+      lineEndPoint = f2;
+      long long size;
+      bool sizeFilterCheck = false;
+      filter = memcmp(dirnamestr, linestartPoint, compsize) != 0
+        // filter out lines containing "<DIR>"
+        && memcmp(dirStr, linestartPoint + 21, compsize2) != 0
+        && memcmp("\r\n", linestartPoint , 2) != 0
+        && memcmp("     Total Files Listed:", linestartPoint, 24) != 0
+        
+        ;
+      if (sizeFilterActive  && linecount > 5 && filter) {
+        const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
+        while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
+        {
+          ++sizeStartPoint;
+        }
+        const char * sizeEndPoint = sizeStartPoint;
+        while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
+        {
+          ++sizeEndPoint;
+        }
+        string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
+        if (sizeString != "File(s)" && sizeString !=  "Dir(s)") {
+          size = boost::lexical_cast<long long>(sizeString);
 
-      //string lineString(previousLinePtr, f2 - previousLinePtr-1);
-      int charsize = f2 - previousLinePtr + 1;
-      char * line = new char[charsize]();
-      strncpy(line, previousLinePtr, charsize);
-      f2++;
-      hitcount++;
-      previousLinePtr = f2;
+          sizeFilterCheck = (searchOptions.sizeOperand.greaterThan == -1
+            || searchOptions.sizeOperand.greaterThan < size )
+            && (searchOptions.sizeOperand.smallerThan == -1
+            || searchOptions.sizeOperand.smallerThan > size);
+
+        }
+        else
+          sizeFilterCheck = false;
+
+        if (sizeFilterCheck) {
+          string resultString(previousLinePtr, f2 - previousLinePtr  );
+          resuts_file   << resultString << "\n";
+          hitcount++;
+        }
+      }
+
+      f2+=2;
+      
+      linestartPoint = previousLinePtr = f2;
+      
     }
   }
 
-  cout << "Benchmark: picking lines to char: " << endl;
-  cout << "linecount: " << hitcount << /*searchResults.size() <<*/ endl;
+  cout << "Benchmark: filtering with size: " << endl;
+  cout << "number of results: " << hitcount << /*searchResults.size() <<*/ endl;
 
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
 
