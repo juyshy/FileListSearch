@@ -14,7 +14,22 @@ using std::endl;
 class SearchOptions;
 
 
-bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
+void reportDriveMetadata(const char * f, std::ofstream & resuts_file){
+  string listingbeginning(f, 200);
+  std::regex serPattern("Serial Number is (.*?)\r?\n");
+  string sernum = get_match(listingbeginning, serPattern);
+  std::regex volPattern("Volume in drive ([A-Z]) is\\s+.*?\r?\n");
+  string volLetter = get_match(listingbeginning, volPattern);
+  std::cout << "volume letter: " << volLetter << "\n";
+  std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
+  string volName = get_match(listingbeginning, volnamePattern);
+  std::cout << "volume name: " << volName << "\n";
+
+  resuts_file << sernum + "\n";
+  resuts_file << volName + "\n";
+}
+
+bool searchBySizeOnly(string fileListFilename, SearchOptions searchOptions, std::ofstream &resuts_file) {
 
   const char   newLine = '\n';
   const char * newLineChar = &newLine;
@@ -39,18 +54,18 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   string  sizeFilterStr = searchOptions.sizeFilter;
   boost::timer::auto_cpu_timer t;
   boost::iostreams::mapped_file mmap;
-  try {
 
+  try {
     // Load file
     mmap.open(fileListFilename, boost::iostreams::mapped_file::readonly);
   }
   catch (std::exception& e)
   {
-
     std::cerr << "exception caught: " << e.what() << '\n';
     return 1;
   }
   cout << "searchString " << searchString << endl;
+
   if (filetype == "both")
   {
     cout << "searching for both files and directories " << filetype << endl;
@@ -64,34 +79,23 @@ bool searchLoopTesting(string fileListFilename, SearchOptions searchOptions, std
   auto end = f + mmap.size();
   auto size2 = end - f;
 
-
   if (!f) {
     printf("Not enough memory for f. It's the end I'm afraid.\n");
     return false;
   }
+
   std::cout << "listing file: " << fileListFilename << " ";
   std::cout << "loaded " << "\n";
   std::cout << "size: " << mmap.size() << "\n";
-  // ulong stop1 = GetTickCount();
-  // cout << "mmap.open, mmap.const_data took " << stop1 - start1 << "mS" << endl;
-  string listingbeginning(f, 200);
-  std::regex serPattern("Serial Number is (.*?)\r?\n");
-  string sernum = get_match(listingbeginning, serPattern);
-  std::regex volPattern("Volume in drive ([A-Z]) is\\s+.*?\r?\n");
-  string volLetter = get_match(listingbeginning, volPattern);
-  std::cout << "volume letter: " << volLetter << "\n";
-  std::regex volnamePattern("Volume in drive [A-Z] is\\s+(.*?)\r?\n");
-  string volName = get_match(listingbeginning, volnamePattern);
-  std::cout << "volume name: " << volName << "\n";
+  reportDriveMetadata(  f,  resuts_file);
+
   resuts_file << ">>>>" << fileListFilename + "\n";
-  resuts_file << sernum + "\n";
-  resuts_file << volName + "\n";
   t.report();
   t.stop();
   t.start();
 
-  // search
-  //std::vector<string> searchResults;
+  // prepare search
+ 
   auto searchChar1 = searchString[0];
   int searchStringLen = searchString.size();
   char * searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
