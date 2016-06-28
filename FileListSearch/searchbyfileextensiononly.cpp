@@ -189,6 +189,9 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
     t.start();
   }
 
+  std::vector<string> resultRows;
+  std::vector<string> duplicates;
+  std::vector<string>::iterator it;
   std::cout << "searching... " << "\n";
 
   // loop through all potential search hits
@@ -211,51 +214,73 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
         && memcmp("\r\n", linestartPoint, 2) != 0
 
         ;
-      if (sizeFilterActive  && linecount > 5 && filter) {
-        const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
-        while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
+
+
+      if (/*sizeFilterActive  &&*/ linecount > 5 && filter && linecount < 10000) {
+
+        string resultString(linestartPoint, f2 - linestartPoint);
+        
+        size_t  numfilesrowpos = resultString.find("File(s)");
+        if (numfilesrowpos == std::string::npos)
         {
-          ++sizeStartPoint;
-        }
-        const char * sizeEndPoint = sizeStartPoint;
-        while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
-        {
-          ++sizeEndPoint;
-        }
-        string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-        if (sizeString != "File(s)") {
-          size = boost::lexical_cast<long long>(sizeString);
+          it = find(resultRows.begin(), resultRows.end(), resultString);
+          if (it == resultRows.end()){
 
-          sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
-            || searchOptions.sizeOperand.greaterThan < size)
-            && (!searchOptions.sizeOperand.smallerThanActive
-            || searchOptions.sizeOperand.smallerThan > size);
-
-        }
-        else
-          sizeFilterCheck = false;
-
-        if (sizeFilterCheck) {
-          string resultString(linestartPoint, f2 - linestartPoint);
-
-          // search  and fetch the containging directory name
-          dirStartPoint = linestartPoint;
-          while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
-          {
-            --dirStartPoint;
+            resultRows.push_back(resultString);
+            resuts_file <<    resultString << "\n";
           }
-          dirEndPoint = dirStartPoint;
-          while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
+          else
           {
-            ++dirEndPoint;
-          }
-          --dirEndPoint; //  step back to drop "\n"
 
-          // capture only the directory name
-          string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
-          resuts_file << dirLineString << "; " << resultString << "\n";
-          hitcount++;
+            duplicates.push_back(resultString);
+            resuts_file << "DUP: " << resultString << "\n";
+          }
         }
+        //const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
+        //while ((lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
+        //{
+        //  ++sizeStartPoint;
+        //}
+        //const char * sizeEndPoint = sizeStartPoint;
+        //while ((lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
+        //{
+        //  ++sizeEndPoint;
+        //}
+        //string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
+        //if (sizeString != "File(s)") {
+        //  size = boost::lexical_cast<long long>(sizeString);
+
+        //  sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
+        //    || searchOptions.sizeOperand.greaterThan < size)
+        //    && (!searchOptions.sizeOperand.smallerThanActive
+        //    || searchOptions.sizeOperand.smallerThan > size);
+
+        //}
+        //else
+        //  sizeFilterCheck = false;
+
+
+        //if (sizeFilterCheck) {
+        //  string resultString(linestartPoint, f2 - linestartPoint);
+
+        //  // search  and fetch the containging directory name
+        //  dirStartPoint = linestartPoint;
+        //  while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+        //  {
+        //    --dirStartPoint;
+        //  }
+        //  dirEndPoint = dirStartPoint;
+        //  while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
+        //  {
+        //    ++dirEndPoint;
+        //  }
+        //  --dirEndPoint; //  step back to drop "\n"
+
+        //  // capture only the directory name
+        //  string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+        //  resuts_file << dirLineString << "; " << resultString << "\n";
+        //  hitcount++;
+        //}
       }
 
       f2 += 2;
@@ -266,8 +291,9 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
   }
 
   //cout << "Benchmark: filtering with size: " << endl;
-  cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
-
+  //cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
+  cout << "Number of rows: " <<   resultRows.size() << endl;
+  cout << "Number of dups: " <<   duplicates.size() << endl;
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
   std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
   if (hitcount == 0)
