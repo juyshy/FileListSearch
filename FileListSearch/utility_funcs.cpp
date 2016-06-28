@@ -26,7 +26,7 @@ string  get_match(std::string const &s, std::regex const &r) {
     return matchStr;
   }
   else {
-    std::cerr << s << "did not match\n";
+    //std::cerr << s << "did not match\n";
     return "";
   }
 }

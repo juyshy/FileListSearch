@@ -384,6 +384,35 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     return false;
   }
   searchOptions.success = true;
+  bool fullexposureOfSearchOptions = true;
+  if (fullexposureOfSearchOptions)
+  {
+
+
+    cout << "searchString: " << searchOptions.searchString << endl;
+    cout << "casesensitive: " << searchOptions.casesensitive << endl;
+    cout << "overwrite: " << searchOptions.overwrite << endl;
+    cout << "fullpath: " << searchOptions.fullpath << endl;
+    cout << "filetype: " << searchOptions.filetype << endl;
+    cout << "cdtreefilenameflag: " << searchOptions.cdtreefilenameflag << endl;
+    cout << "fileExtension : " << searchOptions.fileExtension << endl;
+    cout << "fileExtensionCheckCaseSensitive : " << searchOptions.fileExtensionCheckCaseSensitive << endl;
+    cout << "year : " << searchOptions.year << endl;
+    cout << "date : " << searchOptions.date << endl;
+    cout << "monthYear : " << searchOptions.monthYear << endl;
+    cout << "sizeFilter: " << searchOptions.sizeFilter << endl;
+    cout << "searchby: " << searchOptions.searchby << endl;
+    cout << "timestampInAutoName: " << searchOptions.timestampInAutoName << endl;
+    cout << "resultsFilename: " << searchOptions.resultsFilename << endl;
+    //cout << "listFiles: " <<  searchOptions.listFiles << endl;
+    //cout << "sizeOperand.greaterThanActive: " << searchOptions.sizeOperand.greaterThanActive << endl;
+    //cout << "sizeOperand.smallerThanActive: " << searchOptions.sizeOperand.smallerThanActive << endl;
+    if (searchOptions.sizeOperand.greaterThanActive)  
+      cout << "size filter greaterThan: " << searchOptions.sizeOperand.greaterThan << endl;
+    if (searchOptions.sizeOperand.smallerThanActive)
+      cout << "size filter smallerThan: " << searchOptions.sizeOperand.smallerThan << endl;
+
+  }
   return true;
 }
 
