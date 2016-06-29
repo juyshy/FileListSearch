@@ -11,6 +11,7 @@
 #include <string>
 #include <iostream> 
 #include <regex>
+#include <tuple>
 #include <map>
 using std::cout;
 using std::endl;
@@ -33,6 +34,23 @@ unsigned long long getSize(const char *   linestartPoint, const char * lineEndPo
   
   size = boost::lexical_cast<long long>(sizeString);
   return size;
+}
+
+std::tuple<double, char> scaleWithMetricPrefix(long long numvalue){
+ 
+  char incPrefixes[] = { 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
+  //char decPrefixes[] = { 'm', '\u03bc', 'n', 'p', 'f', 'a', 'z', 'y' };
+
+ 
+  int degree = (int)floor(log10(numvalue) / 3);
+  double scaled = numvalue * pow(1000, -degree);
+
+  char prefix = incPrefixes[degree - 1];
+  //case -1: prefix = decPrefixes[-degree - 1]; break;
+
+  //string scaledStr = boost::lexical_cast<long long>(scaled);
+  std::tuple<double, char> scaledWithMetricPefix{ scaled, prefix };
+  return  scaledWithMetricPefix;
 }
 
 void reportDriveMetadata(const char * f, std::ofstream & resuts_file){
@@ -321,25 +339,14 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
     cout << "Unique files : " << hitcount << endl;
   cout << "Number of dups: " << dups << endl;
 
-  long double prefixMultiple;
-  char incPrefixes[] = { 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
-  char decPrefixes[] = { 'm', '\u03bc', 'n', 'p', 'f', 'a', 'z', 'y' };
-
-  floor(4.5);
-  int degree = (int)floor(log10(dupfileSizesTotal) / 3);
-  double scaled = dupfileSizesTotal * pow(1000, -degree);
-
-  char prefix;
  
-   prefix = incPrefixes[degree - 1];  
-  //case -1: prefix = decPrefixes[-degree - 1]; break;
- 
-   string scaledStr = boost::lexical_cast<string>(scaled);
-   scaledStr + prefix;
 
    cout.precision(3);
-   cout << "Duplicate file sizes total: " ;
-   cout << scaled << prefix <<  " (" << dupfileSizesTotal << ")  " <<  endl;
+   
+
+   std::tuple<double, char>  dupfileSizesTotalTuple = scaleWithMetricPrefix(dupfileSizesTotal);
+   cout << "Duplicate file sizes total: ";
+   cout << std::get<0>(dupfileSizesTotalTuple) << std::get<1>(dupfileSizesTotalTuple) << " (" << dupfileSizesTotal << ")  " << endl;
   
   //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
   std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
