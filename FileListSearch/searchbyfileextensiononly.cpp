@@ -224,7 +224,7 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
       // identify duplicate directories
 
 
-      if (/*sizeFilterActive  &&*/ linecount > 5 && filter /*&& linecount < 150000*/) {
+      if (/*sizeFilterActive  && linecount > 5 */   filter /*&& linecount < 150000*/) {
 
         string resultString(linestartPoint, f2 - linestartPoint);
         
