@@ -66,7 +66,7 @@ bool fexists(string filenameToCheck)
 int metricPrefix2Integer(char prefix){
   string metricPrefixMap = "kmgt";
   std::size_t metricPrefixMapLoc = metricPrefixMap.find(prefix);
-  return pow(10, ++metricPrefixMapLoc * 3);
+  return boost::lexical_cast<int>( pow(10, ++metricPrefixMapLoc * 3));
 
 }
 
