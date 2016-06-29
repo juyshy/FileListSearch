@@ -243,9 +243,10 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
      You can also make a range like this -z\">100k <2M\" (use allways double quotes!)")
     ("fullpath,u", opt::value<bool>()->default_value(false), "fullpath included in results")
     ("searchby,b", opt::value<std::string>()->default_value("filename"), 
-    "searchtype (filename, by_directory_name or cdtree)\n \
+    "searchtype (filename, by_directory_name, duplicate or cdtree)\n \
     filename = regular file name search,\n \
     by_directory_name = list all files in directories that match search term,\n \
+    duplicate = search for file duplicates (date, size, filename match)\n \
     cdtree = search cdtree format csv file")
     ("fileextension,x", opt::value<std::string>()->default_value("*"), "file extension filter for search default to any")
     ("fileextensioncase,n", opt::value<bool>()->default_value(false), "file extension filter casesensitive defaults to false (= case insensitive)")     
@@ -346,6 +347,10 @@ bool getParameters(int argc, char *argv[], SearchOptions &searchOptions){
     }
 
     searchOptions.searchby = vm["searchby"].as<std::string>();
+
+    if (searchOptions.searchby == "dup")
+      searchOptions.searchby = "duplicate";
+
   searchOptions.timestampInAutoName = vm["timestamp"].as<bool>();
 
   // extracting search results file file name from command line options
@@ -440,11 +445,15 @@ int main(int argc, char *argv[])
   resuts_file << "searchString: " << searchOptions.searchString << "\n";
   for (string fileListFilename : searchOptions.listFiles) {
     //cout << fileListFilename << endl;
-    findDups(fileListFilename, searchOptions, resuts_file);
    
-  /*  std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
+   
+    std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
     if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
       searchFromCdTree(fileListFilename, searchOptions, resuts_file);
+    else if (searchOptions.searchby == "duplicate"){
+      searchOptions.casesensitive = true; // force case sensitive (no need for case insensitive)
+      findDups(fileListFilename, searchOptions, resuts_file);
+    }
     else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
       searchByFileExtensionOnly(fileListFilename, searchOptions, resuts_file);
 
@@ -452,12 +461,12 @@ int main(int argc, char *argv[])
       searchByName(fileListFilename, searchOptions, resuts_file);
     else if (searchOptions.searchby == "by_directory_name")
       searchFilesByFolderName(fileListFilename, searchOptions, resuts_file);
-  
+
     else {
       cout << "ERROR!! searchby search function option not valid! " << endl;
       cout << "search function needs to be one of the following: filename, by_directory_name or cdtree" << endl;
       std::cout << searchOptions.desc << "\n";
-    }*/
+    }
   }
 
   resuts_file.close();
