@@ -195,7 +195,8 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
   std::vector<string>::iterator it;
   std::cout << "searching... " << "\n";
 
-  std::map<string, int> dupCount;
+  //std::map<string, int> dupCount;
+  std::set<string> uniquerows;
   int dups = 0;
   // loop through all potential search hits
   while (f2 && f2 != end) {
@@ -218,6 +219,10 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
 
         ;
 
+      // duplicate search todo:
+      // include paths for all instances in search result
+      // identify duplicate directories
+
 
       if (/*sizeFilterActive  &&*/ linecount > 5 && filter /*&& linecount < 150000*/) {
 
@@ -227,19 +232,36 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
         if (numfilesrowpos == std::string::npos)
         {
           //it = find(resultRows.begin(), resultRows.end(), resultString);
-          if (dupCount.count(resultString) > 0){
-            dupCount.insert(make_pair(resultString, dupCount[resultString] + 1));
+          if (uniquerows.find(resultString) != uniquerows.end()){
             //duplicates.push_back(resultString);
-            resuts_file << "DUP: " << resultString << "\n";
+
+            // search  and fetch the containging directory name
+            dirStartPoint = linestartPoint;
+            while ((dirStartPoint - beginning) > 0 && memcmp(dirnamestr, dirStartPoint, compsize) != 0)
+            {
+              --dirStartPoint;
+            }
+            dirEndPoint = dirStartPoint;
+            while ((end - dirEndPoint) > 0 && memcmp(newLineChar, dirEndPoint, 1) != 0)
+            {
+              ++dirEndPoint;
+            }
+            --dirEndPoint; //  step back to drop "\n"
+
+            // capture only the directory name
+            string dirLineString(dirStartPoint + compsize, dirEndPoint - dirStartPoint - compsize);
+
+            resuts_file << "DUP: " << dirLineString << "; " << resultString << "\n";
             dups++;
    
           }
           else
           {
+            uniquerows.insert( resultString );
             hitcount++;
-            dupCount.insert(make_pair(resultString, 1));
+            //dupCount.insert(make_pair(resultString, 1));
             //resultRows.push_back(resultString);
-            resuts_file << resultString << "\n";
+            //resuts_file << resultString << "\n";
           }
         }
       
