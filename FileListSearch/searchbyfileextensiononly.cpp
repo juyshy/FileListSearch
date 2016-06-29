@@ -58,7 +58,7 @@ bool findDups(string fileListFilename, SearchOptions searchOptions, std::ofstrea
   }
 
   cout << "\nPreparing search.." << endl;
-  cout << "Search by file size only.." << endl;
+  cout << "Search for duplicates.." << endl;
   //cout << "Search string: " << searchString << endl;
 
   if (filetype == "both")
