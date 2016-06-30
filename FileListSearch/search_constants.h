@@ -1,4 +1,5 @@
 
+#pragma once
 
 const char   newLine = '\n';
 const char * newLineChar = &newLine;

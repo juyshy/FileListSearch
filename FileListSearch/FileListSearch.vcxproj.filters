@@ -27,16 +27,7 @@
     <ClInclude Include="utility_funcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="searchfromcdtree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="searchoptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="searchbyname.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="searchfilesbyfoldername.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="search_constants.h">
@@ -46,6 +37,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Search.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,15 +53,6 @@
     <ClCompile Include="utility_funcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="searchfromcdtree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="searchbyname.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="searchfilesbyfoldername.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="searchoptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,7 +60,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Search.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

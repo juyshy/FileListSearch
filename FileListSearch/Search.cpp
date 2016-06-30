@@ -1,3 +1,6 @@
+#pragma once
+
+
 #include "stdafx.h"
 #include "Search.h"
 #include "search_constants.h"
@@ -26,8 +29,8 @@ namespace file_list_search {
 
 
     for (string fileListFilename : searchOptions.listFiles) {
-    //  file_list_search::Storage * storage = new file_list_search::Storage(fileListFilename);
-    //  storages.push_back(storage);
+      file_list_search::Storage * storage = new file_list_search::Storage(fileListFilename);
+      storages.push_back(storage);
     }
 
     //searchOptions.initializeVariables();

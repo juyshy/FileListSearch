@@ -1,11 +1,11 @@
 
 #pragma once
-//#include "storage.h"
+#include "storage.h"
 #include "SearchResult.h"
 
 namespace file_list_search {
 
-  //using file_list_search::Storage;
+  using file_list_search::Storage;
 
   class Search
   {
@@ -20,7 +20,7 @@ namespace file_list_search {
     //bool Search::initilizeOptions();
     SearchOptions &searchOptions;
     SearchResult * searchResult;
-    ////std::vector<Storage *> storages;
+    std::vector<Storage *> storages;
   private:
     //void Search::execute(Storage * storage);
     std::vector<string> resultRows;
