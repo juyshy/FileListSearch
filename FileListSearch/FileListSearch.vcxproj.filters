@@ -39,13 +39,13 @@
     <ClInclude Include="searchfilesbyfoldername.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="searchbyfileextensiononly.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="search_constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SearchResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,14 +68,14 @@
     <ClCompile Include="searchfilesbyfoldername.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="searchbyfileextensiononly.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="searchoptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SearchResult.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Search.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

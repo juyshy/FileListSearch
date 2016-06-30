@@ -7,9 +7,9 @@
 #include "searchfromcdtree.h"
 #include "searchbyname.h"
 #include "searchfilesbyfoldername.h"
-#include "searchbyfileextensiononly.h"
+//#include "searchbyfileextensiononly.h"
 
-//#include "Search.h"
+#include "Search.h"
 //#include "Storage.h"
 #include "SearchResult.h"
 #include <boost/program_options.hpp>
@@ -46,9 +46,6 @@ namespace opt = boost::program_options;
 using std::endl;
 
 
-
-
-
 int main(int argc, char *argv[])
 {
   boost::timer::auto_cpu_timer t;
@@ -63,12 +60,12 @@ int main(int argc, char *argv[])
   //std::cout << " \n";
   //resuts_file << "searchString: " << searchOptions.searchString << "\n";
 
-  //file_list_search::SearchResult searchresult(resuts_file);
+ 
 
   ////std::vector<file_list_search::Storage *> storages;
 
-  //file_list_search::Search search = file_list_search::Search(searchOptions);
-  //
+  file_list_search::Search search = file_list_search::Search(searchOptions);
+  search.initializeSearch();  //
 
   ////search.searchOptions = searchOptions;
   //search.initializeSearch();
