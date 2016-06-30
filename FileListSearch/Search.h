@@ -11,16 +11,16 @@ namespace file_list_search {
   {
   public:
     //Search();
-    Search(SearchOptions &searchOptions, std::ofstream & re_file);
+    Search(SearchOptions &searchOptions, SearchResult  & searchRes, std::ofstream & re_file);
     ~Search();
 
     
-    bool Search::initializeSearch(SearchResult * searchResult);
+    bool Search::initializeSearch( );
     bool Search::prepare(Storage * storage);
     //bool Search::initilizeOptions();
     SearchOptions &searchOptions;
     std::ofstream & resuts_file;
-    SearchResult * searchResult;
+    SearchResult  & searchResult;
     std::vector<Storage *> storages;
   private:
     void Search::runSearch(Storage * storage);

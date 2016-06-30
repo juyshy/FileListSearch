@@ -16,7 +16,7 @@ namespace file_list_search {
     bool SearchResult::checkExistingFile();
     bool SearchResult::prepareResultsFile();
     void SearchResult::reportResults();
-
+    void SearchResult::finalize();
     SearchOptions searchOptions;
     std::ofstream resuts_file;
     std::string resultsFilename;

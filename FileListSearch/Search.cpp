@@ -11,7 +11,8 @@ using std::endl;
 namespace file_list_search {
 
   //Search::Search(){}
-  Search::Search(SearchOptions &so, std::ofstream & re_file) : searchOptions(so), resuts_file(re_file) {
+  Search::Search(SearchOptions &so, SearchResult  & searchRes, std::ofstream & re_file) : 
+    searchOptions(so), resuts_file(re_file), searchResult(searchRes){
    
   }
 
@@ -25,9 +26,9 @@ namespace file_list_search {
 
   //}
 
-  bool Search::initializeSearch(SearchResult * searchResult){
+  bool Search::initializeSearch(){
 
-    searchResult = searchResult;
+  
     for (string fileListFilename : searchOptions.listFiles) {
       file_list_search::Storage * storage = new file_list_search::Storage(fileListFilename);
       storages.push_back(storage);
@@ -182,10 +183,10 @@ namespace file_list_search {
       }
     }
 
-    searchResult->dupfileSizesTotal = dupfileSizesTotal;
-    searchResult->hitcount = hitcount;
-    searchResult->dups = dups;
-    //searchResult.linecount = storage->linecount; // todo aggregate
+    searchResult.dupfileSizesTotal = dupfileSizesTotal;
+    searchResult.hitcount = hitcount;
+    searchResult.dups = dups;
+    searchResult.linecount = storage->linecount; // todo aggregate
 
   }
 

@@ -87,4 +87,8 @@ namespace file_list_search {
     //  resuts_file << "NOTHING FOUND " << "\n";
  
   }
+
+  void SearchResult::finalize() {
+    resuts_file.close();
+  }
 }

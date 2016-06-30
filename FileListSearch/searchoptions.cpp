@@ -346,3 +346,4 @@ using std::endl;
     yearFilterActive = year.size() > 0 && (!monthYearFilterActive && !dateFilterActive);
 
   }
+

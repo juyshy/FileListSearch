@@ -31,7 +31,7 @@ namespace file_list_search {
   {
   }
 
-  unsigned long long getFileSize(const char *   linestartPoint, const char * lineEndPoint){
+  unsigned long long Storage::getFileSize(const char *   linestartPoint, const char * lineEndPoint){
 
     long long size;
     const char * sizeStartPoint = linestartPoint + 17; //offset after date & time
