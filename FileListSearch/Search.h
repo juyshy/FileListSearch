@@ -15,7 +15,7 @@ namespace file_list_search {
     ~Search();
 
     
-    bool Search::initializeSearch();
+    bool Search::initializeSearch(SearchResult * searchResult);
     bool Search::prepare(Storage * storage);
     //bool Search::initilizeOptions();
     SearchOptions &searchOptions;
@@ -23,7 +23,7 @@ namespace file_list_search {
     SearchResult * searchResult;
     std::vector<Storage *> storages;
   private:
-    //void Search::execute(Storage * storage);
+    void Search::runSearch(Storage * storage);
     std::vector<string> resultRows;
     std::vector<string> duplicates;
     std::vector<string>::iterator it;

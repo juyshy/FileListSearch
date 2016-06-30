@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   ////std::vector<file_list_search::Storage *> storages;
 
   file_list_search::Search search = file_list_search::Search(searchOptions, searchresult.resuts_file);
-  search.initializeSearch();  //
+  search.initializeSearch(&searchresult);  //
 
   ////search.searchOptions = searchOptions;
   //search.initializeSearch();
