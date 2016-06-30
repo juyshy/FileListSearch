@@ -82,6 +82,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SearchResult.h" />
     <ClInclude Include="search_constants.h" />
     <ClInclude Include="searchbyfileextensiononly.h" />
     <ClInclude Include="searchbyname.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="searchfilesbyfoldername.cpp" />
     <ClCompile Include="searchfromcdtree.cpp" />
     <ClCompile Include="searchoptions.cpp" />
+    <ClCompile Include="SearchResult.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

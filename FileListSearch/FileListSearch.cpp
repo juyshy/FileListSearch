@@ -11,7 +11,7 @@
 
 //#include "Search.h"
 //#include "Storage.h"
-//#include "SearchResult.h"
+#include "SearchResult.h"
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
@@ -48,39 +48,6 @@ using std::endl;
 
 
 
-bool checkExistingFile(std::string & resultsFilename, const bool overwrite) {
-
-  std::string resultsFilenameOriginal = resultsFilename;
-  int renameSuffix = 1;
-  while (fexists(resultsFilename) && !overwrite)
-  {
-    std::cout << "results file " << resultsFilename << " allready exists" << "\n";
-    std::cout << "overwrite, rename or cancel? (o,r,c)?" << "\n";
-    string mystr;
-
-    getline(cin, mystr);
-    if (mystr == "r")
-    {
-      string renameSuffixStr = boost::lexical_cast<string>(renameSuffix);
-      resultsFilename = resultsFilenameOriginal + renameSuffixStr;
-
-    }
-    else if (mystr == "c")
-    {
-      std::cout << "canceling.." << "\n";
-      return false;
-    }
-    else
-    {
-      std::cout << "over";
-      break;
-    }
-    renameSuffix++;
-
-  }
-  return true;
-}
-
 
 int main(int argc, char *argv[])
 {
@@ -89,16 +56,10 @@ int main(int argc, char *argv[])
   if (!searchOptions.getParameters(argc, argv))
     return 1;
 
-  //file_list_search::SearchResult searchresult(resuts_file);
+  file_list_search::SearchResult searchresult(searchOptions);
+  searchresult.prepareResultsFile();
 
-  //std::string fileListFilename; // = "E:/adm/hdlist/stuff/LACIESHARE_12012015-113107_30K_EKAARIVIA.txt"; 
-  //if (!checkExistingFile(searchOptions.resultsFilename, searchOptions.overwrite))
-  //  return 1;
-
-
-  std::ofstream resuts_file;
-  //resuts_file.open(searchOptions.resultsFilename);
-
+ 
   //std::cout << " \n";
   //resuts_file << "searchString: " << searchOptions.searchString << "\n";
 
@@ -140,7 +101,7 @@ int main(int argc, char *argv[])
     //}
   //}
 
-  resuts_file.close();
+  //resuts_file.close();
 
 
 }

@@ -45,6 +45,9 @@
     <ClInclude Include="search_constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SearchResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="searchoptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
