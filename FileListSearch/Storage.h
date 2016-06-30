@@ -10,6 +10,10 @@
 using std::string;
 
 
+
+
+
+
 namespace file_list_search {
 
   class Storage
@@ -28,12 +32,18 @@ namespace file_list_search {
     const char * beginning;
     const char * beginning2; // lowercase duplicate beginning pointer
     const char * end;
+ 
     int fileListSize2;
     const char * f2; // lowercase copy
     void Storage::makeLowerCaseCopy();
     void Storage::trimListSearchRange();
     int linecount = 0;
+    const char * linestartPoint;
+    const char * lineEndPoint;
+    const char * dirStartPoint;
+    const char * dirEndPoint;
   private:
+
     boost::iostreams::mapped_file mmap;
   };
 }

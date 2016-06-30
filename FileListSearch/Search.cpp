@@ -11,7 +11,7 @@ using std::endl;
 namespace file_list_search {
 
   //Search::Search(){}
-  Search::Search(SearchOptions &so) : searchOptions(so){
+  Search::Search(SearchOptions &so, std::ofstream & re_file) : searchOptions(so), resuts_file(re_file) {
    
   }
 
@@ -25,7 +25,7 @@ namespace file_list_search {
 
   //}
 
-  bool Search::initializeSearch( ){
+  bool Search::initializeSearch(){
 
 
     for (string fileListFilename : searchOptions.listFiles) {
@@ -33,58 +33,59 @@ namespace file_list_search {
       storages.push_back(storage);
     }
 
-    //searchOptions.initializeVariables();
-    //for (Storage * storage : storages){
-    //  prepare(storage);
-    //  execute(storage);
-    //}
+    searchOptions.initializeVariables();
+    for (Storage * storage : storages){
+      prepare(storage);
+      //execute(storage);
+    }
 
     return true;
   }
 
-  //bool Search::prepare(Storage * storage){
+  bool Search::prepare(Storage * storage){
 
-  //  bool timerProfiling = true;
+    bool timerProfiling = true;
 
-  //  boost::timer::auto_cpu_timer t;
-  //  storage->loadFileList();
-  //  cout << "\nPreparing search.." << endl;
-  //  cout << searchOptions.searchby << endl;
-  //  storage->reportDriveMetadata(storage->f, searchResult.resuts_file);
-  //  searchResult.resuts_file << ">>>>" << storage->fileListFileName + "\n";
+    boost::timer::auto_cpu_timer t;
+    storage->loadFileList();
+    cout << "\nPreparing search.." << endl;
+    cout << searchOptions.searchby << endl;
+    storage->reportDriveMetadata(storage->f, resuts_file);
+    resuts_file << ">>>>" << storage->fileListFileName + "\n";
 
-  //  if (timerProfiling)
-  //  {
-  //    t.report();
-  //    t.stop();
-  //    t.start();
-  //  }
+    if (timerProfiling)
+    {
+      t.report();
+      t.stop();
+      t.start();
+    }
 
-  //  if (searchOptions.filetype == "both")
-  //  {
-  //    cout << "Searching for both files and directories " << endl;
-  //  }
-  //  else
-  //    cout << "Searching for file type: " << searchOptions.filetype << endl;
-
-
-
-  //  if (!searchOptions.casesensitive) { // not casesensitive make a lower copy
-  //    storage->makeLowerCaseCopy();
-  //  }
-  //  else
-  //  {
-  //    storage->f2 = storage->f; // using the original
-
-  //  }
+    if (searchOptions.filetype == "both")
+    {
+      cout << "Searching for both files and directories " << endl;
+    }
+    else
+      cout << "Searching for file type: " << searchOptions.filetype << endl;
 
 
-  //  storage->beginning2 = storage->f2;
-  //  storage->end = storage->f2 + storage->fileListSize2;
 
-  //  storage->trimListSearchRange();
+    if (!searchOptions.casesensitive) { // not casesensitive make a lower copy
+      storage->makeLowerCaseCopy();
+    }
+    else
+    {
+      storage->f2 = storage->f; // using the original
 
-  //}
+    }
+
+
+    storage->beginning2 = storage->f2;
+    storage->end = storage->f2 + storage->fileListSize2;
+
+    storage->trimListSearchRange();
+
+    return true;
+  }
 
   //void Search::execute(Storage * storage) {
   //  while (storage->f2 && storage->f2 != storage->end) {

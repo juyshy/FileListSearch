@@ -1,12 +1,12 @@
 // FileListSearch.cpp : Defines the entry point for the console application.
 //
-
+#pragma once
 #include "stdafx.h"
 #include "utility_funcs.h"
 #include "searchoptions.h"
-#include "searchfromcdtree.h"
-#include "searchbyname.h"
-#include "searchfilesbyfoldername.h"
+//#include "searchfromcdtree.h"
+//#include "searchbyname.h"
+//#include "searchfilesbyfoldername.h"
 //#include "searchbyfileextensiononly.h"
 
 #include "Search.h"
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
   ////std::vector<file_list_search::Storage *> storages;
 
-  file_list_search::Search search = file_list_search::Search(searchOptions);
+  file_list_search::Search search = file_list_search::Search(searchOptions, searchresult.resuts_file);
   search.initializeSearch();  //
 
   ////search.searchOptions = searchOptions;
