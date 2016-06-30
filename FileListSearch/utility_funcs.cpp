@@ -70,3 +70,20 @@ int metricPrefix2Integer(char prefix){
 
 }
 
+std::tuple<double, char> scaleWithMetricPrefix(long long numvalue){
+
+  char incPrefixes[] = { 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
+  //char decPrefixes[] = { 'm', '\u03bc', 'n', 'p', 'f', 'a', 'z', 'y' };
+
+
+  int degree = (int)floor(log10(numvalue) / 3);
+  double scaled = numvalue * pow(1000, -degree);
+
+  char prefix = incPrefixes[degree - 1];
+  //case -1: prefix = decPrefixes[-degree - 1]; break;
+
+  //string scaledStr = boost::lexical_cast<long long>(scaled);
+  std::tuple<double, char> scaledWithMetricPefix{ scaled, prefix };
+  return  scaledWithMetricPefix;
+}
+

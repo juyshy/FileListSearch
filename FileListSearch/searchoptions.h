@@ -21,9 +21,12 @@ struct SizeFilterElements{
 class SearchOptions
 {
 public:
-  SearchOptions() {
-    opt::options_description desc("All options: (search and listingfiles required)");
-  }
+  SearchOptions();
+  ~SearchOptions();
+  void SearchOptions::getSizeOperands();
+  bool getParameters(int argc, char *argv[]);
+  void SearchOptions::checkWildCardInFileListings();
+
   bool success; // success for gathering options
   string searchString;
   bool casesensitive; // is searchh casesensitive
@@ -44,6 +47,31 @@ public:
   string sizeFilter;
   SizeFilterElements sizeOperand;
   bool exposeOptions;
+
+  void SearchOptions::initializeVariables();
+  bool sizeFilterActive;
+private:
+
+
+  int searchStringLen;
+  char * searchCharArray;
+  bool filterFileExt = false;
+  int fileExtLen ;
+  char * fileExt; 
+ 
+  bool fileExtensionCheck = false; // actual test variable initial value
+
+  std::locale loc;
+  char searchChar1 ; //  look initially for the first letter of the extension 
+  
+  char * dateFilter;
+  char * yearFilter;
+  char * monthYearFilter ;
+  bool dateFilterActive ;
+  bool monthYearFilterActive ;
+  bool yearFilterActive ;
+
+
 };
 
 

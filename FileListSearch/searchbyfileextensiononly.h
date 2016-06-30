@@ -7,7 +7,6 @@
 using std::string;
 
 
-std::tuple<double, char> scaleWithMetricPrefix(long long numvalue);
 
 unsigned long long getSize(const char *   linestartPoint, const char * lineEndPoint);
 

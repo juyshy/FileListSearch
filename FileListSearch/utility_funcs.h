@@ -46,5 +46,7 @@ int replace(std::string& str, const std::string& from, const std::string& to);
 bool fexists(string filenameToCheck);
 
 int metricPrefix2Integer(char prefix);
+std::tuple<double, char> scaleWithMetricPrefix(long long numvalue);
+
 
 #endif UTILITY_FUNCS_H_
