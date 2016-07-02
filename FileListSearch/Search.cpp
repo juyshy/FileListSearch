@@ -53,7 +53,7 @@ namespace file_list_search {
   bool Search::prepare(Storage * storage){
 
     bool timerProfiling = true;
-
+    cout << "\nLoading filelist.." << endl;
     boost::timer::auto_cpu_timer t;
     storage->loadFileList();
     cout << "\nPreparing search.." << endl;
