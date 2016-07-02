@@ -72,6 +72,7 @@ namespace file_list_search {
     //cout << "Benchmark: filtering with size: " << endl;
     //cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
     cout << "Number of rows: " << linecount << endl;
+    cout << "Number of files: " << filecount << endl;
     cout << "Unique files : " << hitcount << endl;
     cout << "Number of dups: " << dups << endl;
 

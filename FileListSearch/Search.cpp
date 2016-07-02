@@ -45,7 +45,8 @@ namespace file_list_search {
     searchResult.dupfileSizesTotal = dupfileSizesTotal;
     searchResult.hitcount = hitcount;
     searchResult.dups = dups;
-    searchResult.linecount = totalLinecount; //  
+    searchResult.linecount = totalLinecount; 
+    searchResult.filecount = totalFilecount; //  
     return true;
   }
 

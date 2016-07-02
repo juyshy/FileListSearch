@@ -21,6 +21,7 @@ namespace file_list_search {
     std::ofstream resuts_file;
     std::string resultsFilename;
     int linecount  ;
+    int filecount;
     int  hitcount  ;
     int dups  ;
 
