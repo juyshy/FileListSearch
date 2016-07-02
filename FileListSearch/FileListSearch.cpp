@@ -56,27 +56,14 @@ int main(int argc, char *argv[])
   file_list_search::SearchResult searchresult(searchOptions);
   searchresult.prepareResultsFile();
 
- 
-  //std::cout << " \n";
-  //resuts_file << "searchString: " << searchOptions.searchString << "\n";
-
- 
-
-  ////std::vector<file_list_search::Storage *> storages;
-
   file_list_search::Search search = file_list_search::Search(searchOptions, searchresult, searchresult.resuts_file);
   search.initializeSearch();  //
   searchresult.reportResults();
   searchresult.finalize();
 
-  ////search.searchOptions = searchOptions;
-  //search.initializeSearch();
-
   ///////////////////////////////
 
-  //for (string fileListFilename : searchOptions.listFiles) {
-  //  //cout << fileListFilename << endl;
-  // 
+
    
     //std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
     //if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")

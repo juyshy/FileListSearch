@@ -38,6 +38,7 @@ namespace file_list_search {
     void Storage::makeLowerCaseCopy();
     void Storage::trimListSearchRange();
     int linecount = 0;
+    int filecount = 0;
     const char * linestartPoint;
     const char * lineEndPoint;
     const char * dirStartPoint;

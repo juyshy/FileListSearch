@@ -34,12 +34,13 @@ namespace file_list_search {
       storages.push_back(storage);
     }
 
-    int totalLinecount = 0;
+
     searchOptions.initializeVariables();
     for (Storage * storage : storages){
       prepare(storage);
       runSearch(storage);
       totalLinecount += storage->linecount;
+      totalFilecount += storage->filecount;
     }
     searchResult.dupfileSizesTotal = dupfileSizesTotal;
     searchResult.hitcount = hitcount;
@@ -98,28 +99,28 @@ namespace file_list_search {
       if (storage->f2 = static_cast<const char*>(memchr(storage->f2, '\r', storage->end - storage->f2)))
       {
         storage->linecount++;
-        //
-        //int charsize = f2 - linestartPoint + 1;
-        //char * line = new char[charsize]();
-        //strncpy(line, linestartPoint, charsize);
-        bool  filter;
-        // filter out directories 
-        storage->lineEndPoint = storage->f2;
 
+        bool  filter;
+        storage->lineEndPoint = storage->f2;
         bool sizeFilterCheck = false;
+        bool filterEmptylines = memcmp(" ", storage->linestartPoint, 1) != 0;
+        // filter out directories 
         filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0
           // filter out lines containing "<DIR>"
           && memcmp(dirStr, storage->linestartPoint + 21, compsize2) != 0
           && memcmp("\r\n", storage->linestartPoint, 2) != 0
+          && filterEmptylines;
 
           ;
-
+        
         // duplicate search todo:
         // include paths for all instances in search result
         // identify duplicate directories
 
 
         if (/*sizeFilterActive  && linecount > 5 */   filter /*&& linecount < 150000*/) {
+
+          ++(storage->filecount);
 
           string resultString(storage->linestartPoint, storage->f2 - storage->linestartPoint);
 

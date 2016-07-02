@@ -31,6 +31,8 @@ namespace file_list_search {
     int dups = 0;
     unsigned long long dupfileSizesTotal = 0;
     int hitcount = 0;
+    int totalLinecount = 0;
+    int totalFilecount = 0;
   };
 
 }
