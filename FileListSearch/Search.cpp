@@ -34,12 +34,17 @@ namespace file_list_search {
       storages.push_back(storage);
     }
 
+    int totalLinecount = 0;
     searchOptions.initializeVariables();
     for (Storage * storage : storages){
       prepare(storage);
       runSearch(storage);
+      totalLinecount += storage->linecount;
     }
-
+    searchResult.dupfileSizesTotal = dupfileSizesTotal;
+    searchResult.hitcount = hitcount;
+    searchResult.dups = dups;
+    searchResult.linecount = totalLinecount; //  
     return true;
   }
 
@@ -183,10 +188,7 @@ namespace file_list_search {
       }
     }
 
-    searchResult.dupfileSizesTotal = dupfileSizesTotal;
-    searchResult.hitcount = hitcount;
-    searchResult.dups = dups;
-    searchResult.linecount = storage->linecount; // todo aggregate
+
 
   }
 
