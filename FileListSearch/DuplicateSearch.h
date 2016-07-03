@@ -11,7 +11,7 @@ namespace file_list_search {
   class DuplicateSearch : public Search
   {
   public:
-    DuplicateSearch(SearchOptions &searchOptions, SearchResult  & searchRes, std::ofstream & re_file);
+    DuplicateSearch(SearchOptions &searchOptions, SearchResult  & searchRes );
     ~DuplicateSearch();
 
     void runSearch(Storage * storage);

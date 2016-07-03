@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
   file_list_search::SearchResult searchresult(searchOptions);
   searchresult.prepareResultsFile();
 
-  file_list_search::DuplicateSearch search = file_list_search::DuplicateSearch(searchOptions, searchresult, searchresult.resuts_file);
+
+  file_list_search::DuplicateSearch search = file_list_search::DuplicateSearch(searchOptions, searchresult);
   search.initializeSearch();  //
   searchresult.reportResults();
   searchresult.finalize();
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
 
 
    
-    //std::size_t cdtreeFlagPos  = fileListFilename.find(searchOptions.cdtreefilenameflag);
+  //std::size_t cdtreeFlagPos = searchOptions. .find(searchOptions.cdtreefilenameflag);
     //if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
     //  searchFromCdTree(fileListFilename, searchOptions, resuts_file);
     //else if (searchOptions.searchby == "duplicate"){

@@ -11,8 +11,8 @@ using std::endl;
 namespace file_list_search {
 
   //Search::Search(){}
-  Search::Search(SearchOptions &so, SearchResult  & searchRes, std::ofstream & re_file) : 
-    searchOptions(so), resuts_file(re_file), searchResult(searchRes){
+  Search::Search(SearchOptions &so, SearchResult  & searchRes ) : 
+    searchOptions(so),   searchResult(searchRes){
    
   }
 
@@ -58,8 +58,8 @@ namespace file_list_search {
     storage->loadFileList();
     cout << "\nPreparing search.." << endl;
     cout << searchOptions.searchby << endl;
-    storage->reportDriveMetadata(storage->f, resuts_file);
-    resuts_file << ">>>>" << storage->fileListFileName + "\n";
+    storage->reportDriveMetadata(storage->f, searchResult.resuts_file);
+    searchResult.resuts_file << ">>>>" << storage->fileListFileName + "\n";
 
     if (timerProfiling)
     {
@@ -167,7 +167,7 @@ namespace file_list_search {
                 // capture only the directory name
                 string dirLineString(storage->dirStartPoint + compsize, storage->dirEndPoint - storage->dirStartPoint - compsize);
 
-                resuts_file << "DUP: " << dirLineString << "; " << resultString << "\n";
+                searchResult.resuts_file << "DUP: " << dirLineString << "; " << resultString << "\n";
                 dups++;
               }
             }
@@ -177,7 +177,7 @@ namespace file_list_search {
               hitcount++;
               //dupCount.insert(make_pair(resultString, 1));
               //resultRows.push_back(resultString);
-              //resuts_file << resultString << "\n";
+              //searchResult.resuts_file << resultString << "\n";
             }
           }
 

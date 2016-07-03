@@ -7,9 +7,8 @@
 
 namespace file_list_search {
 
-  DuplicateSearch::DuplicateSearch(SearchOptions &so, SearchResult  & searchRes, 
-    std::ofstream & re_file) :
-    Search(so, searchRes, re_file) {
+  DuplicateSearch::DuplicateSearch(SearchOptions &so, SearchResult  & searchRes) :
+    Search(so, searchRes) {
 
   }
 
@@ -91,7 +90,7 @@ namespace file_list_search {
                 // capture only the directory name
                 string dirLineString(storage->dirStartPoint + compsize, storage->dirEndPoint - storage->dirStartPoint - compsize);
 
-                resuts_file << "DUP: " << dirLineString << "; " << resultString << "\n";
+                searchResult.resuts_file << "DUP: " << dirLineString << "; " << resultString << "\n";
                 dups++;
               }
             }
@@ -101,7 +100,7 @@ namespace file_list_search {
               hitcount++;
               //dupCount.insert(make_pair(resultString, 1));
               //resultRows.push_back(resultString);
-              //resuts_file << resultString << "\n";
+              //searchResult.resuts_file << resultString << "\n";
             }
           }
 
