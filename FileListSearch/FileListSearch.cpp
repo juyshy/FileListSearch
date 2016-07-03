@@ -12,6 +12,7 @@
 #include "Search.h"
 //#include "Storage.h"
 #include "SearchResult.h"
+#include "DuplicateSearch.h"
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
   file_list_search::SearchResult searchresult(searchOptions);
   searchresult.prepareResultsFile();
 
-  file_list_search::Search search = file_list_search::Search(searchOptions, searchresult, searchresult.resuts_file);
+  file_list_search::DuplicateSearch search = file_list_search::DuplicateSearch(searchOptions, searchresult, searchresult.resuts_file);
   search.initializeSearch();  //
   searchresult.reportResults();
   searchresult.finalize();
