@@ -308,7 +308,7 @@ using std::endl;
 
     searchChar1 = searchString[0];
     searchStringLen = searchString.size();
-    searchCharArray = reinterpret_cast<char *>(alloca(searchString.size() + 1));
+    searchCharArray = reinterpret_cast<char *>(malloc(searchString.size() + 1));
     memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
 
     filterFileExt = false;
@@ -321,7 +321,7 @@ using std::endl;
     // hard coded new line appended: file extension should always be at the end of file list line
     fileExtension += "\r\n";
     fileExtLen = fileExtension.size();
-    fileExt = reinterpret_cast<char *>(alloca(fileExtension.size() + 1));
+    fileExt = reinterpret_cast<char *>(malloc(fileExtension.size() + 1));
     memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
     // do the file extension filtering
     fileExtensionCheck = false; // actual test variable initial value
@@ -330,13 +330,13 @@ using std::endl;
 
     sizeFilterActive = sizeOperand.greaterThanActive || sizeOperand.smallerThanActive;
 
-    dateFilter = reinterpret_cast<char *>(alloca(date.size() + 1));
+    dateFilter = reinterpret_cast<char *>(malloc(date.size() + 1));
     memcpy(dateFilter, date.c_str(), date.size() + 1);
 
-    yearFilter = reinterpret_cast<char *>(alloca(year.size() + 1));
+    yearFilter = reinterpret_cast<char *>(malloc(year.size() + 1));
     memcpy(yearFilter, year.c_str(), year.size() + 1);
 
-    monthYearFilter = reinterpret_cast<char *>(alloca(monthYear.size() + 1));
+    monthYearFilter = reinterpret_cast<char *>(malloc(monthYear.size() + 1));
     memcpy(monthYearFilter, monthYear.c_str(), monthYear.size() + 1);
 
     // if empty no filtering

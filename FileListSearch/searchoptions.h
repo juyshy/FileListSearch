@@ -50,7 +50,6 @@ public:
 
   void SearchOptions::initializeVariables();
   bool sizeFilterActive;
-private:
 
 
   int searchStringLen;
@@ -71,6 +70,7 @@ private:
   bool monthYearFilterActive ;
   bool yearFilterActive ;
 
+private:
 
 };
 

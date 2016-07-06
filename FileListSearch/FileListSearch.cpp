@@ -13,6 +13,8 @@
 //#include "Storage.h"
 #include "SearchResult.h"
 #include "DuplicateSearch.h"
+#include "SearchByFileExtension.h"
+
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
@@ -56,13 +58,29 @@ int main(int argc, char *argv[])
 
   file_list_search::SearchResult searchresult(searchOptions);
   searchresult.prepareResultsFile();
+  file_list_search::Search * search;
 
-
-  file_list_search::DuplicateSearch search = file_list_search::DuplicateSearch(searchOptions, searchresult);
-  search.initializeSearch();  //
+ 
+  if (searchOptions.searchby == "duplicate"){
+    cout << "starting duplicate search " << endl;
+ 
+    searchresult.searchType = file_list_search::SearchResult::search_class::dupli;
+    searchOptions.casesensitive = true; // force case sensitive (no need for case insensitive)
+      search = new file_list_search::DuplicateSearch(searchOptions, searchresult);
+ 
+  }
+  // if searchstring any and file extension option given:
+  else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
+  {
+      cout << "starting  file extension search " << endl;
+      
+      searchresult.searchType = file_list_search::SearchResult::search_class::fileExt;
+      search = new file_list_search::SearchByFileExtension(searchOptions, searchresult);
+ 
+  }
+  search->initializeSearch();  //
   searchresult.reportResults();
   searchresult.finalize();
-
   ///////////////////////////////
 
 
@@ -70,6 +88,8 @@ int main(int argc, char *argv[])
   //std::size_t cdtreeFlagPos = searchOptions. .find(searchOptions.cdtreefilenameflag);
     //if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
     //  searchFromCdTree(fileListFilename, searchOptions, resuts_file);
+
+
     //else if (searchOptions.searchby == "duplicate"){
     //  searchOptions.casesensitive = true; // force case sensitive (no need for case insensitive)
     //  findDups(fileListFilename, searchOptions, resuts_file);

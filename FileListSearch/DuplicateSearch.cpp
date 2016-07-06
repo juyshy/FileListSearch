@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "DuplicateSearch.h"
 #include "search_constants.h"
-#include <fstream>
+
 
 namespace file_list_search {
 

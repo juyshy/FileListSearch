@@ -16,6 +16,10 @@
 using std::cout;
 using std::endl;
 class SearchOptions;
+const char * linestartPoint;
+const char * lineEndPoint;
+const char * dirStartPoint;
+const char * dirEndPoint;
 
 unsigned long long getSize(const char *   linestartPoint, const char * lineEndPoint){
 

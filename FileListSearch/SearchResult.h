@@ -24,8 +24,8 @@ namespace file_list_search {
     int filecount;
     int  hitcount  ;
     int dups  ;
-
- 
+    enum search_class { dupli, fileExt, filename };
+    search_class searchType;
     unsigned long long dupfileSizesTotal;
 
     std::tuple<double, char>  dupfileSizesTotalTuple; 

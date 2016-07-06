@@ -73,15 +73,19 @@ namespace file_list_search {
     //cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
     cout << "Number of rows: " << linecount << endl;
     cout << "Number of files: " << filecount << endl;
-    cout << "Unique files : " << hitcount << endl;
-    cout << "Number of dups: " << dups << endl;
+    cout << "Number of results: " << hitcount << endl;
+    if (searchType == dupli)
+      cout << "Number of dups: " << dups << endl;
 
     cout.precision(3);
 
-    std::tuple<double, char>  dupfileSizesTotalTuple = scaleWithMetricPrefix(dupfileSizesTotal);
-    cout << "Duplicate file sizes total: ";
-    cout << std::get<0>(dupfileSizesTotalTuple) << std::get<1>(dupfileSizesTotalTuple) << " (" << dupfileSizesTotal << ")  " << endl;
+    if (dupfileSizesTotal > 0)  {
 
+        dupfileSizesTotalTuple = scaleWithMetricPrefix(dupfileSizesTotal);
+      cout << "Duplicate file sizes total: ";
+      cout << std::get<0>(dupfileSizesTotalTuple) << std::get<1>(dupfileSizesTotalTuple) << " (" << dupfileSizesTotal << ")  " << endl;
+
+    } 
     //cout << "search results found: " << hitcount << /*searchResults.size() <<*/ endl;
     std::cout << "Writing results to " << searchOptions.resultsFilename << "\n";
     //if (hitcount == 0)

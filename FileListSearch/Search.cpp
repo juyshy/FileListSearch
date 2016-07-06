@@ -11,7 +11,7 @@ using std::endl;
 namespace file_list_search {
 
   //Search::Search(){}
-  Search::Search(SearchOptions &so, SearchResult  & searchRes ) : 
+  Search::Search(SearchOptions so, SearchResult  & searchRes ) : 
     searchOptions(so),   searchResult(searchRes){
    
   }
@@ -35,8 +35,10 @@ namespace file_list_search {
     }
 
 
-    searchOptions.initializeVariables();
+    
     for (Storage * storage : storages){
+      searchOptions.initializeVariables();
+
       prepare(storage);
       runSearch(storage);
       totalLinecount += storage->linecount;

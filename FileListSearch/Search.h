@@ -11,18 +11,18 @@ namespace file_list_search {
   {
   public:
     //Search();
-    Search(SearchOptions &searchOptions, SearchResult  & searchRes);
+    Search(SearchOptions searchOptions, SearchResult  & searchRes);
     ~Search();
 
     
     bool Search::initializeSearch( );
     bool Search::prepare(Storage * storage);
     //bool Search::initilizeOptions();
-    SearchOptions &searchOptions;
+    SearchOptions searchOptions;
     //std::ofstream & resuts_file;
     SearchResult  & searchResult;
     std::vector<Storage *> storages;
-    void Search::runSearch(Storage * storage);
+    virtual void Search::runSearch(Storage * storage);
 
   protected:
 
