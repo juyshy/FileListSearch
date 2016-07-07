@@ -1,99 +1,80 @@
-#pragma once
-
 #include "stdafx.h"
-#include "SearchByFileExtension.h"
+#include "FileSearch.h"
 #include "search_constants.h"
 #include "utility_funcs.h"
 
 namespace file_list_search {
 
-  SearchByFileExtension::SearchByFileExtension(SearchOptions &so, SearchResult  & searchRes) :
-    Search(so, searchRes) {
 
+  FileSearch::FileSearch(SearchOptions &so, SearchResult  & searchRes) :
+    Search(so, searchRes) {
   }
 
 
-  SearchByFileExtension::~SearchByFileExtension()
+  FileSearch::~FileSearch()
   {
   }
 
-  void SearchByFileExtension::runSearch(Storage * storage) {
-    searchOptions.searchChar1 = searchOptions.fileExt[1]; //  look initially for the first letter of the extension 
+
+  void FileSearch::runSearch(Storage * storage){
+    std::locale loc;
     while (storage->f2 && storage->f2 != storage->end) {
-
-      // intially searching for the searchChar1 = fileExt[1]
-
       if (storage->f2 = static_cast<const char*>(memchr(storage->f2, searchOptions.searchChar1, storage->end - storage->f2)))
       {
-        storage->linecount++; // number of fileextension chars searchChar1 = fileExt[1]
-        storage->f2--; // back one step to include the dot for comparison
+        storage->linecount++;
         // check for search string
 
-        //this time compare to file extension 
-        bool endBoundaryCheck = (storage->end - storage->f2) > searchOptions.fileExtLen;
-        bool matchString = memcmp(searchOptions.fileExt, storage->f2, searchOptions.fileExtLen) == 0;
+        bool endBoundaryCheck = (storage->end - storage->f2) > searchOptions.searchStringLen;
+        bool matchString = memcmp(searchOptions.searchCharArray, storage->f2, searchOptions.searchStringLen) == 0;
 
         if (endBoundaryCheck && matchString)
         {
           ++(storage->filecount);
+          //if ()
           // locate search result line start and end
-          storage->linestartPoint = storage->f + (storage->f2 - storage->beginning2); // flip to grab result from original in case of caseinsensitive search
-
+          storage->linestartPoint = storage->lineEndPoint = storage->f + (storage->f2 - storage->beginning2); // flip to search from original in case of caseinsensitive search
           while ((storage->linestartPoint - storage->beginning) > 0 && memcmp(newLineChar, storage->linestartPoint, 1) != 0)
           {
             --(storage->linestartPoint);
           }
           ++(storage->linestartPoint); // step forward to drop "\n"
+          while ((storage->end - storage->lineEndPoint) > 0 && memcmp(newLineChar, storage->lineEndPoint, 1) != 0)
+          {
+            ++(storage->lineEndPoint);
+          }
+          --(storage->lineEndPoint); //  step back to drop "\n"
 
-          // as "\r\n" was appended to search string we know allready where the line ends
-          // it's current location + fileExtLen and then - 2 which strips the "\r\n" appended from pointer; 
-          // oh and then we have to flip it to the original f
-          storage->lineEndPoint = storage->f + (storage->f2 - storage->beginning2 + searchOptions.fileExtLen - 2);
+
 
           bool  filter;
-          
+          // filter out directories and abnormaly long results
           if (searchOptions.filetype == "file") {
 
-            int size;
-            bool sizeFilterCheck = false;
-            if (searchOptions.sizeFilterActive) {
-              const char * sizeStartPoint = storage->linestartPoint + 17; //offset after date & time
-              while ((storage->lineEndPoint - sizeStartPoint) > 0 && memcmp(" ", sizeStartPoint, 1) == 0)
-              {
-                ++sizeStartPoint;
-              }
-              const char * sizeEndPoint = sizeStartPoint;
-              while ((storage->lineEndPoint - sizeEndPoint) > 0 && memcmp(" ", sizeEndPoint, 1) != 0)
-              {
-                ++sizeEndPoint;
-              }
-              string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-              size = boost::lexical_cast<int>(sizeString);
+            if (searchOptions.filterFileExt) {
+              const char * fileExtensionCheckStart = storage->lineEndPoint - searchOptions.fileExtLen;
+              string fileExtensionPortion(fileExtensionCheckStart, searchOptions.fileExtLen);
+              if (!searchOptions.fileExtensionCheckCaseSensitive) {
+                //  beginning2 + (lineEndPoint - beginning - fileExtLen);
+                string fileExtensionPortionLower = "";
 
-              sizeFilterCheck = searchOptions.sizeOperand.greaterThan == -1 || searchOptions.sizeOperand.greaterThan < size;
-              sizeFilterCheck = sizeFilterCheck && (searchOptions.sizeOperand.smallerThan == -1 || searchOptions.sizeOperand.smallerThan > size);
+                // make lowercase version
+                for (std::string::size_type i = 0; i < fileExtensionPortion.length(); ++i)
+                  fileExtensionPortionLower += std::tolower(fileExtensionPortion[i], loc);
+
+                searchOptions.fileExtensionCheck = fileExtensionPortionLower == searchOptions.fileExtension;// memcmp(fileExt, fileExtensionCheckStart, fileExtLen) == 0;
+              }
+              else {
+                searchOptions.fileExtensionCheck = fileExtensionPortion == searchOptions.fileExtension;
+              }
             }
-
-            // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
-            bool  monthyearCheck = memcmp(searchOptions.monthYearFilter, storage->linestartPoint + 3, 7) == 0;
-            // offset 6 in dd.mm.yyyy, yyyy 4 chars long
-            bool yearFilterCheck = memcmp(searchOptions.yearFilter, storage->linestartPoint + 6, 4) == 0;
-            // offset 0 in dd.mm.yyyy, yyyy 10 chars long
-            bool dateFilterCheck = memcmp(searchOptions.dateFilter, storage->linestartPoint, 10) == 0;
             // filter out directories
-            // filter out lines containing " Directory of "
             filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0
-              // filter out lines containing "<DIR>"
               && memcmp(dirStr, storage->linestartPoint + 21, compsize2) != 0
-              && (!searchOptions.monthYearFilterActive || monthyearCheck)
-              && (!searchOptions.yearFilterActive || yearFilterCheck)
-              && (!searchOptions.dateFilterActive || dateFilterCheck)
-              && (!searchOptions.sizeFilterActive || sizeFilterCheck);
-
+              && (!searchOptions.filterFileExt || (searchOptions.filterFileExt
+              && searchOptions.fileExtensionCheck));
           }
           else if (searchOptions.filetype == "dir" || searchOptions.filetype == "folder" || searchOptions.filetype == "directory")
           {
-            // todo: date,year filterin here:
             // only directories
             filter = memcmp(dirStr, storage->linestartPoint + 21, compsize2) == 0;
           }
@@ -102,10 +83,8 @@ namespace file_list_search {
             // filter out directories  
             filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0;
           }
-          // filter abnormaly long results
           if (filter  && storage->lineEndPoint - storage->linestartPoint < 1000)
           {
-            
             string resultString(storage->linestartPoint, storage->lineEndPoint - storage->linestartPoint);
             //searchResults.push_back(resultString);
             ++hitcount;
@@ -129,10 +108,7 @@ namespace file_list_search {
 
             // if fullpath written to results file extract filename
             if (searchOptions.fullpath) {
-              // offset 17 for size and filenames in the row this hard coded value
-              // propably needs to be 
-              // parametrized in internationalization
-              string size_filename = resultString.substr(17);
+              string size_filename = resultString.substr(17); // offset for size and filenames in the row
               trim(size_filename);
               std::size_t endOfSizeLocation = size_filename.find(" ");
               string filename;
@@ -163,10 +139,8 @@ namespace file_list_search {
             storage->f2 = storage->beginning2 + (storage->lineEndPoint - storage->beginning); // continue searching from the end of last result line
           }
         }
-        storage->f2 += 2; //don't get stuck!!
+        storage->f2++;
       }
     }
   }
-
-
 }

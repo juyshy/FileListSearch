@@ -5,9 +5,9 @@
 #include "utility_funcs.h"
 #include "searchoptions.h"
 //#include "searchfromcdtree.h"
-//#include "searchbyname.h"
+#include "FileSearch.h"
 //#include "searchfilesbyfoldername.h"
-//#include "searchbyfileextensiononly.h"
+
 
 #include "Search.h"
 //#include "Storage.h"
@@ -57,7 +57,11 @@ int main(int argc, char *argv[])
     return 1;
 
   file_list_search::SearchResult searchresult(searchOptions);
-  searchresult.prepareResultsFile();
+  if (!searchresult.prepareResultsFile())
+  {
+    return 1;
+
+  }
   file_list_search::Search * search;
 
  
@@ -77,6 +81,13 @@ int main(int argc, char *argv[])
       searchresult.searchType = file_list_search::SearchResult::search_class::fileExt;
       search = new file_list_search::SearchByFileExtension(searchOptions, searchresult);
  
+  }
+  else if (searchOptions.searchby == "filename")
+  {
+    cout << "starting  file extension search " << endl;
+
+    searchresult.searchType = file_list_search::SearchResult::search_class::filename;
+    search = new file_list_search::FileSearch(searchOptions, searchresult);
   }
   search->initializeSearch();  //
   searchresult.reportResults();

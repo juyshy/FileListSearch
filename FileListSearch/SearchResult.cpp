@@ -71,20 +71,24 @@ namespace file_list_search {
   
     //cout << "Benchmark: filtering with size: " << endl;
     //cout << "Number of results: " << hitcount << /*searchResults.size() <<*/ endl;
-    cout << "Number of rows: " << linecount << endl;
+    
    
     
     if (searchType == dupli)
     {
+      cout << "Number of rows: " << linecount << endl;
       cout << "Number of unique files: " << hitcount << endl;
       cout << "Number of dups: " << dups << endl;
     }
-    else if (searchType ==  fileExt)
+    else if (searchType == fileExt || searchType == filename)
     {
+      cout << "Number of chars: " << linecount << endl;
       cout << "Number of files before filter: " << filecount << endl;
       cout << "Number of results: " << hitcount << endl;
 
     }
+ 
+    
 
     cout.precision(3);
 

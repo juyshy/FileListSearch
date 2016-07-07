@@ -326,7 +326,7 @@ using std::endl;
     // do the file extension filtering
     fileExtensionCheck = false; // actual test variable initial value
 
-    searchChar1 = fileExt[1]; //  look initially for the first letter of the extension 
+    
 
     sizeFilterActive = sizeOperand.greaterThanActive || sizeOperand.smallerThanActive;
 
