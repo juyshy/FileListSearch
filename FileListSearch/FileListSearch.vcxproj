@@ -90,6 +90,7 @@
     <ClInclude Include="SearchResult.h" />
     <ClInclude Include="search_constants.h" />
     <ClInclude Include="searchoptions.h" />
+    <ClInclude Include="SizeSearch.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="targetver.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="searchbyfileextensiononly.cpp" />
     <ClCompile Include="searchoptions.cpp" />
     <ClCompile Include="SearchResult.cpp" />
+    <ClCompile Include="SizeSearch.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

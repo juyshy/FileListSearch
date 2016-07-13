@@ -14,6 +14,7 @@
 #include "SearchResult.h"
 #include "DuplicateSearch.h"
 #include "SearchByFileExtension.h"
+#include "SizeSearch.h"
 
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
   if (!searchOptions.getParameters(argc, argv))
     return 1;
 
+  searchOptions.initializeVariables();
+
   file_list_search::SearchResult searchresult(searchOptions);
   if (!searchresult.prepareResultsFile())
   {
@@ -82,6 +85,14 @@ int main(int argc, char *argv[])
       search = new file_list_search::SearchByFileExtension(searchOptions, searchresult);
  
   }
+
+  else if (searchOptions.searchString == "*" && searchOptions.sizeFilterActive)
+  {
+    cout << "starting  size only search " << endl;
+    searchresult.searchType = file_list_search::SearchResult::search_class::size ;
+    search = new file_list_search::SizeSearch(searchOptions, searchresult);
+  }
+
   else if (searchOptions.searchby == "filename")
   {
     cout << "starting  file extension search " << endl;
@@ -89,7 +100,9 @@ int main(int argc, char *argv[])
     searchresult.searchType = file_list_search::SearchResult::search_class::filename;
     search = new file_list_search::FileSearch(searchOptions, searchresult);
   }
-  search->initializeSearch();  //
+
+  if (!search->initializeSearch())
+    return 1;  //
   searchresult.reportResults();
   searchresult.finalize();
   ///////////////////////////////

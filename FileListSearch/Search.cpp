@@ -37,9 +37,10 @@ namespace file_list_search {
 
     
     for (Storage * storage : storages){
-      searchOptions.initializeVariables();
+      
 
-      prepare(storage);
+      if(!prepare(storage))
+        return false;
       runSearch(storage);
       totalLinecount += storage->linecount;
       totalFilecount += storage->filecount;
@@ -57,7 +58,8 @@ namespace file_list_search {
     bool timerProfiling = true;
     cout << "\nLoading filelist.." << endl;
     boost::timer::auto_cpu_timer t;
-    storage->loadFileList();
+    if (!storage->loadFileList())
+      return false;
     cout << "\nPreparing search.." << endl;
     cout << searchOptions.searchby << endl;
     storage->reportDriveMetadata(storage->f, searchResult.resuts_file);

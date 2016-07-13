@@ -87,7 +87,13 @@ namespace file_list_search {
       cout << "Number of results: " << hitcount << endl;
 
     }
- 
+    else if (searchType == size)
+    {
+      cout << "Number of lines: " << linecount << endl;
+      cout << "Number of files before filter: " << filecount << endl;
+      cout << "Number of results: " << hitcount << endl;
+
+    }
     
 
     cout.precision(3);

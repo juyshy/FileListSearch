@@ -16,3 +16,4 @@ Snapshot*.xml
 Release/
 *.vcxproj.user
 *.html
+temp/

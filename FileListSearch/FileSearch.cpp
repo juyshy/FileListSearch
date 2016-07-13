@@ -44,8 +44,6 @@ namespace file_list_search {
           }
           --(storage->lineEndPoint); //  step back to drop "\n"
 
-
-
           bool  filter;
           // filter out directories and abnormaly long results
           if (searchOptions.filetype == "file") {

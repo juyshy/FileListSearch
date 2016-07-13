@@ -109,8 +109,10 @@ void Storage::trimListSearchRange() {
     }
     catch (std::exception& e)
     {
-      std::cerr << "exception caught: " << e.what() << '\n';
-      return 1;
+      std::cerr << "Program encountered following problem: " << e.what() << '\n';
+
+      std::cerr << "Please check your filelist filename. \n ";
+      return false;
     }
 
     f = mmap.const_data();

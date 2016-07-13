@@ -7,15 +7,14 @@
 
 namespace file_list_search {
 
-  class FileSearch : public Search
+  class SizeSearch : public Search
   {
   public:
-    FileSearch(SearchOptions &searchOptions, SearchResult  & searchRes);
-    ~FileSearch();
-
-
+    SizeSearch(SearchOptions &searchOptions, SearchResult  & searchRes);
+    ~SizeSearch();
+    
     virtual void runSearch(Storage * storage);
+
   };
-
-
 }
+

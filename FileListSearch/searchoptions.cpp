@@ -312,14 +312,16 @@ using std::endl;
     memcpy(searchCharArray, searchString.c_str(), searchStringLen + 1);
 
     filterFileExt = false;
-    if (fileExtension.size() > 0 && fileExtension != "*")
+    if (fileExtension.size() > 0 && fileExtension != "*") {
+
       filterFileExt = true;
+      if (fileExtension.at(0) != '.')
+        fileExtension = "." + fileExtension;
 
-    if (fileExtension.at(0) != '.')
-      fileExtension = "." + fileExtension;
+      // hard coded new line appended: file extension should always be at the end of file list line
+      fileExtension += "\r\n";
+    }
 
-    // hard coded new line appended: file extension should always be at the end of file list line
-    fileExtension += "\r\n";
     fileExtLen = fileExtension.size();
     fileExt = reinterpret_cast<char *>(malloc(fileExtension.size() + 1));
     memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
