@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="DuplicateSearch.h" />
     <ClInclude Include="FileSearch.h" />
+    <ClInclude Include="FolderContentSearch.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="SearchByFileExtension.h" />
     <ClInclude Include="searchbyfileextensiononly.h" />
@@ -100,6 +101,7 @@
     <ClCompile Include="DuplicateSearch.cpp" />
     <ClCompile Include="FileListSearch.cpp" />
     <ClCompile Include="FileSearch.cpp" />
+    <ClCompile Include="FolderContentSearch.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchByFileExtension.cpp" />
     <ClCompile Include="searchbyfileextensiononly.cpp" />
