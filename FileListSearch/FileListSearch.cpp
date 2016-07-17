@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   {
     cout << "starting  file extension search " << endl;
 
-    searchresult.searchType = file_list_search::SearchResult::search_class::filename;
+    searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
     search = new file_list_search::FolderContentSearch(searchOptions, searchresult);
   }
 

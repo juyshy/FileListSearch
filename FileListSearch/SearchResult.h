@@ -24,7 +24,7 @@ namespace file_list_search {
     int filecount;
     int  hitcount  ;
     int dups  ;
-    enum search_class { dupli, fileExt, filename, size };
+    enum search_class { dupli, fileExt, filename, size, bydir };
     search_class searchType;
     unsigned long long dupfileSizesTotal;
 

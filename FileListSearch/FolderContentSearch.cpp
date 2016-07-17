@@ -16,28 +16,29 @@ namespace file_list_search {
 
   void FolderContentSearch::runSearch(Storage * storage){
     std::locale loc;
-
+    // collect all directories and their contents where search string found in directory name 
     while (storage->f2 && storage->f2 != storage->end) {
       if (storage->f2 = static_cast<const char*>(memchr(storage->f2, searchOptions.searchChar1, storage->end - storage->f2)))
       {
-
+        storage->linecount++;
         // check for search string
         if (((storage->end - storage->f2) > searchOptions.searchStringLen) && memcmp(searchOptions.searchCharArray, storage->f2, searchOptions.searchStringLen) == 0)
         {
+          storage->filecount++;
           // locate search result line start and end
-          storage->linestartPoint = storage->linestartPoint = storage->beginning + (storage->f2 - storage->beginning2); // flip to search from original in case of caseinsensitive search
+          storage->linestartPoint = storage->lineEndPoint = storage->beginning + (storage->f2 - storage->beginning2); // flip to search from original in case of caseinsensitive search
           while ((storage->linestartPoint - storage->beginning) > 0 && memcmp(newLineChar, storage->linestartPoint, 1) != 0)
           {
             --(storage->linestartPoint);
           }
           ++(storage->linestartPoint); // step forward to drop "\n"
-          while ((storage->end - storage->linestartPoint) > 0 && memcmp(newLineChar, storage->linestartPoint, 1) != 0)
+          while ((storage->end - storage->lineEndPoint) > 0 && memcmp(newLineChar, storage->lineEndPoint, 1) != 0)
           {
             ++(storage->lineEndPoint);
           }
-          //--lineEndPoint; //  this time no need to step back to drop "\n"
-          //string resultString(linestartPoint, lineEndPoint - linestartPoint);
-
+          --(storage->lineEndPoint); //  this time no need to step back to drop "\n"
+          //string resultString(storage->linestartPoint, storage->lineEndPoint - storage->linestartPoint);
+          //resultString;
           // do we have a directory lissting start?
           if (memcmp(dirnamestr, storage->linestartPoint, compsize) == 0)
 

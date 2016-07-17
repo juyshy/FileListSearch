@@ -95,7 +95,13 @@ namespace file_list_search {
 
     }
     
+    else if (searchType == bydir)
+    {
+      cout << "Number of lines: " << linecount << endl;
+      cout << "Number of files before filter: " << filecount << endl;
+      cout << "Number of results: " << hitcount << endl;
 
+    }
     cout.precision(3);
 
     if (dupfileSizesTotal > 0)  {
