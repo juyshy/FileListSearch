@@ -44,6 +44,14 @@ namespace file_list_search {
           }
           --(storage->lineEndPoint); //  step back to drop "\n"
 
+
+          // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
+          bool  monthyearCheck = memcmp(searchOptions.monthYearFilter, storage->linestartPoint + 3, 7) == 0;
+          // offset 6 in dd.mm.yyyy, yyyy 4 chars long
+          bool yearFilterCheck = memcmp(searchOptions.yearFilter, storage->linestartPoint + 6, 4) == 0;
+          // offset 0 in dd.mm.yyyy, yyyy 10 chars long
+          bool dateFilterCheck = memcmp(searchOptions.dateFilter, storage->linestartPoint, 10) == 0;
+
           bool  filter;
           // filter out directories and abnormaly long results
           if (searchOptions.filetype == "file") {
@@ -66,20 +74,37 @@ namespace file_list_search {
               }
             }
             // filter out directories
-            filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0
+
+            // filter out directories
+            // filter out lines containing " Directory of "
+            // filter out lines containing "<DIR>"
+
+              filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0
               && memcmp(dirStr, storage->linestartPoint + 21, compsize2) != 0
               && (!searchOptions.filterFileExt || (searchOptions.filterFileExt
-              && searchOptions.fileExtensionCheck));
+              && searchOptions.fileExtensionCheck))
+              && (!searchOptions.monthYearFilterActive || monthyearCheck)
+              && (!searchOptions.yearFilterActive || yearFilterCheck)
+              && (!searchOptions.dateFilterActive || dateFilterCheck);
+              //&&  (!searchOptions.sizeFilterActive || sizeFilterCheck);;
           }
           else if (searchOptions.filetype == "dir" || searchOptions.filetype == "folder" || searchOptions.filetype == "directory")
           {
             // only directories
-            filter = memcmp(dirStr, storage->linestartPoint + 21, compsize2) == 0;
+           
+           
+            filter = memcmp(dirStr, storage->linestartPoint + 21, compsize2) == 0
+              && (!searchOptions.monthYearFilterActive || monthyearCheck)
+              && (!searchOptions.yearFilterActive || yearFilterCheck)
+              && (!searchOptions.dateFilterActive || dateFilterCheck);
           }
-          else
+          else // no time filter for both!
           {
             // filter out directories  
-            filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0;
+            filter = memcmp(dirnamestr, storage->linestartPoint, compsize) != 0 
+              && (!searchOptions.monthYearFilterActive || monthyearCheck)
+              && (!searchOptions.yearFilterActive || yearFilterCheck)
+              && (!searchOptions.dateFilterActive || dateFilterCheck);
           }
           if (filter  && storage->lineEndPoint - storage->linestartPoint < 1000)
           {
