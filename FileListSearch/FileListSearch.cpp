@@ -15,6 +15,7 @@
 #include "DuplicateSearch.h"
 #include "SearchByFileExtension.h"
 #include "SizeSearch.h"
+#include "FolderContentSearch.h"
 
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
@@ -99,6 +100,14 @@ int main(int argc, char *argv[])
 
     searchresult.searchType = file_list_search::SearchResult::search_class::filename;
     search = new file_list_search::FileSearch(searchOptions, searchresult);
+  }
+
+  else if (searchOptions.searchby == "by_directory_name")
+  {
+    cout << "starting  file extension search " << endl;
+
+    searchresult.searchType = file_list_search::SearchResult::search_class::filename;
+    search = new file_list_search::FolderContentSearch(searchOptions, searchresult);
   }
 
   if (!search->initializeSearch())

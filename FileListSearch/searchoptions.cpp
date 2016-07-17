@@ -195,6 +195,18 @@ using std::endl;
     if (searchby == "dup")
       searchby = "duplicate";
 
+    if (searchby == "dir")
+      searchby = "by_directory_name";
+    
+
+
+    if (searchby == "by_directory_name" && searchString == "*")
+    {
+      std::cout << "\n\nAttention!!!\n\nby_directory_name search mode has to have a search string other than *" << std::endl;
+      std::cout << "Please try again with a valid search string for folder name" << std::endl;
+      success = false;
+      return false;
+    }
     timestampInAutoName = vm["timestamp"].as<bool>();
 
     // extracting search results file file name from command line options
