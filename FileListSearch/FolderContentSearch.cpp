@@ -11,6 +11,7 @@ namespace file_list_search {
 
   FolderContentSearch::~FolderContentSearch()
   {
+    std::cout << "FolderContentSearch destructor" << std::endl;
   }
 
 

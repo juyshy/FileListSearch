@@ -19,6 +19,7 @@ namespace file_list_search {
 
   Search::~Search()
   {
+    std::cout << "Search destructor" << std::endl;
   }
 
 
@@ -44,6 +45,8 @@ namespace file_list_search {
       runSearch(storage);
       totalLinecount += storage->linecount;
       totalFilecount += storage->filecount;
+
+
     }
     searchResult.dupfileSizesTotal = dupfileSizesTotal;
     searchResult.hitcount = hitcount;

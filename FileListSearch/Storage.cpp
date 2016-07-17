@@ -29,6 +29,7 @@ namespace file_list_search {
 
   Storage::~Storage()
   {
+    std::cout << "Storage destructor" << std::endl;
   }
 
   unsigned long long Storage::getFileSize(const char *   linestartPoint, const char * lineEndPoint){
