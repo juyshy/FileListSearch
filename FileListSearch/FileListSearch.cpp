@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   {
     cout << "starting  cdtree extension search " << endl;
 
-    searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
+    searchresult.searchType = file_list_search::SearchResult::search_class::cdtree;
     search = new file_list_search::CdTreeSearch(searchOptions, searchresult);
   }
   // if searchstring any and file extension option given:

@@ -20,10 +20,11 @@ namespace file_list_search {
     while (storage->f2 && storage->f2 != storage->end) {
       if (storage->f2 = static_cast<const char*>(memchr(storage->f2, searchOptions.searchChar1, storage->end - storage->f2)))
       {
-
+        ++(storage->linecount); // in this case num of occurences of searchOptions.searchChar1
         // check for search string
         if (((storage->end - storage->f2) > searchOptions.searchStringLen) && memcmp(searchOptions.searchCharArray, storage->f2, searchOptions.searchStringLen) == 0)
         {
+          ++(storage->filecount);
           // locate search result line start and end
           storage->linestartPoint = storage->lineEndPoint = storage->f + (storage->f2 - storage->beginning2); // flip to search from original in case of caseinsensitive search
           while ((storage->linestartPoint - storage->beginning) > 0 && memcmp(newLineChar, storage->linestartPoint, 1) != 0)

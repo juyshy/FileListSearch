@@ -102,6 +102,13 @@ namespace file_list_search {
       cout << "Number of results: " << hitcount << endl;
 
     }
+    else if (searchType == cdtree)
+    {
+      cout << "Number of potential lines: " << linecount << endl;
+      cout << "Number of files before filter: " << filecount << endl;
+      cout << "Number of results: " << hitcount << endl;
+
+    }
     cout.precision(3);
 
     if (dupfileSizesTotal > 0)  {
