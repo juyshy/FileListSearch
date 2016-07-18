@@ -2,7 +2,7 @@
 #include "CdTreeSearch.h"
 #include "search_constants.h"
 #include "utility_funcs.h"
-
+#include <sstream>
 namespace file_list_search {
 
   CdTreeSearch::CdTreeSearch(SearchOptions &so, SearchResult  & searchRes) :
@@ -58,64 +58,122 @@ namespace file_list_search {
           {
             string resultString(storage->linestartPoint, storage->lineEndPoint - storage->linestartPoint);
             //searchResults.push_back(resultString);
-            ++hitcount;
-            //cout << " resultString:  " << resultString << endl;
+            //resultString;
 
-            // search  and fetch the containging directory name
-            storage->dirStartPoint = storage->linestartPoint;
-            while ((storage->dirStartPoint - storage->beginning) > 0 && memcmp("\nD,", storage->dirStartPoint, 3) != 0)
-            {
-              --(storage->dirStartPoint);
+            bool filter2 = true;
+            if (searchOptions.yearFilterActive 
+              || searchOptions.monthYearFilterActive 
+              || searchOptions.dateFilterActive
+              || searchOptions.sizeFilterActive ) {
+              std::vector<string> rowlist;
+              std::vector<string> datetimelist;
+              std::vector<string> datelist;
+              bool  monthyearCheck;
+              bool yearFilterCheck;
+              bool dateFilterCheck;
+              std::stringstream ss(resultString);
+              while (ss.good())
+              {
+                string substr;
+                getline(ss, substr, ',');
+                rowlist.push_back(substr);
+              };
+              string datetime;
+              if ( rowlist.size() == 7)
+                datetime = rowlist.at(3);
+              else if (rowlist.size() == 9){ // comma in the file name!
+                datetime = rowlist.at(5);
+              } 
+              else {
+                throw std::runtime_error("rowlist anomaly!");
+              }
+              trim(datetime);
+              std::stringstream ssdatetime(datetime);
+              while (ssdatetime.good())
+              {
+                string substr;
+                getline(ssdatetime, substr, ' ');
+                datetimelist.push_back(substr);
+              }
+              string date = datetimelist.at(0);
+              std::stringstream ssdate(date);
+              while (ssdate.good())
+              {
+                string substr;
+                getline(ssdate, substr, '.');
+                datelist.push_back(substr);
+              }
+
+              monthyearCheck = datelist.at(1) + datelist.at(2) == searchOptions.monthYearFilter;
+              yearFilterCheck = datelist.at(2) == searchOptions.yearFilter;
+              dateFilterCheck = date == searchOptions.dateFilter;
+
+                filter2 = (!searchOptions.monthYearFilterActive || monthyearCheck)
+                && (!searchOptions.yearFilterActive || yearFilterCheck)
+                && (!searchOptions.dateFilterActive || dateFilterCheck);
             }
-            storage->dirStartPoint++;
-            storage->dirEndPoint = storage->dirStartPoint;
-            while ((storage->end - storage->dirEndPoint) > 0 && memcmp(newLineChar, storage->dirEndPoint, 1) != 0)
-            {
-              ++(storage->dirEndPoint);
+
+
+              if (filter2){
+              ++hitcount;
+              //cout << " resultString:  " << resultString << endl;
+
+              // search  and fetch the containging directory name
+              storage->dirStartPoint = storage->linestartPoint;
+              while ((storage->dirStartPoint - storage->beginning) > 0 && memcmp("\nD,", storage->dirStartPoint, 3) != 0)
+              {
+                --(storage->dirStartPoint);
+              }
+              storage->dirStartPoint++;
+              storage->dirEndPoint = storage->dirStartPoint;
+              while ((storage->end - storage->dirEndPoint) > 0 && memcmp(newLineChar, storage->dirEndPoint, 1) != 0)
+              {
+                ++(storage->dirEndPoint);
+              }
+              --(storage->dirEndPoint); //  step back to drop "\n"
+
+              // capture  the directory  line
+              string dirLineString(storage->dirStartPoint, storage->dirEndPoint - storage->dirStartPoint);
+
+
+              const char * cdStartPoint = storage->dirStartPoint;
+              while ((cdStartPoint - storage->beginning) > 0 && memcmp("\nC,", cdStartPoint, 3) != 0)
+              {
+                --cdStartPoint;
+              }
+              cdStartPoint++;
+              const char *  cdEndPoint = cdStartPoint;
+              while ((storage->end - cdEndPoint) > 0 && memcmp(newLineChar, cdEndPoint, 1) != 0)
+              {
+                ++cdEndPoint;
+              }
+              --cdEndPoint; //  step back to drop "\n"
+
+              cdStartPoint--; // step backward
+              string cdLineString(cdStartPoint, cdEndPoint - cdStartPoint);
+
+
+              string cdname = cdLineString.substr(3);
+              trim(cdname);
+              std::size_t endOfname = cdname.find(",");
+              cdname = cdname.substr(0, endOfname);
+              string dirname = dirLineString.substr(3);
+              std::size_t begOfname = dirname.find(",");
+
+              dirname = dirname.substr(begOfname + 1);
+              endOfname = dirname.find(",");
+              dirname = dirname.substr(0, endOfname);
+              string fileinfo = resultString.substr(3);
+
+              begOfname = fileinfo.find(",");
+              fileinfo = fileinfo.substr(begOfname + 1);
+
+              searchResult.resuts_file << cdname << "; " << dirname << "; " << fileinfo << "\n";
+
+              // resuts_file << cdLineString << "; " << dirLineString << "; " << resultString << "\n";
+
+              storage->f2 = storage->beginning2 + (storage->lineEndPoint - storage->beginning); // continue searching from the end of last result line
             }
-            --(storage->dirEndPoint); //  step back to drop "\n"
-
-            // capture  the directory  line
-            string dirLineString(storage->dirStartPoint, storage->dirEndPoint - storage->dirStartPoint);
-
-
-            const char * cdStartPoint = storage->dirStartPoint;
-            while ((cdStartPoint - storage->beginning) > 0 && memcmp("\nC,", cdStartPoint, 3) != 0)
-            {
-              --cdStartPoint;
-            }
-            cdStartPoint++;
-            const char *  cdEndPoint = cdStartPoint;
-            while ((storage->end - cdEndPoint) > 0 && memcmp(newLineChar, cdEndPoint, 1) != 0)
-            {
-              ++cdEndPoint;
-            }
-            --cdEndPoint; //  step back to drop "\n"
-
-            cdStartPoint--; // step backward
-            string cdLineString(cdStartPoint, cdEndPoint - cdStartPoint);
-
-
-            string cdname = cdLineString.substr(3);
-            trim(cdname);
-            std::size_t endOfname = cdname.find(",");
-            cdname = cdname.substr(0, endOfname);
-            string dirname = dirLineString.substr(3);
-            std::size_t begOfname = dirname.find(",");
-
-            dirname = dirname.substr(begOfname + 1);
-            endOfname = dirname.find(",");
-            dirname = dirname.substr(0, endOfname);
-            string fileinfo = resultString.substr(3);
-
-            begOfname = fileinfo.find(",");
-            fileinfo = fileinfo.substr(begOfname + 1);
-
-            searchResult.resuts_file << cdname << "; " << dirname << "; " << fileinfo << "\n";
-
-            // resuts_file << cdLineString << "; " << dirLineString << "; " << resultString << "\n";
-
-            storage->f2 = storage->beginning2 + (storage->lineEndPoint - storage->beginning); // continue searching from the end of last result line
           }
         }
         storage->f2++;
