@@ -19,6 +19,7 @@
 #include "SearchByFileExtension.h"
 #include "SizeSearch.h"
 #include "FolderContentSearch.h"
+#include "CdTreeSearch.h"
 
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
@@ -82,6 +83,13 @@ int main(int argc, char *argv[])
       search = new file_list_search::DuplicateSearch(searchOptions, searchresult);
  
   }
+  else if (searchOptions.searchby == "cdtree")
+  {
+    cout << "starting  cdtree extension search " << endl;
+
+    searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
+    search = new file_list_search::CdTreeSearch(searchOptions, searchresult);
+  }
   // if searchstring any and file extension option given:
   else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
   {
@@ -101,7 +109,7 @@ int main(int argc, char *argv[])
 
   else if (searchOptions.searchby == "filename")
   {
-    cout << "starting  file extension search " << endl;
+    cout << "starting  filename search " << endl;
 
     searchresult.searchType = file_list_search::SearchResult::search_class::filename;
     search = new file_list_search::FileSearch(searchOptions, searchresult);
@@ -109,7 +117,7 @@ int main(int argc, char *argv[])
 
   else if (searchOptions.searchby == "by_directory_name")
   {
-    cout << "starting  file extension search " << endl;
+    cout << "starting search all directory contents" << endl;
 
     searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
     search = new file_list_search::FolderContentSearch(searchOptions, searchresult);

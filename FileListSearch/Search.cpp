@@ -96,8 +96,9 @@ namespace file_list_search {
     storage->beginning2 = storage->f2;
     storage->end = storage->f2 + storage->fileListSize2;
 
-    storage->trimListSearchRange();
-
+    if (searchOptions.searchby != "cdtree") 
+      storage->trimListSearchRange();
+    storage->linestartPoint = storage->f2;
     return true;
   }
 

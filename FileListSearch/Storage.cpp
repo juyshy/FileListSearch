@@ -86,7 +86,7 @@ void Storage::trimListSearchRange() {
   string last1000chars(end - 1000, 1000);
   size_t lastlinePoint = last1000chars.rfind("     Total Files Listed:");
   end = end - 1000 + lastlinePoint;
-  linestartPoint = f2;
+  
 
 }
 

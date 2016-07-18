@@ -82,6 +82,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CdTreeSearch.h" />
     <ClInclude Include="DuplicateSearch.h" />
     <ClInclude Include="FileSearch.h" />
     <ClInclude Include="FolderContentSearch.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="utility_funcs.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CdTreeSearch.cpp" />
     <ClCompile Include="DuplicateSearch.cpp" />
     <ClCompile Include="FileListSearch.cpp" />
     <ClCompile Include="FileSearch.cpp" />
