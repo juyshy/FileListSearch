@@ -316,6 +316,12 @@ using std::endl;
     }
   }
 
+  void SearchOptions::initExtensionChar(){
+    fileExtLen = fileExtension.size();
+    fileExt = reinterpret_cast<char *>(malloc(fileExtension.size() + 1));
+    memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
+  }
+
   void SearchOptions::initializeVariables(){
 
     searchChar1 = searchString[0];
@@ -330,13 +336,9 @@ using std::endl;
       if (fileExtension.at(0) != '.')
         fileExtension = "." + fileExtension;
 
-      // hard coded new line appended: file extension should always be at the end of file list line
-      fileExtension += "\r\n";
     }
+    initExtensionChar();
 
-    fileExtLen = fileExtension.size();
-    fileExt = reinterpret_cast<char *>(malloc(fileExtension.size() + 1));
-    memcpy(fileExt, fileExtension.c_str(), fileExtLen + 1);
     // do the file extension filtering
     fileExtensionCheck = false; // actual test variable initial value
 

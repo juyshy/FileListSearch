@@ -26,7 +26,7 @@ public:
   void SearchOptions::getSizeOperands();
   bool getParameters(int argc, char *argv[]);
   void SearchOptions::checkWildCardInFileListings();
-
+  void SearchOptions::initExtensionChar();
   bool success; // success for gathering options
   string searchString;
   bool casesensitive; // is searchh casesensitive

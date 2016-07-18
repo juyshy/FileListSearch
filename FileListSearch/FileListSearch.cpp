@@ -6,8 +6,6 @@
 #include "searchoptions.h"
 //#include "searchfromcdtree.h"
 #include "FileSearch.h"
-//#include "searchfilesbyfoldername.h"
-
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -59,6 +57,7 @@ using std::endl;
 int main(int argc, char *argv[])
 {
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+  //_crtBreakAlloc = 6227;
   boost::timer::auto_cpu_timer t;
   SearchOptions searchOptions = SearchOptions();
   if (!searchOptions.getParameters(argc, argv))

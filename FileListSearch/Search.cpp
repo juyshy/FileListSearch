@@ -31,21 +31,20 @@ namespace file_list_search {
 
   
     for (string fileListFilename : searchOptions.listFiles) {
+  
+      //std::unique_ptr<Storage> storage(new Storage(fileListFilename));
+
       file_list_search::Storage * storage = new file_list_search::Storage(fileListFilename);
-      storages.push_back(storage);
-    }
+    //  storages.push_back(storage);
+    //}
 
-
-    
-    for (Storage * storage : storages){
-      
-
+      //for (Storage * storage : storages){
       if(!prepare(storage))
         return false;
       runSearch(storage);
       totalLinecount += storage->linecount;
       totalFilecount += storage->filecount;
-
+      delete storage ;
 
     }
     searchResult.dupfileSizesTotal = dupfileSizesTotal;
@@ -84,7 +83,7 @@ namespace file_list_search {
 
 
 
-    if (!searchOptions.casesensitive) { // not casesensitive make a lower copy
+    if (!searchOptions.casesensitive /*&& searchOptions.searchString != "*"*/) { // not casesensitive make a lower copy
       storage->makeLowerCaseCopy();
     }
     else

@@ -29,7 +29,10 @@ namespace file_list_search {
 
   Storage::~Storage()
   {
-    std::cout << "Storage destructor" << std::endl;
+
+    //std::cout << "Storage destructor" << std::endl;
+    mmap.close();
+
   }
 
   unsigned long long Storage::getFileSize(const char *   linestartPoint, const char * lineEndPoint){

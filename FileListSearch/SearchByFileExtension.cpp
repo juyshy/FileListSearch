@@ -18,6 +18,10 @@ namespace file_list_search {
   }
 
   void SearchByFileExtension::runSearch(Storage * storage) {
+    // hard coded new line appended: file extension should always be at the end of file list line
+    searchOptions.fileExtension += "\r\n";
+    searchOptions.initExtensionChar();
+
     searchOptions.searchChar1 = searchOptions.fileExt[1]; //  look initially for the first letter of the extension 
     while (storage->f2 && storage->f2 != storage->end) {
 
