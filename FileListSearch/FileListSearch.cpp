@@ -21,6 +21,8 @@
 #include "FolderContentSearch.h"
 #include "CdTreeSearch.h"
 
+#include "SearchManager.h"
+
 #include <boost/program_options.hpp>
 #include <boost/program_options/errors.hpp>
 #include <boost/iostreams/device/mapped_file.hpp> // for mmap
@@ -60,11 +62,17 @@ int main(int argc, char *argv[])
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
   //_crtBreakAlloc = 6227;
   boost::timer::auto_cpu_timer t;
+
+
+  // process search options
+
   SearchOptions searchOptions = SearchOptions();
   if (!searchOptions.getParameters(argc, argv))
     return 1;
-
   searchOptions.initializeVariables();
+
+
+  // prepare search result object
 
   file_list_search::SearchResult searchresult(searchOptions);
   if (!searchresult.prepareResultsFile())
@@ -72,72 +80,17 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  // run search
 
-  file_list_search::Search * search;
- 
-  if (searchOptions.searchby == "duplicate"){
-    cout << "starting duplicate search " << endl;
- 
-    searchresult.searchType = file_list_search::SearchResult::search_class::dupli;
-    searchOptions.casesensitive = true; // force case sensitive (no need for case insensitive)
-      search = new file_list_search::DuplicateSearch(searchOptions, searchresult);
- 
-  }
-  else if (searchOptions.searchby == "cdtree")
+  file_list_search::SearchManager searchmanager(searchOptions, searchresult);
+  if (!searchmanager.run())
   {
-    cout << "starting  cdtree extension search " << endl;
-
-    searchresult.searchType = file_list_search::SearchResult::search_class::cdtree;
-    search = new file_list_search::CdTreeSearch(searchOptions, searchresult);
-  }
-  // if searchstring any and file extension option given:
-  else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
-  {
-      cout << "starting  file extension search " << endl;
-      
-      searchresult.searchType = file_list_search::SearchResult::search_class::fileExt;
-      search = new file_list_search::SearchByFileExtension(searchOptions, searchresult);
- 
-  }
-
-  else if (searchOptions.searchString == "*" && searchOptions.sizeFilterActive)
-  {
-    cout << "starting  size only search " << endl;
-    searchresult.searchType = file_list_search::SearchResult::search_class::size ;
-    search = new file_list_search::SizeSearch(searchOptions, searchresult);
-  }
-
-  else if (searchOptions.searchby == "filename")
-  {
-    cout << "starting  filename search " << endl;
-
-    searchresult.searchType = file_list_search::SearchResult::search_class::filename;
-    search = new file_list_search::FileSearch(searchOptions, searchresult);
-  }
-
-  else if (searchOptions.searchby == "by_directory_name")
-  {
-    cout << "starting search all directory contents" << endl;
-
-    searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
-    search = new file_list_search::FolderContentSearch(searchOptions, searchresult);
-  }
-  else {
-    cout << "ERROR!! searchby search function option not valid! " << endl;
-    cout << "search function (--searchby / -b option) needs to be one of the following: filename, by_directory_name, duplicate or cdtree" << endl;
-    std::cout << searchOptions.desc << "\n";
     return 1;
   }
 
-  if (!search->initializeSearch())
-    return 1;  //
+  // results:
   searchresult.reportResults();
-  searchresult.finalize();
-  
 
- 
-
-  //resuts_file.close();
 
   _CrtDumpMemoryLeaks();
 

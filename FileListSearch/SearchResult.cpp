@@ -123,6 +123,7 @@ namespace file_list_search {
     //if (hitcount == 0)
     //  resuts_file << "NOTHING FOUND " << "\n";
  
+    finalize();
   }
 
   void SearchResult::finalize() {
