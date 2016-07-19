@@ -70,25 +70,46 @@ namespace file_list_search {
 
 
             if (sizeFilterCheck) {
-              string resultString(storage->linestartPoint, storage->f2 - storage->linestartPoint);
+              bool  monthyearCheck;
+                bool yearFilterCheck;
+                bool dateFilterCheck;
+                bool filter2 = true;
+                if (searchOptions.yearFilterActive
+                  || searchOptions.monthYearFilterActive
+                  || searchOptions.dateFilterActive){
 
-              // search  and fetch the containging directory name
-              storage->dirStartPoint = storage->linestartPoint;
-              while ((storage->dirStartPoint - storage->beginning) > 0 && memcmp(dirnamestr, storage->dirStartPoint, compsize) != 0)
-              {
-                --(storage->dirStartPoint);
-              }
-              storage->dirEndPoint = storage->dirStartPoint;
-              while ((storage->end - storage->dirEndPoint) > 0 && memcmp(newLineChar, storage->dirEndPoint, 1) != 0)
-              {
-                ++(storage->dirEndPoint);
-              }
-              --(storage->dirEndPoint); //  step back to drop "\n"
+                  // offset 3 in dd.mm.yyyy, mm.yyyy 7 chars long
+                  monthyearCheck = memcmp(searchOptions.monthYearFilter, storage->linestartPoint + 3, 7) == 0;
+                  // offset 6 in dd.mm.yyyy, yyyy 4 chars long
+                  yearFilterCheck = memcmp(searchOptions.yearFilter, storage->linestartPoint + 6, 4) == 0;
+                  // offset 0 in dd.mm.yyyy, yyyy 10 chars long
+                  dateFilterCheck = memcmp(searchOptions.dateFilter, storage->linestartPoint, 10) == 0;
+                  filter2 = (!searchOptions.monthYearFilterActive || monthyearCheck)
+                    && (!searchOptions.yearFilterActive || yearFilterCheck)
+                    && (!searchOptions.dateFilterActive || dateFilterCheck);
+                }
+           
+              if (filter2) {
+                string resultString(storage->linestartPoint, storage->f2 - storage->linestartPoint);
 
-              // capture only the directory name
-              string dirLineString(storage->dirStartPoint + compsize, storage->dirEndPoint - storage->dirStartPoint - compsize);
-              searchResult.resuts_file << dirLineString << "; " << resultString << "\n";
-              hitcount++;
+                // search  and fetch the containging directory name
+                storage->dirStartPoint = storage->linestartPoint;
+                while ((storage->dirStartPoint - storage->beginning) > 0 && memcmp(dirnamestr, storage->dirStartPoint, compsize) != 0)
+                {
+                  --(storage->dirStartPoint);
+                }
+                storage->dirEndPoint = storage->dirStartPoint;
+                while ((storage->end - storage->dirEndPoint) > 0 && memcmp(newLineChar, storage->dirEndPoint, 1) != 0)
+                {
+                  ++(storage->dirEndPoint);
+                }
+                --(storage->dirEndPoint); //  step back to drop "\n"
+
+                // capture only the directory name
+                string dirLineString(storage->dirStartPoint + compsize, storage->dirEndPoint - storage->dirStartPoint - compsize);
+                searchResult.resuts_file << dirLineString << "; " << resultString << "\n";
+                hitcount++;
+              }
             }
           }
 
