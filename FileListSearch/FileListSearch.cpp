@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
   // process search options
 
-  SearchOptions searchOptions = SearchOptions();
+  SearchOptions searchOptions;
   if (!searchOptions.getParameters(argc, argv))
     return 1;
   searchOptions.initializeVariables();
