@@ -70,10 +70,10 @@ int main(int argc, char *argv[])
   if (!searchresult.prepareResultsFile())
   {
     return 1;
-
   }
-  file_list_search::Search * search;
 
+
+  file_list_search::Search * search;
  
   if (searchOptions.searchby == "duplicate"){
     cout << "starting duplicate search " << endl;
@@ -122,38 +122,20 @@ int main(int argc, char *argv[])
     searchresult.searchType = file_list_search::SearchResult::search_class::bydir;
     search = new file_list_search::FolderContentSearch(searchOptions, searchresult);
   }
+  else {
+    cout << "ERROR!! searchby search function option not valid! " << endl;
+    cout << "search function (--searchby / -b option) needs to be one of the following: filename, by_directory_name, duplicate or cdtree" << endl;
+    std::cout << searchOptions.desc << "\n";
+    return 1;
+  }
 
   if (!search->initializeSearch())
     return 1;  //
   searchresult.reportResults();
   searchresult.finalize();
-  ///////////////////////////////
+  
 
-
-   
-  //std::size_t cdtreeFlagPos = searchOptions. .find(searchOptions.cdtreefilenameflag);
-    //if (cdtreeFlagPos != std::string::npos || searchOptions.searchby == "cdtree")
-    //  searchFromCdTree(fileListFilename, searchOptions, resuts_file);
-
-
-    //else if (searchOptions.searchby == "duplicate"){
-    //  searchOptions.casesensitive = true; // force case sensitive (no need for case insensitive)
-    //  findDups(fileListFilename, searchOptions, resuts_file);
-    //}
-    //else if (searchOptions.searchString == "*" && searchOptions.fileExtension.size() > 0 && searchOptions.fileExtension != "*")
-    //  searchByFileExtensionOnly(fileListFilename, searchOptions, resuts_file);
-
-    //else if(searchOptions.searchby == "filename")
-    //  searchByName(fileListFilename, searchOptions, resuts_file);
-    //else if (searchOptions.searchby == "by_directory_name")
-    //  searchFilesByFolderName(fileListFilename, searchOptions, resuts_file);
-
-    //else {
-    //  cout << "ERROR!! searchby search function option not valid! " << endl;
-    //  cout << "search function needs to be one of the following: filename, by_directory_name or cdtree" << endl;
-    //  std::cout << searchOptions.desc << "\n";
-    //}
-  //}
+ 
 
   //resuts_file.close();
 
