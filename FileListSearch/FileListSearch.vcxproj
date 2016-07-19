@@ -88,7 +88,6 @@
     <ClInclude Include="FolderContentSearch.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="SearchByFileExtension.h" />
-    <ClInclude Include="searchbyfileextensiononly.h" />
     <ClInclude Include="SearchManager.h" />
     <ClInclude Include="SearchResult.h" />
     <ClInclude Include="search_constants.h" />
@@ -107,7 +106,6 @@
     <ClCompile Include="FolderContentSearch.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchByFileExtension.cpp" />
-    <ClCompile Include="searchbyfileextensiononly.cpp" />
     <ClCompile Include="SearchManager.cpp" />
     <ClCompile Include="searchoptions.cpp" />
     <ClCompile Include="SearchResult.cpp" />
