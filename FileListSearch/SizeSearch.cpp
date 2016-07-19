@@ -44,7 +44,7 @@ namespace file_list_search {
             // filter out lines containing "<DIR>"
             && memcmp(dirStr, storage->linestartPoint + 21, compsize2) != 0
             && memcmp("\r\n", storage->linestartPoint, 2) != 0
-
+            && memcmp(" ", storage->linestartPoint, 1) != 0 // this would cover this: (sizeString != "File(s)") as well
             ;
           if (searchOptions.sizeFilterActive  /*&& linecount > 5*/ && filter) {
             ++(storage->filecount);
@@ -59,17 +59,15 @@ namespace file_list_search {
               ++sizeEndPoint;
             }
             string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-            if (sizeString != "File(s)") {
-              size = boost::lexical_cast<long long>(sizeString);
+            
+            size = boost::lexical_cast<long long>(sizeString);
 
-              sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
-                || searchOptions.sizeOperand.greaterThan < size)
-                && (!searchOptions.sizeOperand.smallerThanActive
-                || searchOptions.sizeOperand.smallerThan > size);
+            sizeFilterCheck = (!searchOptions.sizeOperand.greaterThanActive
+              || searchOptions.sizeOperand.greaterThan < size)
+              && (!searchOptions.sizeOperand.smallerThanActive
+              || searchOptions.sizeOperand.smallerThan > size);
 
-            }
-            else
-              sizeFilterCheck = false;
+
 
             if (sizeFilterCheck) {
               string resultString(storage->linestartPoint, storage->f2 - storage->linestartPoint);
