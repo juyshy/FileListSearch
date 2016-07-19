@@ -131,29 +131,8 @@ namespace file_list_search {
 
             // if fullpath written to results file extract filename
             if (searchOptions.fullpath) {
-              string size_filename = resultString.substr(17); // offset for size and filenames in the row
-              trim(size_filename);
-              std::size_t endOfSizeLocation = size_filename.find(" ");
-              string filename;
-
-              string filesizeStr;
-              int filesize;
-              if (endOfSizeLocation != std::string::npos)
-              {
-                filename = size_filename.substr(endOfSizeLocation + 1);
-                filesizeStr = size_filename.substr(0, endOfSizeLocation);
-                if (filesizeStr != "<DIR>")
-                  filesize = boost::lexical_cast<int>(filesizeStr);
-                else
-                  trim(filename);
-
-              }
-              else
-              {
-                throw std::runtime_error("filename not found!");
-                filename = size_filename;// todo: 
-              }
-
+            
+              string filename = extractFileName(resultString);
               searchResult.resuts_file << /*dirLineString << "; " <<*/ resultString << "; " << dirLineString << "\\" << filename << "\n";
             }
             else

@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Search.h"
 #include "search_constants.h"
+#include "utility_funcs.h"
 using std::cout;
 using std::endl;
 #include <boost/timer/timer.hpp>
@@ -26,6 +27,32 @@ namespace file_list_search {
   //bool Search::initilizeOptions(){
 
   //}
+
+  string Search::extractFileName(string str){
+    string size_filename = str.substr(17); // offset for size and filenames in the row
+    trim(size_filename);
+    std::size_t endOfSizeLocation = size_filename.find(" ");
+    string filename;
+
+    string filesizeStr;
+    int filesize;
+    if (endOfSizeLocation != std::string::npos)
+    {
+      filename = size_filename.substr(endOfSizeLocation + 1);
+      filesizeStr = size_filename.substr(0, endOfSizeLocation);
+      if (filesizeStr != "<DIR>")
+        filesize = boost::lexical_cast<int>(filesizeStr);
+      else
+        trim(filename);
+
+    }
+    else
+    {
+      throw std::runtime_error("filename not found!");
+      filename = size_filename;// todo: 
+    }
+    return filename;
+  }
 
   bool Search::initializeSearch(){
 

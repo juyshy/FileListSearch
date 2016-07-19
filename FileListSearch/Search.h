@@ -14,7 +14,7 @@ namespace file_list_search {
     Search(SearchOptions searchOptions, SearchResult  & searchRes);
     ~Search();
 
-    
+    string Search::extractFileName(string str);
     bool Search::initializeSearch( );
     bool Search::prepare(Storage * storage);
     //bool Search::initilizeOptions();
