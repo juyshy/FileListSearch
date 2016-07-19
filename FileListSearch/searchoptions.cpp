@@ -65,6 +65,9 @@ using std::endl;
     }
   }
 
+
+
+
   bool SearchOptions::getParameters(int argc, char *argv[]){
 
     //opt::options_description desc("All options: (search and listingfiles required)");
@@ -143,6 +146,11 @@ using std::endl;
     fileExtension = vm["fileextension"].as<std::string>();
     fileExtensionCheckCaseSensitive = vm["fileextensioncase"].as<bool>();
     exposeOptions = vm["exposeoptions"].as<bool>();
+
+    if (!casesensitive){
+ 
+      std::transform(searchString.begin(), searchString.end(), searchString.begin(), ::tolower);
+    }
 
     year = vm["year"].as<std::string>();
     date = vm["date"].as<std::string>();
@@ -253,7 +261,7 @@ using std::endl;
     if (exposeOptions)
     {
 
-
+      cout << "exposeOptions: " << exposeOptions << endl;
       cout << "searchString: " << searchString << endl;
       cout << "casesensitive: " << casesensitive << endl;
       cout << "overwrite: " << overwrite << endl;
@@ -269,14 +277,14 @@ using std::endl;
       cout << "searchby: " << searchby << endl;
       cout << "timestampInAutoName: " << timestampInAutoName << endl;
       cout << "resultsFilename: " << resultsFilename << endl;
-      //cout << "listFiles: " <<  listFiles << endl;
-      //cout << "sizeOperand.greaterThanActive: " << sizeOperand.greaterThanActive << endl;
-      //cout << "sizeOperand.smallerThanActive: " << sizeOperand.smallerThanActive << endl;
+      cout << "listFiles: " << endl;
+      for (string filelistfileName : listFiles)
+        cout << "    " << filelistfileName << endl;
       if (sizeOperand.greaterThanActive)
         cout << "size filter greaterThan: " << sizeOperand.greaterThan << endl;
       if (sizeOperand.smallerThanActive)
         cout << "size filter smallerThan: " << sizeOperand.smallerThan << endl;
-
+      cout <<   endl;
     }
 
     checkWildCardInFileListings();

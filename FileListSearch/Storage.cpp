@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "Storage.h"
 
-//#include "searchbyfileextensiononly.h"
 #include "utility_funcs.h"
 
 #include <boost/timer/timer.hpp>
