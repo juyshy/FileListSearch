@@ -15,7 +15,21 @@ namespace file_list_search {
   }
 
   void CdTreeSearch::runSearch(Storage * storage){
-  
+    if (searchOptions.monthYearFilter[0] == '0')
+    {
+
+      searchOptions.monthYearFilter = reinterpret_cast<char *>(malloc(searchOptions.monthYear.size() /*+ 1*/));
+      memcpy(searchOptions.monthYearFilter, searchOptions.monthYear.substr(1).c_str(), searchOptions.monthYear.size() + 1);
+    }
+    string datefilter=searchOptions.date;
+    replace(datefilter, ".0", ".");
+    if (datefilter.substr(0,1) == "0")
+    {
+      datefilter = datefilter.substr(1);
+
+    }
+    searchOptions.dateFilter = reinterpret_cast<char *>(malloc(datefilter.size() /*+ 1*/));
+    memcpy(searchOptions.dateFilter, datefilter.c_str(), datefilter.size() + 1);
     // loop through all potential search hits
     while (storage->f2 && storage->f2 != storage->end) {
       if (storage->f2 = static_cast<const char*>(memchr(storage->f2, searchOptions.searchChar1, storage->end - storage->f2)))
@@ -104,7 +118,7 @@ namespace file_list_search {
                 datelist.push_back(substr);
               }
 
-              monthyearCheck = datelist.at(1) + datelist.at(2) == searchOptions.monthYearFilter;
+              monthyearCheck = datelist.at(1) + "." + datelist.at(2) == searchOptions.monthYearFilter;
               yearFilterCheck = datelist.at(2) == searchOptions.yearFilter;
               dateFilterCheck = date == searchOptions.dateFilter;
 
