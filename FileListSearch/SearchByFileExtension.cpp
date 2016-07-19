@@ -58,7 +58,8 @@ namespace file_list_search {
           
           if (searchOptions.filetype == "file") {
 
-            int size;
+            unsigned long long size;
+
             bool sizeFilterCheck = false;
             if (searchOptions.sizeFilterActive) {
               const char * sizeStartPoint = storage->linestartPoint + 17; //offset after date & time
@@ -72,7 +73,7 @@ namespace file_list_search {
                 ++sizeEndPoint;
               }
               string sizeString(sizeStartPoint, sizeEndPoint - sizeStartPoint);
-              size = boost::lexical_cast<int>(sizeString);
+              size = boost::lexical_cast<unsigned long long>(sizeString);
 
               sizeFilterCheck = searchOptions.sizeOperand.greaterThan == -1 || searchOptions.sizeOperand.greaterThan < size;
               sizeFilterCheck = sizeFilterCheck && (searchOptions.sizeOperand.smallerThan == -1 || searchOptions.sizeOperand.smallerThan > size);
