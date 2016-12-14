@@ -105,8 +105,9 @@ namespace file_list_search {
 
 
 
-    if (!searchOptions.casesensitive && ( searchResult.searchType != file_list_search::SearchResult::search_class::size
-      || searchOptions.searchString != "*" )) { // not casesensitive make a lower copy
+    if (!searchOptions.casesensitive && searchOptions.searchString != "*"
+      &&   searchResult.searchType != file_list_search::SearchResult::search_class::size
+        ) { // not casesensitive make a lower copy
       storage->makeLowerCaseCopy();
     }
     else
