@@ -93,7 +93,7 @@ Todo:
 * parallel code
 * linting
 * memory leak checks
-* more search options: date, year, file size, regex
+* more search options: regex, date ranges
 * splitting date, size into csv
 * GUI
 * post processing option: duplicate removal
