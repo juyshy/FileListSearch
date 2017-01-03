@@ -88,6 +88,7 @@ Download link for compiled exe can be found from blog post:
 Todo:
 --------
 * internationalization: time zones, operating system languages
+* smart pointers
 * further performance optimization 
 * parallel code
 * linting
