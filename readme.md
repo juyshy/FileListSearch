@@ -49,15 +49,24 @@ Usage: FileListSearch options
 * -y [ --year ] arg                     filter by year: yyyy
 * -m [ --monthyear ] arg                filter by monthyear with format mm.yyyy
 * -d [ --date ] arg                     filter by date with format dd.mm.yyyy
+* -z [ --size ] arg                     filter by size. Example: -z">1M",
+                                        -z"<100k" or -z"g1M" -z"s100k".
+                                            You can also make a range like this
+                                        -z">100k <2M" (use allways double
+                                        quotes!)
 * -u [ --fullpath ] arg (=0)            fullpath included in results
-* -b [ --searchby ] arg (=filename)     searchtype (filename, by_directory_name
-                                        or cdtree)
-                                             filename = regular file name
-                                        search,
-                                             by_directory_name = list all files
-                                        in directories that match search term,
-                                             cdtree = search cdtree format csv
-                                        file
+* -b [ --searchby ] arg (=filename)     searchtype (filename,
+                                        by_directory_name, duplicate or cdtree)
+                                                        filename = regular file
+                                        name search,
+                                                            by_directory_name =
+                                        list all files in directories that
+                                        match search term,
+                                                                duplicate =
+                                        search for file duplicates (date, size,
+                                        filename match)
+                                                                    cdtree =
+                                        search cdtree format csv file
 * -x [ --fileextension ] arg (=*)       file extension filter for search
                                         default to any
 * -n [ --fileextensioncase ] arg (=0)   file extension filter casesensitive
@@ -69,6 +78,7 @@ Usage: FileListSearch options
 * -t [ --cdtreefilenameflag ] arg (=cdtree)
                                         if this string found in the file name
                                         switch to cdtree search function
+* -i [ --exposeoptions ] arg (=0)       list all option values to terminal
 * --help                                produce help message
 
 Compilation:
